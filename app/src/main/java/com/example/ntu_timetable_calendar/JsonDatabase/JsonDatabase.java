@@ -1,6 +1,7 @@
 package com.example.ntu_timetable_calendar.JsonDatabase;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.example.ntu_timetable_calendar.CourseModels.Course;
 import com.example.ntu_timetable_calendar.DAO.JsonDAO;
@@ -52,7 +53,7 @@ public class JsonDatabase {
 
     /**
      * Singleton pattern in converting the json of all courses into a map to improve performance,
-     * since the json file is quite large
+     * since the json file is quite large, we only want to deserialize once!
      *
      * @param context
      * @return
@@ -99,10 +100,11 @@ public class JsonDatabase {
             // Actually, in each value, there is already the course code inside -- hence the key is actually useless
             Map<String, Exam> allExamsMap = gson.fromJson(examJsonStr, mapType);
 
-            if(allExamsMap != null){
+            if (allExamsMap != null) {
                 allExams = new ArrayList<>(allExamsMap.values());
             }
         }
     }
+
 
 }

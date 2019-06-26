@@ -3,6 +3,7 @@ package com.example.ntu_timetable_calendar.Fragments;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +43,7 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
     private static final String TAG = "SearchFragment";
     private List<Exam> allExams;
     private List<Course> allCourses;
+    private List<Course> subCourses = new ArrayList<>();
     private SearchViewModel searchViewModel;
     private SearchRVAdapter searchRVAdapter;
     private List<String> list = new ArrayList<>();
@@ -55,11 +57,16 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        long startTime = System.nanoTime();
 
         initialiseViews(view);
         setupViewModel();
         setupRecyclerView();
         setupFilter();
+
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime);
+        Log.d(TAG, "onViewCreated: DURATION : " + duration);
     }
 
     private void initialiseViews(View view) {
@@ -115,9 +122,7 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
                         filteredList.add(course);
                     }
                 }
-
                 searchRVAdapter.setCourseList(filteredList);
-
             }
         });
     }
@@ -138,6 +143,9 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
         recyclerView.setNestedScrollingEnabled(false);
 
         searchRVAdapter = new SearchRVAdapter(getContext());
+       /* for(int i = 0; i < 20; i++){
+            subCourses.add(allCourses.get(i));
+        }*/
         searchRVAdapter.setCourseList(allCourses);
         recyclerView.setAdapter(searchRVAdapter);
 

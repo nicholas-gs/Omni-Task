@@ -10,6 +10,7 @@ import com.example.ntu_timetable_calendar.Fragments.CalendarFragment;
 import com.example.ntu_timetable_calendar.Fragments.HomeFragment;
 import com.example.ntu_timetable_calendar.Fragments.PlanFragment;
 import com.example.ntu_timetable_calendar.Fragments.SearchFragment;
+import com.example.ntu_timetable_calendar.JsonDatabase.JsonDatabase;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,6 +26,10 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction().add(R.id.activitymain_fragment_container,
                     new HomeFragment(), "home_fragment").commit();
         }
+
+        // We instantiate the jsonDatabase here (even though we don't the data yet) in order to prevent
+        // the fragment loading to lag, since instantiating the database carries out the deserialization
+        JsonDatabase jsonDatabase = JsonDatabase.getJsonDatabaseInstance(getApplicationContext());
 
         initialiseViews();
         setUpBottomNav();

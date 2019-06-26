@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:title="Home"
+        android:id="@+id/bottomNav_home"
+        android:icon="@drawable/bottom_nav_home_selector"
+        />
+
+
+    <item
+        android:title="Search"
+        android:id="@+id/bottomNav_search"
+        android:icon="@drawable/bottom_nav_search_selector"
+        />
+
+    <item
+        android:title="Plan"
+        android:id="@+id/bottomNav_plan"
+        android:icon="@drawable/bottom_nav_plan_selector"
+        />
+
+    <item
+        android:title="Calendar"
+        android:id="@+id/bottomNav_calendar"
+        android:icon="@drawable/bottom_nav_calendar_selector"
+        />
+
+</menu>

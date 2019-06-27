@@ -1,7 +1,6 @@
 package com.example.ntu_timetable_calendar.JsonDatabase;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.example.ntu_timetable_calendar.CourseModels.Course;
 import com.example.ntu_timetable_calendar.DAO.JsonDAO;

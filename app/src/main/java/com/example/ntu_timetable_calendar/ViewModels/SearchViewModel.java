@@ -1,9 +1,11 @@
 package com.example.ntu_timetable_calendar.ViewModels;
 
 import android.app.Application;
+import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.MutableLiveData;
 
 import com.example.ntu_timetable_calendar.CourseModels.Course;
 import com.example.ntu_timetable_calendar.ExamModels.Exam;
@@ -29,8 +31,35 @@ public class SearchViewModel extends AndroidViewModel {
         return jsonRepository.getAllExams();
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
-  /*  public MutableLiveData<Map<String, Exam>> getSelectedExams() {
-        return selectedExams;
-    }*/
+    public MutableLiveData<List<Course>> getFilteredList() {
+        return jsonRepository.getFilteredList();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void queryCourseData(String queryStr) {
+        new QueryCourseDataAsyncTask(queryStr, jsonRepository).execute();
+    }
+
+    private static class QueryCourseDataAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        private String queryStr;
+        private JsonRepository jsonRepository;
+
+        public QueryCourseDataAsyncTask(String queryStr, JsonRepository jsonRepository) {
+            this.queryStr = queryStr;
+            this.jsonRepository = jsonRepository;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            jsonRepository.queryCourseData(queryStr);
+
+            return null;
+        }
+    }
+
+
 }

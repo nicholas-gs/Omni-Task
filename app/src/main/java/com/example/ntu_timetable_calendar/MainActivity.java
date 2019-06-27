@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
                 switch (item.getItemId()) {
                     case R.id.bottomNav_home:
                         getSupportFragmentManager().beginTransaction().add(R.id.activitymain_fragment_container,
@@ -52,7 +53,8 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.bottomNav_search:
                         getSupportFragmentManager().beginTransaction().add(R.id.activitymain_fragment_container,
-                                new SearchFragment(), "search_fragment").commit();
+                                new SearchFragment(), "home_fragment").commit();
+
                         break;
                     case R.id.bottomNav_plan:
                         getSupportFragmentManager().beginTransaction().add(R.id.activitymain_fragment_container,

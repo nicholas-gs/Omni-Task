@@ -8,26 +8,26 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ntu_timetable_calendar.CourseModels.Course;
 import com.example.ntu_timetable_calendar.Helper.StringHelper;
 import com.example.ntu_timetable_calendar.R;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class SearchRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class SearchRVAdapter extends ListAdapter<Course, RecyclerView.ViewHolder> {
 
     // Constants
     private static final int HEADER_VIEW_TYPE = 0;
     private static final int ITEM_VIEW_TYPE = 1;
 
     private Context context;
-    private List<Course> courseList = new ArrayList<>();
+    /*private List<Course> courseList = new ArrayList<>();*/
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     private onItemClickListener itemClickListener;
+
 
     public interface onItemClickListener {
         void onClick(int position, Course course);
@@ -39,16 +39,21 @@ public class SearchRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     public SearchRVAdapter(Context context) {
+        super(DIFF_CALLBACK);
         this.context = context;
     }
 
-    public void setCourseList(List<Course> courseList) {
-        this.courseList.clear();
-        this.courseList.addAll(courseList);
-        this.courseList.add(0, null);
+    private static final DiffUtil.ItemCallback<Course> DIFF_CALLBACK = new DiffUtil.ItemCallback<Course>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull Course oldItem, @NonNull Course newItem) {
+            return oldItem.getCourseCode().equals(newItem.getCourseCode());
+        }
 
-        notifyDataSetChanged();
-    }
+        @Override
+        public boolean areContentsTheSame(@NonNull Course oldItem, @NonNull Course newItem) {
+            return oldItem.getCourseCode().equals(newItem.getCourseCode());
+        }
+    };
 
     /**
      * ViewHolder class for RV item
@@ -69,7 +74,7 @@ public class SearchRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 @Override
                 public void onClick(View view) {
                     if (itemClickListener != null) {
-                        itemClickListener.onClick(getAdapterPosition(), courseList.get(getAdapterPosition()));
+                        itemClickListener.onClick(getAdapterPosition(), getItem(getAdapterPosition()));
                     }
                 }
             });
@@ -103,18 +108,13 @@ public class SearchRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         } else if (holder.getItemViewType() == ITEM_VIEW_TYPE) {
             ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-            Course course = courseList.get(position);
+            Course course = getItem(position);
             itemViewHolder.nameTV.setText(StringHelper.formatNameString(course.getName()));
             itemViewHolder.auTV.setText(course.getAu().trim());
             String indexStr = StringHelper.formatIndexString(course);
             itemViewHolder.indexTV.setText(indexStr);
             itemViewHolder.codeTV.setText(course.getCourseCode());
         }
-    }
-
-    @Override
-    public int getItemCount() {
-        return courseList.size();
     }
 
     @Override

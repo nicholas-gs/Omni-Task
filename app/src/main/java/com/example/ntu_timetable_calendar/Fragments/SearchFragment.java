@@ -1,6 +1,7 @@
 package com.example.ntu_timetable_calendar.Fragments;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -16,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,6 +26,7 @@ import com.example.ntu_timetable_calendar.Adapter.SearchRVAdapter;
 import com.example.ntu_timetable_calendar.CourseModels.Course;
 import com.example.ntu_timetable_calendar.ExamModels.Exam;
 import com.example.ntu_timetable_calendar.Helper.KeyboardHelper;
+import com.example.ntu_timetable_calendar.Helper.ListHelper;
 import com.example.ntu_timetable_calendar.ItemDecorators.SearchRVItemDecorator;
 import com.example.ntu_timetable_calendar.R;
 import com.example.ntu_timetable_calendar.ViewModels.SearchViewModel;
@@ -43,10 +46,10 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
     private static final String TAG = "SearchFragment";
     private List<Exam> allExams;
     private List<Course> allCourses;
-    private List<Course> subCourses = new ArrayList<>();
-    private SearchViewModel searchViewModel;
+    private SearchViewModel searchViewModel = null;
     private SearchRVAdapter searchRVAdapter;
     private List<String> list = new ArrayList<>();
+    private Observer<List<Course>> observer;
 
     @Nullable
     @Override
@@ -60,13 +63,24 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
         long startTime = System.nanoTime();
 
         initialiseViews(view);
-        setupViewModel();
         setupRecyclerView();
+        setupViewModel();
         setupFilter();
 
         long endTime = System.nanoTime();
         long duration = (endTime - startTime);
         Log.d(TAG, "onViewCreated: DURATION : " + duration);
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (searchViewModel != null) {
+            searchViewModel.getFilteredList().removeObserver(observer);
+            searchViewModel = null;
+        }
     }
 
     private void initialiseViews(View view) {
@@ -85,18 +99,37 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
     }
 
     private void setupViewModel() {
-        searchViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
-       /* searchViewModel.getSelectedExams().observe(this, new Observer<Map<String, Exam>>() {
-            @Override
-            public void onChanged(Map<String, Exam> stringExamMap) {
-                Toast.makeText(getContext(), "Length : " + stringExamMap.size(), Toast.LENGTH_SHORT).show();
-            }
-        });*/
+        if (searchViewModel == null) {
+            searchViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
+        }
 
-        allExams = searchViewModel.getAllExams();
-        allCourses = searchViewModel.getAllCourses();
+        observer = new Observer<List<Course>>() {
+            @Override
+            public void onChanged(List<Course> courseList) {
+                Log.d(TAG, "onChanged: Triggered");
+                List<Course> c = new ArrayList<>(courseList);
+                ListHelper.insertDummyCourse(0, c);
+                searchRVAdapter.submitList(c);
+            }
+        };
+
+        searchViewModel.getFilteredList().observe(this, observer);
+
+        // In the JsonDAO, we defined that if the query string == "" (empty string), we return the entire list of courses.
+        // Hence we send this query in order to populate the recyclerview when the fragment is first initialised
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                searchViewModel.queryCourseData("");
+            }
+        }, 200);
+
     }
 
+    /**
+     * Handle functionality for search widget - Sends query string to searchViewModel
+     */
     private void setupFilter() {
 
         searchEditText.addTextChangedListener(new TextWatcher() {
@@ -112,41 +145,29 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
 
             @Override
             public void afterTextChanged(Editable editable) {
-                String queryStr = editable.toString().toUpperCase();
+                String queryStr = editable.toString().toUpperCase().trim();
 
-                List<Course> filteredList = new ArrayList<>();
-
-                for (Course course : allCourses) {
-                    if (course.getCourseCode().toUpperCase().contains(queryStr) ||
-                            course.getName().toUpperCase().contains(queryStr)) {
-                        filteredList.add(course);
-                    }
-                }
-                searchRVAdapter.setCourseList(filteredList);
+                searchViewModel.queryCourseData(queryStr);
             }
         });
     }
 
     private void setupRecyclerView() {
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
-
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setNestedScrollingEnabled(false);
         // Setup customised recyclerview item divider
-        SearchRVItemDecorator dividerItemDecoration = new SearchRVItemDecorator(getContext(),
+        SearchRVItemDecorator dividerItemDecoration = new SearchRVItemDecorator(Objects.requireNonNull(getContext()),
                 LinearLayout.VERTICAL, true);
         dividerItemDecoration.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(
                 getContext(), R.drawable.rv_item_divider
         )));
         recyclerView.addItemDecoration(dividerItemDecoration);
 
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setNestedScrollingEnabled(false);
-
         searchRVAdapter = new SearchRVAdapter(getContext());
-       /* for(int i = 0; i < 20; i++){
-            subCourses.add(allCourses.get(i));
-        }*/
-        searchRVAdapter.setCourseList(allCourses);
+
         recyclerView.setAdapter(searchRVAdapter);
 
         searchRVAdapter.setOnItemClickListener(this);

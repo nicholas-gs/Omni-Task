@@ -70,17 +70,11 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
         long endTime = System.nanoTime();
         long duration = (endTime - startTime);
         Log.d(TAG, "onViewCreated: DURATION : " + duration);
-
     }
 
     @Override
     public void onPause() {
         super.onPause();
-
-        if (searchViewModel != null) {
-            searchViewModel.getFilteredList().removeObserver(observer);
-            searchViewModel = null;
-        }
     }
 
     private void initialiseViews(View view) {

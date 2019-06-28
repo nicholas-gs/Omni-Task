@@ -22,7 +22,6 @@ public class JsonDAO {
     private List<Exam> allExams;
 
     private MutableLiveData<List<Course>> filteredList = new MutableLiveData<>();
-    private static final int PAGING_SIZE = 5;
 
     public JsonDAO(List<Course> allCourses, List<Exam> allExams) {
         this.allCourses = allCourses;

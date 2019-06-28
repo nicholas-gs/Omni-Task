@@ -5,17 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
+    android:background="@color/colorPrimaryDark"
     android:orientation="horizontal"
     app:cardCornerRadius="4dp"
-    android:background="@color/colorPrimaryDark"
     app:cardElevation="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="48dp"
+        android:background="@color/colorPrimaryDark"
         android:gravity="center"
         android:orientation="horizontal"
-        android:background="@color/colorPrimaryDark"
         android:paddingStart="8dp"
         android:paddingEnd="8dp">
 
@@ -27,19 +27,20 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:importantForAccessibility="no"
             android:padding="2dp"
-            android:src="@drawable/ic_search_unselected_24dp"/>
+            android:src="@drawable/ic_search_unselected_24dp" />
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/search_box_start_search"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="center_vertical">
 
             <EditText
                 android:id="@+id/search_widget_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@id/search_clear"
                 android:background="@android:color/transparent"
                 android:gravity="center_vertical"
                 android:hint="Search Course"
@@ -49,7 +50,19 @@
                 android:textColorHint="@color/colorPrimaryLight"
                 android:textSize="14sp" />
 
-        </LinearLayout>
+            <ImageView
+                android:id="@+id/search_clear"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_margin="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:importantForAccessibility="no"
+                android:padding="2dp"
+                android:src="@drawable/ic_close_lightblue_24dp" />
+
+        </RelativeLayout>
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

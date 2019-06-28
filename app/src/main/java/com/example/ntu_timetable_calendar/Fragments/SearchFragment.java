@@ -9,8 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,11 +24,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ntu_timetable_calendar.Adapter.SearchRVAdapter;
 import com.example.ntu_timetable_calendar.CourseModels.Course;
-import com.example.ntu_timetable_calendar.ExamModels.Exam;
 import com.example.ntu_timetable_calendar.Helper.KeyboardHelper;
 import com.example.ntu_timetable_calendar.Helper.ListHelper;
 import com.example.ntu_timetable_calendar.ItemDecorators.SearchRVItemDecorator;
 import com.example.ntu_timetable_calendar.R;
+import com.example.ntu_timetable_calendar.ViewModels.ActivityViewModel;
 import com.example.ntu_timetable_calendar.ViewModels.SearchViewModel;
 
 import java.util.ArrayList;
@@ -41,15 +41,14 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
     private CardView searchWidget;
     private EditText searchEditText;
     private RecyclerView recyclerView;
+    private ImageView clearBtn;
 
     // Variables
     private static final String TAG = "SearchFragment";
-    private List<Exam> allExams;
-    private List<Course> allCourses;
-    private SearchViewModel searchViewModel = null;
+    private SearchViewModel searchViewModel;
     private SearchRVAdapter searchRVAdapter;
-    private List<String> list = new ArrayList<>();
     private Observer<List<Course>> observer;
+    private ActivityViewModel activityViewModel;
 
     @Nullable
     @Override
@@ -60,27 +59,28 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        long startTime = System.nanoTime();
-
         initialiseViews(view);
         setupRecyclerView();
-        setupViewModel();
         setupFilter();
-
-        long endTime = System.nanoTime();
-        long duration = (endTime - startTime);
-        Log.d(TAG, "onViewCreated: DURATION : " + duration);
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        // Initialise the activityViewModel
+        activityViewModel = ViewModelProviders.of(Objects.requireNonNull(getActivity())).get(ActivityViewModel.class);
+        // Initialise the SearchViewModel
+        setupViewModel();
     }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private void initialiseViews(View view) {
         searchWidget = view.findViewById(R.id.search_widget_container);
         searchEditText = view.findViewById(R.id.search_widget_edittext);
         recyclerView = view.findViewById(R.id.search_fragment_recyclerview);
+        clearBtn = view.findViewById(R.id.search_clear);
 
         // Handle search widget on click - Show the soft keyboard programmatically
         searchWidget.setOnClickListener(new View.OnClickListener() {
@@ -90,36 +90,60 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
                 KeyboardHelper.showKeyBoard(Objects.requireNonNull(getActivity()));
             }
         });
+
+        clearBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                searchEditText.setText("");
+            }
+        });
     }
 
+    /**
+     * Setup SearchViewModel that is scoped to the lifecycle of the fragment
+     */
     private void setupViewModel() {
-        if (searchViewModel == null) {
-            searchViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
-        }
+
+        searchViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
 
         observer = new Observer<List<Course>>() {
             @Override
             public void onChanged(List<Course> courseList) {
                 Log.d(TAG, "onChanged: Triggered");
                 List<Course> c = new ArrayList<>(courseList);
+                // Insert a dummy course object for the first item in the list (header)
                 ListHelper.insertDummyCourse(0, c);
                 searchRVAdapter.submitList(c);
             }
         };
 
-        searchViewModel.getFilteredList().observe(this, observer);
+        // By passing getViewLifecycleOwner
+        searchViewModel.getFilteredList().observe(getViewLifecycleOwner(), observer);
 
-        // In the JsonDAO, we defined that if the query string == "" (empty string), we return the entire list of courses.
-        // Hence we send this query in order to populate the recyclerview when the fragment is first initialised
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                searchViewModel.queryCourseData("");
+                Log.d(TAG, "run: RUNNING");
+
+                if (activityViewModel != null) {
+                    // Get the previously stored query
+                    String previousQuery = activityViewModel.getSearchQuery();
+                    if (previousQuery != null && !(previousQuery.length() == 0)) {
+                        searchViewModel.queryCourseData(previousQuery);
+                        searchEditText.requestFocus();
+                        searchEditText.setText(previousQuery);
+                    } else {
+                        searchViewModel.queryCourseData("");
+                    }
+                } else {
+                    searchViewModel.queryCourseData("");
+                }
+
             }
         }, 200);
-
     }
+
 
     /**
      * Handle functionality for search widget - Sends query string to searchViewModel
@@ -139,9 +163,11 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
 
             @Override
             public void afterTextChanged(Editable editable) {
-                String queryStr = editable.toString().toUpperCase().trim();
+                // Save query into SharedPreference
+                String queryStr = editable.toString();
+                activityViewModel.setSearchQuery(queryStr);
+                searchViewModel.queryCourseData(queryStr.toUpperCase().trim());
 
-                searchViewModel.queryCourseData(queryStr);
             }
         });
     }
@@ -175,6 +201,8 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
      */
     @Override
     public void onClick(int position, Course course) {
-        Toast.makeText(getContext(), "Code : " + course.getCourseCode(), Toast.LENGTH_SHORT).show();
+        Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction().add(R.id.activitymain_fragment_container, new CourseDetailFragment(), "course_detail_fragment")
+                .addToBackStack(null).commit();
     }
+
 }

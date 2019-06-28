@@ -118,7 +118,7 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
         };
 
         // By passing getViewLifecycleOwner
-        searchViewModel.getFilteredList().observe(getViewLifecycleOwner(), observer);
+        searchViewModel.getFilteredCourseData().observe(getViewLifecycleOwner(), observer);
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -201,8 +201,16 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
      */
     @Override
     public void onClick(int position, Course course) {
-        Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction().add(R.id.activitymain_fragment_container, new CourseDetailFragment(), "course_detail_fragment")
-                .addToBackStack(null).commit();
+        activityViewModel.setCourseToDetail(course);
+        Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction()
+                .add(R.id.activitymain_fragment_container, new CourseDetailFragment(), "course_detail_fragment")
+                .hide(this).addToBackStack(null).commit();
+
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy: SearchFragment Destroyed");
+    }
 }

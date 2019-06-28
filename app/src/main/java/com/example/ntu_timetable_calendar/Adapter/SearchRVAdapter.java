@@ -62,14 +62,13 @@ public class SearchRVAdapter extends ListAdapter<Course, RecyclerView.ViewHolder
         private RelativeLayout itemContainer;
         private TextView nameTV, auTV, indexTV, codeTV;
 
-        public ItemViewHolder(@NonNull View itemView) {
+        ItemViewHolder(@NonNull View itemView) {
             super(itemView);
             itemContainer = itemView.findViewById(R.id.search_rv_item_container);
             nameTV = itemView.findViewById(R.id.search_rv_item_name);
             auTV = itemView.findViewById(R.id.search_rv_item_au);
             indexTV = itemView.findViewById(R.id.search_rv_item_index);
             codeTV = itemView.findViewById(R.id.search_rv_item_code);
-
             itemContainer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

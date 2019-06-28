@@ -20,11 +20,14 @@ public class SearchViewModel extends AndroidViewModel {
 
     private static final String TAG = "SearchFragment";
 
+
     public SearchViewModel(@NonNull Application application) {
         super(application);
         jsonRepository = new JsonRepository(application);
         Log.d(TAG, "SearchViewModel: Constructor called");
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
     public List<Course> getAllCourses() {
         return jsonRepository.getAllCourses();
@@ -36,8 +39,14 @@ public class SearchViewModel extends AndroidViewModel {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public MutableLiveData<List<Course>> getFilteredList() {
-        return jsonRepository.getFilteredList();
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    public MutableLiveData<List<Course>> getFilteredCourseData() {
+        return jsonRepository.getFilteredCourseList();
+    }
+
+    public MutableLiveData<List<Exam>> getFilteredExamData() {
+        return jsonRepository.getFilteredExamList();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -59,7 +68,29 @@ public class SearchViewModel extends AndroidViewModel {
         @Override
         protected Void doInBackground(Void... voids) {
             jsonRepository.queryCourseData(queryStr);
+            return null;
+        }
+    }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void queryExamData(String queryStr) {
+        new QueryExamDataAsyncTask(queryStr, jsonRepository).execute();
+    }
+
+    private static class QueryExamDataAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        private String queryStr;
+        private JsonRepository jsonRepository;
+
+        QueryExamDataAsyncTask(String queryStr, JsonRepository jsonRepository) {
+            this.queryStr = queryStr;
+            this.jsonRepository = jsonRepository;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            jsonRepository.queryExamData(queryStr);
             return null;
         }
     }

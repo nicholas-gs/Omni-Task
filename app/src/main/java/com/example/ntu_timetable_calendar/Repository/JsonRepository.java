@@ -36,8 +36,12 @@ public class JsonRepository {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public MutableLiveData<List<Course>> getFilteredList() {
-        return jsonDAO.getFilteredList();
+    public MutableLiveData<List<Course>> getFilteredCourseList() {
+        return jsonDAO.getFilteredCourseList();
+    }
+
+    public MutableLiveData<List<Exam>> getFilteredExamList() {
+        return jsonDAO.getFilteredExamList();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -62,6 +66,27 @@ public class JsonRepository {
             return null;
         }
     }
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
+    public void queryExamData(String queryStr) {
+        new QueryExamDataAsyncTask(jsonDAO, queryStr).execute();
+    }
+
+    private static class QueryExamDataAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        private JsonDAO jsonDAO;
+        private String querystr;
+
+        QueryExamDataAsyncTask(JsonDAO jsonDAO, String querystr) {
+            this.jsonDAO = jsonDAO;
+            this.querystr = querystr;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            jsonDAO.queryExamData(querystr);
+            return null;
+        }
+    }
 
 }

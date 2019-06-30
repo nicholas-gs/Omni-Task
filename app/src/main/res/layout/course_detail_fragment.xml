@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorPrimary">
 
     <androidx.appcompat.widget.Toolbar
@@ -12,98 +14,74 @@
         android:background="@color/colorPrimary"
         android:elevation="0dp" />
 
-    <include
-        android:id="@+id/course_detail_header"
-        layout="@layout/course_detail_fragment_header" />
-
-    <TextView
-        android:id="@+id/course_detail_examTV"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/course_detail_header"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="4dp"
-        android:text="Exam"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@color/colorAccent"
-        android:textSize="16sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/course_detail_date"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/course_detail_examTV"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="6dp"
-        android:layout_marginEnd="20dp"
-        android:singleLine="true"
-        android:text="Monday, 2 December 2019"
-        android:textColor="@color/colorContentText"
-        android:textSize="14sp" />
-
-    <TextView
-        android:id="@+id/course_detail_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/course_detail_date"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="4dp"
-        android:singleLine="true"
-        android:text="Start : 9am"
-        android:textColor="@color/colorContentText"
-        android:textSize="14sp" />
-
-    <TextView
-        android:id="@+id/course_detail_duration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/course_detail_date"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="20dp"
-        android:singleLine="true"
-        android:text="Duration : 2 hours"
-        android:textColor="@color/colorContentText"
-        android:textSize="14sp" />
-
-    <View
-        android:id="@+id/divider1"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_below="@id/course_detail_duration"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="@color/colorPrimaryLight" />
-
-    <TextView
-        android:id="@+id/indexes"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/divider1"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="10dp"
-        android:text="Indexes"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@color/colorAccent"
-        android:textSize="16sp"
-        android:textStyle="bold" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/course_detail_rv"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/indexes"
-        android:paddingStart="20dp"
-        android:paddingTop="8dp"
-        android:paddingEnd="20dp">
+        android:layout_below="@id/course_detail_toolbar">
 
-    </androidx.recyclerview.widget.RecyclerView>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <include
+                android:id="@+id/course_detail_header"
+                layout="@layout/course_detail_fragment_header" />
+
+            <com.alespero.expandablecardview.ExpandableCardView
+                app:icon="@drawable/ic_home_selected_24dp"
+                android:id="@+id/course_detail_expandableCardView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/course_detail_header"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                app:expandOnClick="true"
+                app:inner_view="@layout/course_detail_exam_innerview"
+                app:title="Exam">
+
+            </com.alespero.expandablecardview.ExpandableCardView>
+
+            <View
+                android:id="@+id/divider1"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/course_detail_expandableCardView"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:background="@color/colorPrimaryLight" />
+
+            <TextView
+                android:id="@+id/indexes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/divider1"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:text="Indexes"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/colorAccent"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/course_detail_rv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/indexes"
+                android:layout_centerHorizontal="true"
+                android:paddingStart="20dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="20dp">
+
+            </androidx.recyclerview.widget.RecyclerView>
+
+
+        </RelativeLayout>
+
+    </ScrollView>
 
 
 </RelativeLayout>

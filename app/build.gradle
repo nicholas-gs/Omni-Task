@@ -43,4 +43,7 @@ dependencies {
 
     // CardView
     implementation 'androidx.cardview:cardview:1.0.0'
+
+    // Expandable CardView (https://github.com/AleSpero/ExpandableCardView)
+    implementation 'com.alespero:expandable-cardview:0.8'
 }

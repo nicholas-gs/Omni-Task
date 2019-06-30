@@ -1,6 +1,7 @@
 package com.example.ntu_timetable_calendar.Fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.alespero.expandablecardview.ExpandableCardView;
 import com.example.ntu_timetable_calendar.CourseModels.Course;
 import com.example.ntu_timetable_calendar.ExamModels.Exam;
 import com.example.ntu_timetable_calendar.Helper.StringHelper;
@@ -30,11 +32,14 @@ public class CourseDetailFragment extends Fragment {
     private Toolbar toolbar;
     private TextView nameTV, codeTV, auTV;
     private TextView dateTV, timeTV, durationTV, examTV;
+    private ExpandableCardView expandableCardView;
 
     // Variables
     private Exam exam;
     private SearchViewModel searchViewModel;
     private ActivityViewModel activityViewModel;
+
+    private static final String TAG = "CardView";
 
     public CourseDetailFragment() {
     }
@@ -63,6 +68,9 @@ public class CourseDetailFragment extends Fragment {
         nameTV = view.findViewById(R.id.course_detail_name);
         codeTV = view.findViewById(R.id.course_detail_code);
         auTV = view.findViewById(R.id.course_detail_au);
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        expandableCardView = view.findViewById(R.id.course_detail_expandableCardView);
 
         dateTV = view.findViewById(R.id.course_detail_date);
         timeTV = view.findViewById(R.id.course_detail_time);
@@ -95,22 +103,7 @@ public class CourseDetailFragment extends Fragment {
         searchViewModel.getFilteredExamData().observe(getViewLifecycleOwner(), new Observer<List<Exam>>() {
             @Override
             public void onChanged(List<Exam> exams) {
-
-                if (exams.size() != 0) {
-                    exam = exams.get(0);
-                    examTV.setText("Final Exam");
-                    String dateStr = exam.getDay() + ", " + exam.getDate();
-                    dateTV.setText(dateStr);
-                    String timeStr = "Start : " + exam.getTime();
-                    timeTV.setText(timeStr);
-                    String durationStr = "Duration : " + Float.toString(exam.getDuration()) + "h";
-                    durationTV.setText(durationStr);
-                } else {
-                    examTV.setText("No Final Exam");
-                    durationTV.setText("");
-                    dateTV.setText("");
-                    timeTV.setText("");
-                }
+                bindExamData(exams);
             }
         });
 
@@ -133,6 +126,33 @@ public class CourseDetailFragment extends Fragment {
         nameTV.setText(StringHelper.formatNameString(course.getName()));
         codeTV.setText(course.getCourseCode());
         auTV.setText(course.getAu());
+    }
+
+    /**
+     * Bind data to the expandable card view
+     * @param exams
+     */
+    private void bindExamData(List<Exam> exams) {
+
+        if (exams.size() != 0) {
+            Log.d(TAG, "bindExamData: 1");
+            expandableCardView.setIcon(ContextCompat.getDrawable(getContext(), R.drawable.ic_home_selected_24dp));;
+            exam = exams.get(0);
+            examTV.setText("Final Exam");
+            String dateStr = exam.getDay() + ", " + exam.getDate();
+            dateTV.setText(dateStr);
+            String timeStr = "Start : " + exam.getTime();
+            timeTV.setText(timeStr);
+            String durationStr = "Duration : " + Float.toString(exam.getDuration()) + "h";
+            durationTV.setText(durationStr);
+        } else {
+            Log.d(TAG, "bindExamData: 2");
+            expandableCardView.setTitle("No Final Exam");
+            examTV.setVisibility(View.GONE);
+            durationTV.setVisibility(View.GONE);
+            dateTV.setVisibility(View.GONE);
+            timeTV.setVisibility(View.GONE);
+        }
     }
 
     /**

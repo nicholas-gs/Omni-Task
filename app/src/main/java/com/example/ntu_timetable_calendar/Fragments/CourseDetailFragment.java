@@ -1,7 +1,6 @@
 package com.example.ntu_timetable_calendar.Fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +14,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.alespero.expandablecardview.ExpandableCardView;
 import com.example.ntu_timetable_calendar.CourseModels.Course;
 import com.example.ntu_timetable_calendar.ExamModels.Exam;
+import com.example.ntu_timetable_calendar.ExpandableCardView.ExpandableCardView;
 import com.example.ntu_timetable_calendar.Helper.StringHelper;
 import com.example.ntu_timetable_calendar.R;
 import com.example.ntu_timetable_calendar.ViewModels.ActivityViewModel;
@@ -31,7 +30,7 @@ public class CourseDetailFragment extends Fragment {
     // Views
     private Toolbar toolbar;
     private TextView nameTV, codeTV, auTV;
-    private TextView dateTV, timeTV, durationTV, examTV;
+    private TextView dateTV, timeTV, durationTV;
     private ExpandableCardView expandableCardView;
 
     // Variables
@@ -75,7 +74,6 @@ public class CourseDetailFragment extends Fragment {
         dateTV = view.findViewById(R.id.course_detail_date);
         timeTV = view.findViewById(R.id.course_detail_time);
         durationTV = view.findViewById(R.id.course_detail_duration);
-        examTV = view.findViewById(R.id.course_detail_examTV);
 
         toolbar.setNavigationIcon(ContextCompat.getDrawable(Objects.requireNonNull(getContext()), R.drawable.ic_arrow_back_lightblue_24dp));
 
@@ -130,15 +128,18 @@ public class CourseDetailFragment extends Fragment {
 
     /**
      * Bind data to the expandable card view
+     *
      * @param exams
      */
     private void bindExamData(List<Exam> exams) {
 
         if (exams.size() != 0) {
-            Log.d(TAG, "bindExamData: 1");
-            expandableCardView.setIcon(ContextCompat.getDrawable(getContext(), R.drawable.ic_home_selected_24dp));;
+
+            expandableCardView.setIsExpandable(true);
+            expandableCardView.setTitle(-1, "Final Exam");
+            expandableCardView.setIndicator(-1, ContextCompat.getDrawable(getContext(), R.drawable.arrow_down));
+
             exam = exams.get(0);
-            examTV.setText("Final Exam");
             String dateStr = exam.getDay() + ", " + exam.getDate();
             dateTV.setText(dateStr);
             String timeStr = "Start : " + exam.getTime();
@@ -146,12 +147,9 @@ public class CourseDetailFragment extends Fragment {
             String durationStr = "Duration : " + Float.toString(exam.getDuration()) + "h";
             durationTV.setText(durationStr);
         } else {
-            Log.d(TAG, "bindExamData: 2");
-            expandableCardView.setTitle("No Final Exam");
-            examTV.setVisibility(View.GONE);
-            durationTV.setVisibility(View.GONE);
-            dateTV.setVisibility(View.GONE);
-            timeTV.setVisibility(View.GONE);
+            expandableCardView.removeIndicator();
+            expandableCardView.setIsExpandable(false);
+            expandableCardView.setTitle(-1, "No Exam");
         }
     }
 

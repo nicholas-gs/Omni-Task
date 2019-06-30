@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorPrimary">
 
     <androidx.appcompat.widget.Toolbar
@@ -27,8 +26,7 @@
                 android:id="@+id/course_detail_header"
                 layout="@layout/course_detail_fragment_header" />
 
-            <com.alespero.expandablecardview.ExpandableCardView
-                app:icon="@drawable/ic_home_selected_24dp"
+            <com.example.ntu_timetable_calendar.ExpandableCardView.ExpandableCardView
                 android:id="@+id/course_detail_expandableCardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -37,10 +35,11 @@
                 android:layout_marginStart="12dp"
                 android:layout_marginEnd="12dp"
                 app:expandOnClick="true"
+                app:icon="@drawable/ic_home_selected_24dp"
                 app:inner_view="@layout/course_detail_exam_innerview"
                 app:title="Exam">
 
-            </com.alespero.expandablecardview.ExpandableCardView>
+            </com.example.ntu_timetable_calendar.ExpandableCardView.ExpandableCardView>
 
             <View
                 android:id="@+id/divider1"
@@ -48,7 +47,7 @@
                 android:layout_height="1dp"
                 android:layout_below="@id/course_detail_expandableCardView"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="16dp"
                 android:background="@color/colorPrimaryLight" />
 

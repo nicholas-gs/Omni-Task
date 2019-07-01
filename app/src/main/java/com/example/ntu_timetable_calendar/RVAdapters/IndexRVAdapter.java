@@ -1,4 +1,4 @@
-package com.example.ntu_timetable_calendar.Adapter;
+package com.example.ntu_timetable_calendar.RVAdapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;

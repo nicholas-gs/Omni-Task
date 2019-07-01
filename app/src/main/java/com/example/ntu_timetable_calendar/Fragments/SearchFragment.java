@@ -22,12 +22,12 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.ntu_timetable_calendar.Adapter.SearchRVAdapter;
 import com.example.ntu_timetable_calendar.CourseModels.Course;
 import com.example.ntu_timetable_calendar.Helper.KeyboardHelper;
 import com.example.ntu_timetable_calendar.Helper.ListHelper;
 import com.example.ntu_timetable_calendar.ItemDecorators.SearchRVItemDecorator;
 import com.example.ntu_timetable_calendar.R;
+import com.example.ntu_timetable_calendar.RVAdapters.SearchRVAdapter;
 import com.example.ntu_timetable_calendar.ViewModels.ActivityViewModel;
 import com.example.ntu_timetable_calendar.ViewModels.SearchViewModel;
 
@@ -103,16 +103,19 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
      * Setup SearchViewModel that is scoped to the lifecycle of the fragment
      */
     private void setupViewModel() {
-
+        final ListHelper listHelper = new ListHelper();
         searchViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
 
         observer = new Observer<List<Course>>() {
             @Override
             public void onChanged(List<Course> courseList) {
-                Log.d(TAG, "onChanged: Triggered");
+
                 List<Course> c = new ArrayList<>(courseList);
-                // Insert a dummy course object for the first item in the list (header)
-                ListHelper.insertDummyCourse(0, c);
+
+                // Insert a dummy course object for the first item in the list (header). See method description
+                // for details on how the first course POJO object is always made different for diffutil, every time
+                // submitList() is triggered
+                listHelper.insertDummyCourse(0, c);
                 searchRVAdapter.submitList(c);
             }
         };

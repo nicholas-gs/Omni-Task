@@ -1,4 +1,4 @@
-package com.example.ntu_timetable_calendar.Adapter;
+package com.example.ntu_timetable_calendar.RVAdapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -18,6 +18,7 @@ import com.example.ntu_timetable_calendar.R;
 
 /**
  * RecyclerView adapter for the recyclerview inside the search fragment
+ * 1) Before passing the list of courses, add a dummy holder course object at position 0 for the header item!!!
  */
 public class SearchRVAdapter extends ListAdapter<Course, RecyclerView.ViewHolder> {
 
@@ -26,7 +27,6 @@ public class SearchRVAdapter extends ListAdapter<Course, RecyclerView.ViewHolder
     private static final int ITEM_VIEW_TYPE = 1;
 
     private Context context;
-    /*private List<Course> courseList = new ArrayList<>();*/
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     private onItemClickListener itemClickListener;
@@ -54,7 +54,15 @@ public class SearchRVAdapter extends ListAdapter<Course, RecyclerView.ViewHolder
 
         @Override
         public boolean areContentsTheSame(@NonNull Course oldItem, @NonNull Course newItem) {
-            return oldItem.getCourseCode().equals(newItem.getCourseCode());
+            /**
+             * We programmatically increment the flag variable inside the first Course POJO in the SearchFragment class
+             * in order to ensure that the new item at index 0 is always different, hence the number of results textview
+             * is always updated.
+             */
+            return (oldItem.getCourseCode().equals(newItem.getCourseCode()) && oldItem.getIndexes().get(0).getDetails()
+                    .get(0).getFlag() == newItem.getIndexes().get(0).getDetails()
+                    .get(0).getFlag()
+            );
         }
     };
 
@@ -87,8 +95,12 @@ public class SearchRVAdapter extends ListAdapter<Course, RecyclerView.ViewHolder
      * ViewHolder class for RV Header (First item in the recyclerview)
      */
     class HeaderViewHolder extends RecyclerView.ViewHolder {
-        public HeaderViewHolder(@NonNull View itemView) {
+
+        private TextView countTV;
+
+        HeaderViewHolder(@NonNull View itemView) {
             super(itemView);
+            countTV = itemView.findViewById(R.id.search_rv_header_count);
         }
     }
 
@@ -108,7 +120,11 @@ public class SearchRVAdapter extends ListAdapter<Course, RecyclerView.ViewHolder
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder.getItemViewType() == HEADER_VIEW_TYPE) {
 
+            HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
+            headerViewHolder.countTV.setText(String.format("%s Results", Integer.toString(getItemCount() - 1)));
+
         } else if (holder.getItemViewType() == ITEM_VIEW_TYPE) {
+
             ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
             Course course = getItem(position);
             itemViewHolder.nameTV.setText(StringHelper.formatNameString(course.getName()));

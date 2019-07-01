@@ -19,7 +19,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.ntu_timetable_calendar.Adapter.IndexRVAdapter;
+import com.example.ntu_timetable_calendar.RVAdapters.IndexRVAdapter;
 import com.example.ntu_timetable_calendar.CourseModels.Course;
 import com.example.ntu_timetable_calendar.CourseModels.Index;
 import com.example.ntu_timetable_calendar.ExamModels.Exam;

@@ -4,6 +4,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,8 +16,12 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.ntu_timetable_calendar.Adapter.IndexRVAdapter;
 import com.example.ntu_timetable_calendar.CourseModels.Course;
+import com.example.ntu_timetable_calendar.CourseModels.Index;
 import com.example.ntu_timetable_calendar.ExamModels.Exam;
 import com.example.ntu_timetable_calendar.ExpandableCardView.ExpandableCardView;
 import com.example.ntu_timetable_calendar.Helper.StringHelper;
@@ -22,6 +29,7 @@ import com.example.ntu_timetable_calendar.R;
 import com.example.ntu_timetable_calendar.ViewModels.ActivityViewModel;
 import com.example.ntu_timetable_calendar.ViewModels.SearchViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -32,11 +40,15 @@ public class CourseDetailFragment extends Fragment {
     private TextView nameTV, codeTV, auTV;
     private TextView dateTV, timeTV, durationTV;
     private ExpandableCardView expandableCardView;
+    private Spinner spinner;
+    private RecyclerView recyclerView;
 
     // Variables
+    private List<Index> indexList; // Course POJO passed from SearchFragment
     private Exam exam;
     private SearchViewModel searchViewModel;
     private ActivityViewModel activityViewModel;
+    private IndexRVAdapter indexRVAdapter;
 
     private static final String TAG = "CardView";
 
@@ -67,7 +79,8 @@ public class CourseDetailFragment extends Fragment {
         nameTV = view.findViewById(R.id.course_detail_name);
         codeTV = view.findViewById(R.id.course_detail_code);
         auTV = view.findViewById(R.id.course_detail_au);
-
+        spinner = view.findViewById(R.id.course_detail_spinner);
+        recyclerView = view.findViewById(R.id.course_detail_rv);
         ////////////////////////////////////////////////////////////////////////////////////////////
         expandableCardView = view.findViewById(R.id.course_detail_expandableCardView);
 
@@ -84,6 +97,9 @@ public class CourseDetailFragment extends Fragment {
                 Objects.requireNonNull(getActivity()).onBackPressed();
             }
         });
+
+        setupRecyclerView();
+
     }
 
 
@@ -108,11 +124,15 @@ public class CourseDetailFragment extends Fragment {
         activityViewModel.getCourseToDetail().observe(this, new Observer<Course>() {
             @Override
             public void onChanged(Course course) {
+                saveIndexes(course);
                 bindCourseData(course);
                 searchViewModel.queryExamData(course.getCourseCode());
             }
         });
+    }
 
+    private void saveIndexes(Course course) {
+        this.indexList = course.getIndexes();
     }
 
     /**
@@ -124,6 +144,8 @@ public class CourseDetailFragment extends Fragment {
         nameTV.setText(StringHelper.formatNameString(course.getName()));
         codeTV.setText(course.getCourseCode());
         auTV.setText(course.getAu());
+
+        bindSpinnerData(course);
     }
 
     /**
@@ -144,13 +166,56 @@ public class CourseDetailFragment extends Fragment {
             dateTV.setText(dateStr);
             String timeStr = "Start : " + exam.getTime();
             timeTV.setText(timeStr);
-            String durationStr = "Duration : " + Float.toString(exam.getDuration()) + "h";
+            String durationStr = "Duration : " + exam.getDuration() + "h";
             durationTV.setText(durationStr);
         } else {
             expandableCardView.removeIndicator();
             expandableCardView.setIsExpandable(false);
-            expandableCardView.setTitle(-1, "No Exam");
+            expandableCardView.setTitle(-1, "No Final Exam");
         }
+    }
+
+    /**
+     * Bind data of course indexes to be shown in the spinner, as well as handle the onItemSelectedListener.
+     * This method is called inside bindCourseData() because courses index data is inside the course POJO
+     */
+    private void bindSpinnerData(Course course) {
+
+        final List<String> listOfIndexes = new ArrayList<>();
+        for (Index index : course.getIndexes()) {
+            listOfIndexes.add(index.getIndexNumber());
+        }
+
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(getContext(), R.layout.course_detail_fragment_spinner, listOfIndexes);
+        spinnerArrayAdapter.setDropDownViewResource(R.layout.course_detail_spinner_dropdown_item);
+        spinner.setAdapter(spinnerArrayAdapter);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String itemSel = adapterView.getItemAtPosition(i).toString();
+
+                for (Index index : indexList) {
+                    if (index.getIndexNumber().equals(itemSel)) {
+                        indexRVAdapter.setData(index.getDetails());
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+    }
+
+    private void setupRecyclerView() {
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setNestedScrollingEnabled(false);
+        recyclerView.setHasFixedSize(false);
+        indexRVAdapter = new IndexRVAdapter(getContext());
+        recyclerView.setAdapter(indexRVAdapter);
     }
 
     /**

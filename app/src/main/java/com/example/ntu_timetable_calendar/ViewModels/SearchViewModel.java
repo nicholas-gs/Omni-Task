@@ -18,13 +18,9 @@ public class SearchViewModel extends AndroidViewModel {
 
     private JsonRepository jsonRepository;
 
-    private static final String TAG = "SearchFragment";
-
-
     public SearchViewModel(@NonNull Application application) {
         super(application);
         jsonRepository = new JsonRepository(application);
-        Log.d(TAG, "SearchViewModel: Constructor called");
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -97,7 +93,6 @@ public class SearchViewModel extends AndroidViewModel {
 
     @Override
     protected void onCleared() {
-        Log.d(TAG, "onCleared: Search ViewModel Destroyed");
         super.onCleared();
     }
 }

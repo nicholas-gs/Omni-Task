@@ -16,6 +16,9 @@ import com.example.ntu_timetable_calendar.CourseModels.Course;
 import com.example.ntu_timetable_calendar.Helper.StringHelper;
 import com.example.ntu_timetable_calendar.R;
 
+/**
+ * RecyclerView adapter for the recyclerview inside the search fragment
+ */
 public class SearchRVAdapter extends ListAdapter<Course, RecyclerView.ViewHolder> {
 
     // Constants

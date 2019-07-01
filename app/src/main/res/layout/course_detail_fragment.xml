@@ -14,6 +14,7 @@
         android:elevation="0dp" />
 
     <ScrollView
+        android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/course_detail_toolbar">
@@ -37,17 +38,16 @@
                 app:expandOnClick="true"
                 app:icon="@drawable/ic_home_selected_24dp"
                 app:inner_view="@layout/course_detail_exam_innerview"
-                app:title="Exam">
-
-            </com.example.ntu_timetable_calendar.ExpandableCardView.ExpandableCardView>
+                app:title="Exam" />
 
             <View
                 android:id="@+id/divider1"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_below="@id/course_detail_expandableCardView"
+                android:layout_centerHorizontal="true"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="4dp"
                 android:layout_marginEnd="16dp"
                 android:background="@color/colorPrimaryLight" />
 
@@ -65,15 +65,25 @@
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
+            <Spinner
+                android:id="@+id/course_detail_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/divider1"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="8dp"
+                android:backgroundTint="@color/colorPrimaryLight" />
+
             <androidx.recyclerview.widget.RecyclerView
+                android:paddingTop="12dp"
                 android:id="@+id/course_detail_rv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_alignParentBottom="true"
+                android:paddingBottom="8dp"
                 android:layout_below="@id/indexes"
                 android:layout_centerHorizontal="true"
-                android:paddingStart="20dp"
-                android:paddingTop="8dp"
-                android:paddingEnd="20dp">
+                >
 
             </androidx.recyclerview.widget.RecyclerView>
 

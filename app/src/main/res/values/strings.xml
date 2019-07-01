@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">ntu-timetable-calendar</string>
+    <string name="HOME_STRING">Home</string>
+    <string name="TODO_STRING">Todo</string>
+    <string name="SEARCH_STRING">Search</string>
+    <string name="PLAN_STRING">Plan</string>
 </resources>

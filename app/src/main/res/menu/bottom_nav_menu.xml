@@ -2,28 +2,30 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:title="Home"
+        android:title="@string/HOME_STRING"
         android:id="@+id/bottomNav_home"
         android:icon="@drawable/bottom_nav_home_selector"
         />
 
 
     <item
-        android:title="Search"
+        android:title="@string/TODO_STRING"
+        android:id="@+id/bottomNav_calendar"
+        android:icon="@drawable/bottom_nav_todo_selector"
+        />
+
+
+
+    <item
+        android:title="@string/SEARCH_STRING"
         android:id="@+id/bottomNav_search"
         android:icon="@drawable/bottom_nav_search_selector"
         />
 
     <item
-        android:title="Plan"
+        android:title="@string/PLAN_STRING"
         android:id="@+id/bottomNav_plan"
         android:icon="@drawable/bottom_nav_plan_selector"
-        />
-
-    <item
-        android:title="Calendar"
-        android:id="@+id/bottomNav_calendar"
-        android:icon="@drawable/bottom_nav_calendar_selector"
         />
 
 </menu>

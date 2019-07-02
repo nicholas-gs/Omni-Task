@@ -36,16 +36,30 @@ public class JsonRepository {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * Returns the entire list of all courses (if for some reason that is required, though it is probably a bad idea
+     * as the list is quite large)
+     * @return
+     */
     public MutableLiveData<List<Course>> getFilteredCourseList() {
         return jsonDAO.getFilteredCourseList();
     }
 
+    /**
+     * Returns the entire list of all exams (if for some reason that is required, though it is probably a bad idea
+     * as the list is quite large)
+     * @return
+     */
     public MutableLiveData<List<Exam>> getFilteredExamList() {
         return jsonDAO.getFilteredExamList();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * Send a query (String) for course objects and asynchronously sends the query to the DAO
+     * @param queryStr
+     */
     public void queryCourseData(String queryStr) {
         new QueryCourseDataAsyncTask(jsonDAO, queryStr).execute();
     }
@@ -67,7 +81,10 @@ public class JsonRepository {
         }
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////
-
+    /**
+     * Send a query (String) for exam objects and asynchronously sends the query to the DAO
+     * @param queryStr
+     */
     public void queryExamData(String queryStr) {
         new QueryExamDataAsyncTask(jsonDAO, queryStr).execute();
     }

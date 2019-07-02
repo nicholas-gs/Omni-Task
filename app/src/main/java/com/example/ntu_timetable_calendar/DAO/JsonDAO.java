@@ -29,6 +29,7 @@ public class JsonDAO {
         this.allExams = allExams;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     public List<Course> getAllCourses() {
         return allCourses;
     }
@@ -36,6 +37,8 @@ public class JsonDAO {
     public List<Exam> getAllExams() {
         return allExams;
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
     public MutableLiveData<List<Course>> getFilteredCourseList() {
         return filteredCourseList;
@@ -48,7 +51,11 @@ public class JsonDAO {
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Paging method call to request course data 50 at a time - don't even know if need this method
+     * Asynchronously searches through the entire list of all courses for courses with SIMILAR names/code, then
+     * posts the result to MutableLiveData<List<Course>> filteredCourseList and triggers the observer.
+     *
+     * NOTE : When the queryStr is empty, i.e is "", it returns the entire list
+     * @param queryStr
      */
     public void queryCourseData(String queryStr) {
         new QueryCourseDataAsyncTask(allCourses, filteredCourseList, queryStr).execute();
@@ -89,6 +96,13 @@ public class JsonDAO {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * Asynchronously searches through the entire list of all exams for exams with the SAME code, then
+     * posts the result to MutableLiveData<List<Exam>> filteredExamList and triggers the observer.
+     *
+     * NOTE : When the queryStr is empty, i.e is "", it returns the entire list
+     * @param queryStr
+     */
     public void queryExamData(String queryStr) {
         new QueryExamDataAsyncTask(allExams, filteredExamList, queryStr).execute();
     }
@@ -124,35 +138,6 @@ public class JsonDAO {
 
             return null;
         }
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    /**
-     * Takes in a list of courses (String) you want to select, and then searches through the map of all courses,
-     * and then returns the selected courses.
-     * If a course cannot be found, null is assigned to the key in the map.
-     *
-     * @param courseSelection
-     * @return
-     */
-    public Map<String, Course> getSelectedCourses(@NonNull List<String> courseSelection) {
-        // TODO
-        return null;
-    }
-
-    /**
-     * Takes in a list of exams (String) you want to select, and then searches through the map of all exams,
-     * and then returns the selected exams.
-     * If a exam cannot be found, null is assigned to the key in the map.
-     *
-     * @param examSelection
-     * @return
-     */
-    public Map<String, Exam> getSelectedExams(@NonNull List<String> examSelection) {
-        // TODO
-        return null;
     }
 
 }

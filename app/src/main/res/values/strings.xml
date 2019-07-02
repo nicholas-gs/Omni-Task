@@ -4,4 +4,5 @@
     <string name="TODO_STRING">Todo</string>
     <string name="SEARCH_STRING">Search</string>
     <string name="PLAN_STRING">Plan</string>
+    <string name="enter_modules">Enter modules</string>
 </resources>

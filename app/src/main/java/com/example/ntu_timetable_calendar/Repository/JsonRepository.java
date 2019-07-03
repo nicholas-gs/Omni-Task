@@ -26,32 +26,18 @@ public class JsonRepository {
         jsonDAO = JsonDatabase.jsonDAO;
     }
 
-    public List<Course> getAllCourses() {
-        return jsonDAO.getAllCourses();
-    }
-
-    public List<Exam> getAllExams() {
-        return jsonDAO.getAllExams();
-    }
-
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * Returns the entire list of all courses (if for some reason that is required, though it is probably a bad idea
-     * as the list is quite large)
-     * @return
-     */
     public MutableLiveData<List<Course>> getFilteredCourseList() {
         return jsonDAO.getFilteredCourseList();
     }
 
-    /**
-     * Returns the entire list of all exams (if for some reason that is required, though it is probably a bad idea
-     * as the list is quite large)
-     * @return
-     */
     public MutableLiveData<List<Exam>> getFilteredExamList() {
         return jsonDAO.getFilteredExamList();
+    }
+
+    public MutableLiveData<List<String>> getAllCourseCode(){
+        return jsonDAO.getAllCourseCode();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -102,6 +88,29 @@ public class JsonRepository {
         @Override
         protected Void doInBackground(Void... voids) {
             jsonDAO.queryExamData(querystr);
+            return null;
+        }
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Send a query for the entire list of all course code
+     */
+    public void queryAllCourseCode(){
+        new QueryAllCourseCodeAsyncTask(jsonDAO).execute();
+    }
+
+    private static class QueryAllCourseCodeAsyncTask extends AsyncTask<Void, Void, Void>{
+
+        private JsonDAO jsonDAO;
+
+        QueryAllCourseCodeAsyncTask(JsonDAO jsonDAO) {
+            this.jsonDAO = jsonDAO;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            jsonDAO.queryAllCourseCode();
             return null;
         }
     }

@@ -2,10 +2,10 @@ package com.example.ntu_timetable_calendar.ViewModels;
 
 import android.app.Application;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.ntu_timetable_calendar.CourseModels.Course;
@@ -24,25 +24,17 @@ public class SearchViewModel extends AndroidViewModel {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public List<Course> getAllCourses() {
-        return jsonRepository.getAllCourses();
-    }
-
-    public List<Exam> getAllExams() {
-        return jsonRepository.getAllExams();
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
     public MutableLiveData<List<Course>> getFilteredCourseData() {
         return jsonRepository.getFilteredCourseList();
     }
 
     public MutableLiveData<List<Exam>> getFilteredExamData() {
         return jsonRepository.getFilteredExamList();
+    }
+
+
+    public LiveData<List<String>> getAllCourseCode() {
+        return jsonRepository.getAllCourseCode();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,5 +82,28 @@ public class SearchViewModel extends AndroidViewModel {
             return null;
         }
     }
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void queryAllCourseCode() {
+        new QueryAllCourseCodeAsyncTask(jsonRepository).execute();
+    }
+
+    private static class QueryAllCourseCodeAsyncTask extends AsyncTask<Void, Void, Void> {
+
+
+        private JsonRepository jsonRepository;
+
+        QueryAllCourseCodeAsyncTask(JsonRepository jsonRepository) {
+            this.jsonRepository = jsonRepository;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            jsonRepository.queryAllCourseCode();
+            return null;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
 }

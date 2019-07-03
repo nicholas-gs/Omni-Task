@@ -2,7 +2,6 @@ package com.example.ntu_timetable_calendar.DAO;
 
 import android.os.AsyncTask;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.ntu_timetable_calendar.CourseModels.Course;
@@ -10,7 +9,6 @@ import com.example.ntu_timetable_calendar.ExamModels.Exam;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This class is instantiated in JsonDatabase.java and acts as the API for access the json database contents.
@@ -23,22 +21,12 @@ public class JsonDAO {
 
     private MutableLiveData<List<Course>> filteredCourseList = new MutableLiveData<>();
     private MutableLiveData<List<Exam>> filteredExamList = new MutableLiveData<>();
+    private MutableLiveData<List<String>> allCourseCode = new MutableLiveData<>();
 
     public JsonDAO(List<Course> allCourses, List<Exam> allExams) {
         this.allCourses = allCourses;
         this.allExams = allExams;
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    public List<Course> getAllCourses() {
-        return allCourses;
-    }
-
-    public List<Exam> getAllExams() {
-        return allExams;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
 
     public MutableLiveData<List<Course>> getFilteredCourseList() {
         return filteredCourseList;
@@ -48,13 +36,18 @@ public class JsonDAO {
         return filteredExamList;
     }
 
+    public MutableLiveData<List<String>> getAllCourseCode() {
+        return allCourseCode;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Asynchronously searches through the entire list of all courses for courses with SIMILAR names/code, then
-     * posts the result to MutableLiveData<List<Course>> filteredCourseList and triggers the observer.
-     *
+     * Asynchronously searches through the entire list of all courses for courses with SIMILAR names/code as the queryStr,
+     * then posts the result to MutableLiveData<List<Course>> filteredCourseList and triggers the observer.
+     * <p>
      * NOTE : When the queryStr is empty, i.e is "", it returns the entire list
+     *
      * @param queryStr
      */
     public void queryCourseData(String queryStr) {
@@ -99,8 +92,9 @@ public class JsonDAO {
     /**
      * Asynchronously searches through the entire list of all exams for exams with the SAME code, then
      * posts the result to MutableLiveData<List<Exam>> filteredExamList and triggers the observer.
-     *
+     * <p>
      * NOTE : When the queryStr is empty, i.e is "", it returns the entire list
+     *
      * @param queryStr
      */
     public void queryExamData(String queryStr) {
@@ -135,6 +129,41 @@ public class JsonDAO {
                 }
                 filteredList.postValue(filteredListTemp);
             }
+
+            return null;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Query for a list of all the course code (String) -- useful when you don't need the list of all course POJO objects
+     */
+
+    public void queryAllCourseCode() {
+        new QueryAllCourseCodeAsyncTask(allCourses, allCourseCode).execute();
+    }
+
+    private static class QueryAllCourseCodeAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        List<Course> listOfAllCourses;
+        MutableLiveData<List<String>> listOfAllCourseCode;
+
+        public QueryAllCourseCodeAsyncTask(List<Course> listOfAllCourses, MutableLiveData<List<String>> listOfAllCourseCode) {
+            this.listOfAllCourses = listOfAllCourses;
+            this.listOfAllCourseCode = listOfAllCourseCode;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            List<String> temp = new ArrayList<>();
+
+            for (Course c : listOfAllCourses) {
+                temp.add(c.getCourseCode().trim());
+            }
+
+            listOfAllCourseCode.postValue(temp);
 
             return null;
         }

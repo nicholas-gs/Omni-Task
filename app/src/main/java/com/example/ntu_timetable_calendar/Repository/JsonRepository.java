@@ -36,14 +36,19 @@ public class JsonRepository {
         return jsonDAO.getFilteredExamList();
     }
 
-    public MutableLiveData<List<String>> getAllCourseCode(){
+    public MutableLiveData<List<String>> getAllCourseCode() {
         return jsonDAO.getAllCourseCode();
+    }
+
+    public MutableLiveData<List<Course>> getTimetablePlanningCourseList() {
+        return jsonDAO.getTimetablePlanningCourseList();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Send a query (String) for course objects and asynchronously sends the query to the DAO
+     *
      * @param queryStr
      */
     public void queryCourseData(String queryStr) {
@@ -67,8 +72,10 @@ public class JsonRepository {
         }
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * Send a query (String) for exam objects and asynchronously sends the query to the DAO
+     *
      * @param queryStr
      */
     public void queryExamData(String queryStr) {
@@ -96,11 +103,11 @@ public class JsonRepository {
     /**
      * Send a query for the entire list of all course code
      */
-    public void queryAllCourseCode(){
+    public void queryAllCourseCode() {
         new QueryAllCourseCodeAsyncTask(jsonDAO).execute();
     }
 
-    private static class QueryAllCourseCodeAsyncTask extends AsyncTask<Void, Void, Void>{
+    private static class QueryAllCourseCodeAsyncTask extends AsyncTask<Void, Void, Void> {
 
         private JsonDAO jsonDAO;
 
@@ -111,6 +118,30 @@ public class JsonRepository {
         @Override
         protected Void doInBackground(Void... voids) {
             jsonDAO.queryAllCourseCode();
+            return null;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void queryPlanningTimetableCourses(List<String> listOfQueries) {
+        new QueryPlanningTimetableCoursesAsyncTaks(jsonDAO, listOfQueries).execute();
+    }
+
+    private static class QueryPlanningTimetableCoursesAsyncTaks extends AsyncTask<Void, Void, Void> {
+
+        private JsonDAO jsonDAO;
+        private List<String> listOfCourseCodes;
+
+        QueryPlanningTimetableCoursesAsyncTaks(JsonDAO jsonDAO, List<String> listOfCourseCodes) {
+            this.jsonDAO = jsonDAO;
+            this.listOfCourseCodes = listOfCourseCodes;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            jsonDAO.queryPlanningTimetableCourseList(listOfCourseCodes);
             return null;
         }
     }

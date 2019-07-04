@@ -32,9 +32,12 @@ public class SearchViewModel extends AndroidViewModel {
         return jsonRepository.getFilteredExamList();
     }
 
-
     public LiveData<List<String>> getAllCourseCode() {
         return jsonRepository.getAllCourseCode();
+    }
+
+    public LiveData<List<Course>> getTimetablePlanningCourseList() {
+        return jsonRepository.getTimetablePlanningCourseList();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -105,5 +108,27 @@ public class SearchViewModel extends AndroidViewModel {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void queryPlanningTimetableCourses(List<String> listOfQueries) {
+        new QueryPlanningTimetableCoursesAsyncTaks(jsonRepository, listOfQueries).execute();
+    }
+
+    private static class QueryPlanningTimetableCoursesAsyncTaks extends AsyncTask<Void, Void, Void> {
+
+        private JsonRepository jsonRepository;
+        private List<String> listOfCourseCodes;
+
+        QueryPlanningTimetableCoursesAsyncTaks(JsonRepository jsonRepository, List<String> listOfCourseCodes) {
+            this.jsonRepository = jsonRepository;
+            this.listOfCourseCodes = listOfCourseCodes;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            jsonRepository.queryPlanningTimetableCourses(listOfCourseCodes);
+            return null;
+        }
+    }
 
 }

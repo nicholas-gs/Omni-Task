@@ -3,6 +3,7 @@ package com.example.ntu_timetable_calendar.Fragments;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,11 +29,13 @@ import java.util.List;
 
 public class PlanFragment extends Fragment implements View.OnClickListener {
 
+    private SearchViewModel searchViewModel;
+
     private MultiAutoCompleteTextView multiAutoCompleteTextView;
     private List<String> courseSelectionsList = new ArrayList<>();
     private List<String> finalSelList = new ArrayList<>();
     private List<String> allCourseCodesList = new ArrayList<>();
-    private List<Course> queriedCourseList = new ArrayList<>();
+    // private List<Course> queriedCourseList = new ArrayList<>();
 
     private static final String TAG = "PlanFragmentText";
 
@@ -63,7 +66,7 @@ public class PlanFragment extends Fragment implements View.OnClickListener {
     }
 
     private void initViewModel() {
-        SearchViewModel searchViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
+        searchViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
 
         /*
           Setup viewmodel -- when it is complete and the list of all course codes is retrieved, call
@@ -82,6 +85,18 @@ public class PlanFragment extends Fragment implements View.OnClickListener {
           Send the query to get all course codes
          */
         searchViewModel.queryAllCourseCode();
+
+        /*
+            Observe changes to the list of courses chosen by the user -- triggered when the user presses the plan button
+         */
+        searchViewModel.getTimetablePlanningCourseList().observe(this, new Observer<List<Course>>() {
+            @Override
+            public void onChanged(List<Course> courseList) {
+                for (Course course : courseList) {
+                    Log.d(TAG, "onChanged: Course code : " + course.getCourseCode());
+                }
+            }
+        });
     }
 
     /**
@@ -130,7 +145,7 @@ public class PlanFragment extends Fragment implements View.OnClickListener {
     /**
      * Check if all of the user input courses are correct/exists by checking if all entered course codes can be
      * found in the allCourseCodesList.
-     *
+     * <p>
      * This function is called by "planTimetable(List<String> finalSelList)"
      * Returns true if user input is valid, false if not
      */
@@ -153,11 +168,12 @@ public class PlanFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    /**
+     * Called when plan fragment button is pressed -- send the list of all course codes chosen by the user to the viewmodel
+     */
     private void planTimetable() {
         if (validationCheck()) {
-            for(String str : finalSelList){
-
-            }
+            searchViewModel.queryPlanningTimetableCourses(finalSelList);
         }
     }
 

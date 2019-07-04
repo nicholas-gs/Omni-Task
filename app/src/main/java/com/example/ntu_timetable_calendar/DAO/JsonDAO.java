@@ -22,11 +22,14 @@ public class JsonDAO {
     private MutableLiveData<List<Course>> filteredCourseList = new MutableLiveData<>();
     private MutableLiveData<List<Exam>> filteredExamList = new MutableLiveData<>();
     private MutableLiveData<List<String>> allCourseCode = new MutableLiveData<>();
+    private MutableLiveData<List<Course>> timetablePlanningCourseList = new MutableLiveData<>();
 
     public JsonDAO(List<Course> allCourses, List<Exam> allExams) {
         this.allCourses = allCourses;
         this.allExams = allExams;
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
     public MutableLiveData<List<Course>> getFilteredCourseList() {
         return filteredCourseList;
@@ -34,6 +37,10 @@ public class JsonDAO {
 
     public MutableLiveData<List<Exam>> getFilteredExamList() {
         return filteredExamList;
+    }
+
+    public MutableLiveData<List<Course>> getTimetablePlanningCourseList() {
+        return timetablePlanningCourseList;
     }
 
     public MutableLiveData<List<String>> getAllCourseCode() {
@@ -164,6 +171,57 @@ public class JsonDAO {
             }
 
             listOfAllCourseCode.postValue(temp);
+
+            return null;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Asynchronously searches through the entire list of all courses and returns a list of courses whose course code
+     * matches EXACTLY the the course codes in the list sent to the query.
+     * <p>
+     * Unlike the queryCourseData(String queryStr) method above, it takes in a list of course code as query ONLY as query and does
+     * not searches for course names. The course code also has the match EXACTLY.
+     * <p>
+     * Used by the plan fragment when user enters a list of course code (String).
+     *
+     * @param listOfCourseCodes
+     */
+    public void queryPlanningTimetableCourseList(List<String> listOfCourseCodes) {
+        new QueryPlanningTimetableCourseListAsyncTask(allCourses, listOfCourseCodes, timetablePlanningCourseList)
+                .execute();
+    }
+
+    private static class QueryPlanningTimetableCourseListAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        private List<Course> listOfAllCourses;
+        private List<String> listOfCourseCodes;
+        private MutableLiveData<List<Course>> filteredList;
+
+        QueryPlanningTimetableCourseListAsyncTask(List<Course> listOfAllCourses, List<String> listOfCourseCodes,
+                                                  MutableLiveData<List<Course>> filteredList) {
+            this.listOfAllCourses = listOfAllCourses;
+            this.listOfCourseCodes = listOfCourseCodes;
+            this.filteredList = filteredList;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            List<Course> tempList = new ArrayList<>();
+
+            for (String str : listOfCourseCodes) {
+                for (Course course : listOfAllCourses) {
+                    if (course.getCourseCode().equals(str)) {
+                        tempList.add(course);
+                        break;
+                    }
+                }
+            }
+
+            filteredList.postValue(tempList);
 
             return null;
         }

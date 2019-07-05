@@ -47,5 +47,9 @@ dependencies {
     // CardView
     implementation 'androidx.cardview:cardview:1.0.0'
 
+    // Kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    // Android-Week-View
+    implementation 'com.github.thellmund:Android-Week-View:3.4.2'
 }

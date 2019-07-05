@@ -5,41 +5,51 @@
     android:layout_height="match_parent"
     android:background="@color/colorPrimary">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/plan_fragment_appbarlayout"
+    <RelativeLayout
+        android:id="@+id/rl1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:elevation="0dp">
+        android:layout_alignParentTop="true"
+        android:paddingStart="8dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="4dp"
+        android:paddingBottom="0dp">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/plan_fragment_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?android:attr/actionBarSize"
-            app:elevation="0dp"
-            app:title="Plan Timetable"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/plan_fragment_plan_button"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toStartOf="@id/plan_fragment_clear_button"
+            android:paddingStart="0dp"
+            android:paddingEnd="2dp"
+            android:text="@string/plan"
+            android:textColor="@color/colorAccent" />
 
-            app:titleTextColor="@color/colorWhite" />
-
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/plan_fragment_appbarlayout"
-        android:padding="8dp">
-
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/plan_fragment_clear_button"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp"
+            android:text="@string/clear"
+            android:textColor="@color/colorContentText" />
 
         <MultiAutoCompleteTextView
-
             android:id="@+id/plan_fragment_autocompletetextview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
+            android:layout_below="@id/plan_fragment_plan_button"
             android:layout_centerHorizontal="true"
             android:background="@color/colorPrimary"
             android:dropDownVerticalOffset="6dp"
             android:gravity="center_vertical"
             android:hint="@string/enter_modules"
+            android:imeOptions="actionNext"
             android:inputType="textMultiLine"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
@@ -48,8 +58,73 @@
             android:textColorHint="@color/colorContentText"
             android:textSize="16sp" />
 
+        <View
+            android:id="@+id/d1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/plan_fragment_autocompletetextview"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="8dp"
+            android:background="@color/colorPrimaryLight" />
+
+        <TextView
+            android:id="@+id/plan_fragment_error_textview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/d1"
+            android:layout_marginTop="8dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:textColor="@color/colorAccent"
+            android:textSize="14sp"
+            android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/plan_fragment_choose_indexes"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/plan_fragment_error_textview"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="0dp"
+            android:text="@string/choose_indexes"
+            android:textColor="@color/event_color_03" />
 
     </RelativeLayout>
 
+    <com.alamkanak.weekview.WeekView
+        android:id="@+id/plan_fragment_weekView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/rl1"
+        android:visibility="visible"
+        app:columnGap="1dp"
+        app:dayBackgroundColor="@color/colorPrimary"
+        app:defaultEventColor="@color/colorPrimary"
+        app:eventCornerRadius="4dp"
+        app:eventTextColor="@color/colorWhite"
+        app:firstDayOfWeek="monday"
+        app:headerRowBackgroundColor="@color/colorPrimary"
+        app:headerRowBottomLineColor="@color/colorContentText"
+        app:headerRowPadding="12dp"
+        app:headerRowTextColor="@color/colorContentText"
+        app:headerRowTextSize="14sp"
+        app:horizontalScrollingEnabled="false"
+        app:hourHeight="40dp"
+        app:numberOfVisibleDays="5"
+        app:showFirstDayOfWeekFirst="true"
+        app:showHeaderRowBottomLine="true"
+        app:showTimeColumnHourSeparator="false"
+        app:showTimeColumnSeparator="true"
+        app:timeColumnBackgroundColor="@android:color/transparent"
+        app:timeColumnPadding="8dp"
+        app:timeColumnSeparatorColor="@color/colorContentText"
+        app:timeColumnSeparatorStrokeWidth="1dp"
+        app:timeColumnTextColor="@color/colorWhite"
+        app:timeColumnTextSize="12sp"
+        app:todayBackgroundColor="@android:color/transparent"
+        app:todayHeaderTextColor="@color/colorContentText" />
 
 </RelativeLayout>

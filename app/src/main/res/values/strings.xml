@@ -5,4 +5,8 @@
     <string name="SEARCH_STRING">Search</string>
     <string name="PLAN_STRING">Plan</string>
     <string name="enter_modules">Enter modules</string>
+    <string name="plan">Plan</string>
+    <string name="clear">Clear</string>
+    <string name="error_message">Please check entries! (Comma separated)</string>
+    <string name="choose_indexes">Choose Indexes</string>
 </resources>

@@ -4,22 +4,14 @@
     <color name="colorPrimaryDark">#27323E</color>
     <color name="colorPrimaryLight">#AEBDC4</color>
     <color name="colorAccent">#FF6861</color>
-    <color name="colorWhite">#FAFAFA</color>
 
-    <color name="colorCardBackgroundDark">#0e0e0e</color>
-    <color name="colorTitleText">#258bd6</color>
+    <color name="colorWhite">#FAFAFA</color>
     <color name="colorContentText">#d3d3d3</color>
 
-    <color name="colorRed">#DB4437</color>
-    <color name="colorYellow">#F4B400</color>
-    <color name="colorGreen">#0F9D58</color>
-
-    <color name="colorBlack">#000000</color>
-    <color name="colorLightGray">#d3d3d3</color>
-    <color name="colorDarkGrey">#555555</color>
-
-    <!-- Search Widget Colors -->
-    <color name="colorSearchWidgetText">#444444</color>
-    <color name="colorSearchWidgetHint">#a4a4a4</color>
+    <!-- Timetable widget events colors -->
+    <color name="event_color_01">#59dbe0</color>
+    <color name="event_color_02">#f57f68</color>
+    <color name="event_color_03">#87d288</color>
+    <color name="event_color_04">#f8b552</color>
 
 </resources>

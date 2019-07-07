@@ -11,9 +11,9 @@ import com.example.ntu_timetable_calendar.Fragments.CalendarFragment;
 import com.example.ntu_timetable_calendar.Fragments.HomeFragment;
 import com.example.ntu_timetable_calendar.Fragments.PlanFragment;
 import com.example.ntu_timetable_calendar.Fragments.SearchFragment;
-import com.example.ntu_timetable_calendar.Helper.KeyboardHelper;
 import com.example.ntu_timetable_calendar.JsonDatabase.JsonDatabase;
-import com.example.ntu_timetable_calendar.ViewModels.ActivityViewModel;
+import com.example.ntu_timetable_calendar.ViewModels.PlanFragmentActivityViewModel;
+import com.example.ntu_timetable_calendar.ViewModels.SearchFragmentActivityViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -77,8 +77,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupViewModel(){
-        ActivityViewModel activityViewModel = ViewModelProviders.of(this).get(ActivityViewModel.class);
-        activityViewModel.setSearchQuery(null);
+        SearchFragmentActivityViewModel searchFragmentActivityViewModel = ViewModelProviders.of(this).get(SearchFragmentActivityViewModel.class);
+        searchFragmentActivityViewModel.setSearchQuery(null);
+        PlanFragmentActivityViewModel planFragmentActivityViewModel = ViewModelProviders.of(this).get(PlanFragmentActivityViewModel.class);
     }
 
 }

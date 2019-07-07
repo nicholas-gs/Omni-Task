@@ -14,11 +14,11 @@ import com.example.ntu_timetable_calendar.Repository.JsonRepository;
 
 import java.util.List;
 
-public class SearchViewModel extends AndroidViewModel {
+public class JsonViewModel extends AndroidViewModel {
 
     private JsonRepository jsonRepository;
 
-    public SearchViewModel(@NonNull Application application) {
+    public JsonViewModel(@NonNull Application application) {
         super(application);
         jsonRepository = new JsonRepository(application);
     }

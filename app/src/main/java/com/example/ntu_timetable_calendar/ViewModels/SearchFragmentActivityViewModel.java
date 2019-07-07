@@ -10,10 +10,10 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.ntu_timetable_calendar.CourseModels.Course;
 
 /**
- * This viewmodel is scoped to the activity's lifecycle and acts as a means of sharing data between fragments /
- * storing data for fragment reinitialisation.
+ * This viewmodel is scoped to the activity's lifecycle and acts as a means of
+ * storing data for search fragment's reinitialisation.
  */
-public class ActivityViewModel extends AndroidViewModel {
+public class SearchFragmentActivityViewModel extends AndroidViewModel {
 
     // Search Fragment search widget's query is stored here whenever the widget edittext changes
     private String searchQuery;
@@ -21,7 +21,7 @@ public class ActivityViewModel extends AndroidViewModel {
     // Pass the course object that the user clicked in SearchFragment's recyclerview to the CourseDetailFragment.
     private MutableLiveData<Course> courseToDetail = new MutableLiveData<>();
 
-    public ActivityViewModel(@NonNull Application application) {
+    public SearchFragmentActivityViewModel(@NonNull Application application) {
         super(application);
     }
 
@@ -44,8 +44,5 @@ public class ActivityViewModel extends AndroidViewModel {
     public void setCourseToDetail(Course courseToDetail) {
         this.courseToDetail.postValue(courseToDetail);
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 }

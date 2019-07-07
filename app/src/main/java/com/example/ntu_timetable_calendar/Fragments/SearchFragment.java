@@ -28,8 +28,8 @@ import com.example.ntu_timetable_calendar.Helper.ListHelper;
 import com.example.ntu_timetable_calendar.ItemDecorators.SearchRVItemDecorator;
 import com.example.ntu_timetable_calendar.R;
 import com.example.ntu_timetable_calendar.RVAdapters.SearchRVAdapter;
-import com.example.ntu_timetable_calendar.ViewModels.ActivityViewModel;
-import com.example.ntu_timetable_calendar.ViewModels.SearchViewModel;
+import com.example.ntu_timetable_calendar.ViewModels.SearchFragmentActivityViewModel;
+import com.example.ntu_timetable_calendar.ViewModels.JsonViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,10 +45,10 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
 
     // Variables
     private static final String TAG = "SearchFragment";
-    private SearchViewModel searchViewModel;
+    private JsonViewModel jsonViewModel;
     private SearchRVAdapter searchRVAdapter;
     private Observer<List<Course>> observer;
-    private ActivityViewModel activityViewModel;
+    private SearchFragmentActivityViewModel searchFragmentActivityViewModel;
 
     @Nullable
     @Override
@@ -68,9 +68,9 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // Initialise the activityViewModel
-        activityViewModel = ViewModelProviders.of(Objects.requireNonNull(getActivity())).get(ActivityViewModel.class);
-        // Initialise the SearchViewModel
+        // Initialise the searchFragmentActivityViewModel
+        searchFragmentActivityViewModel = ViewModelProviders.of(Objects.requireNonNull(getActivity())).get(SearchFragmentActivityViewModel.class);
+        // Initialise the JsonViewModel
         setupViewModel();
     }
 
@@ -100,11 +100,11 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
     }
 
     /**
-     * Setup SearchViewModel that is scoped to the lifecycle of the fragment
+     * Setup JsonViewModel that is scoped to the lifecycle of the fragment
      */
     private void setupViewModel() {
         final ListHelper listHelper = new ListHelper();
-        searchViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
+        jsonViewModel = ViewModelProviders.of(this).get(JsonViewModel.class);
 
         observer = new Observer<List<Course>>() {
             @Override
@@ -121,7 +121,7 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
         };
 
         // By passing getViewLifecycleOwner
-        searchViewModel.getFilteredCourseData().observe(getViewLifecycleOwner(), observer);
+        jsonViewModel.getFilteredCourseData().observe(getViewLifecycleOwner(), observer);
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -129,18 +129,18 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
             public void run() {
                 Log.d(TAG, "run: RUNNING");
 
-                if (activityViewModel != null) {
+                if (searchFragmentActivityViewModel != null) {
                     // Get the previously stored query
-                    String previousQuery = activityViewModel.getSearchQuery();
+                    String previousQuery = searchFragmentActivityViewModel.getSearchQuery();
                     if (previousQuery != null && !(previousQuery.length() == 0)) {
-                        searchViewModel.queryCourseData(previousQuery);
+                        jsonViewModel.queryCourseData(previousQuery);
                         searchEditText.requestFocus();
                         searchEditText.setText(previousQuery);
                     } else {
-                        searchViewModel.queryCourseData("");
+                        jsonViewModel.queryCourseData("");
                     }
                 } else {
-                    searchViewModel.queryCourseData("");
+                    jsonViewModel.queryCourseData("");
                 }
 
             }
@@ -149,7 +149,7 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
 
 
     /**
-     * Handle functionality for search widget - Sends query string to searchViewModel
+     * Handle functionality for search widget - Sends query string to jsonViewModel
      */
     private void setupFilter() {
 
@@ -168,8 +168,8 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
             public void afterTextChanged(Editable editable) {
                 // Save query into SharedPreference
                 String queryStr = editable.toString();
-                activityViewModel.setSearchQuery(queryStr);
-                searchViewModel.queryCourseData(queryStr.toUpperCase().trim());
+                searchFragmentActivityViewModel.setSearchQuery(queryStr);
+                jsonViewModel.queryCourseData(queryStr.toUpperCase().trim());
 
             }
         });
@@ -204,7 +204,7 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
      */
     @Override
     public void onClick(int position, Course course) {
-        activityViewModel.setCourseToDetail(course);
+        searchFragmentActivityViewModel.setCourseToDetail(course);
         Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction()
                 .add(R.id.activitymain_fragment_container, new CourseDetailFragment(), "course_detail_fragment")
                 .hide(this).addToBackStack(null).commit();

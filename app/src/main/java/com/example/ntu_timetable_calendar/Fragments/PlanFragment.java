@@ -4,6 +4,7 @@ import android.graphics.RectF;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,21 +37,26 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class PlanFragment extends Fragment implements View.OnClickListener, EventClickListener<Event>,
-        MonthChangeListener<Event>, DateTimeInterpreter {
+        MonthChangeListener<Event>, DateTimeInterpreter, PlanFragmentBottomSheet.PlanFragmentBottomSheetInterface {
 
     private SearchViewModel searchViewModel;
 
-    private MultiAutoCompleteTextView multiAutoCompleteTextView;
+    // Variables
     private List<String> courseSelectionsList = new ArrayList<>();
     private List<String> finalSelList = new ArrayList<>();
     private List<String> allCourseCodesList = new ArrayList<>();
 
     // We store the list of courses sent by the SearchViewModel after sending the query
     private List<Course> queriedCourseList = new ArrayList<>();
+
+    // A HashMap that stores the index selection for each course that the user has queried.
+    private Map<String, String> indexesSel = new HashMap<>();
 
     // We store the events we want to display in the weekview widget here
     private List<WeekViewDisplayable<Event>> eventList = new ArrayList<>();
@@ -61,6 +67,7 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
     private MaterialButton planButton, clearButton, chooseIndexesButton;
     private TextView errorTV;
     private WeekView<Event> mWeekView;
+    private MultiAutoCompleteTextView multiAutoCompleteTextView;
 
     @Nullable
     @Override
@@ -118,7 +125,8 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
             @Override
             public void onChanged(List<Course> courseList) {
                 saveQueriedCourseList(courseList);
-                displayTimetable(courseList);
+                saveCourseIndexesSelections();
+                displayTimetable();
 
                 // This sets up the WeekView widget to display starting from 0700 -- the user can still scroll up/down
                 mWeekView.goToHour(7);
@@ -130,11 +138,22 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
     /**
      * Save the list of courses from the searchViewModel into the member variable called queriedCourseList.
      * For use outside the ViewModel's onChanged Method
+     *
      * @param courseList
      */
-    private void saveQueriedCourseList(List<Course> courseList){
+    private void saveQueriedCourseList(List<Course> courseList) {
         this.queriedCourseList.clear();
         this.queriedCourseList.addAll(courseList);
+    }
+
+    /**
+     * Set the DEFAULT index selection for each queried course to be it's first index for the HashMap indexesSel.
+     */
+    private void saveCourseIndexesSelections() {
+        this.indexesSel.clear();
+        for (Course course : queriedCourseList) {
+            this.indexesSel.put(course.getCourseCode(), course.getIndexes().get(0).getIndexNumber());
+        }
     }
 
     /**
@@ -235,14 +254,14 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
     }
 
     /**
-     * Takes in the list of queried courses and displays them in the timetable widget by 'converting' them
-     * into a list of event objects stored in the class member variable eventList.
+     * Takes in the list of queried courses and displays them in the timetable widget after 'converting' them
+     * into a list of event objects stored in the class member variable eventList, according to the indexes of each course
+     * stored in the indexesSel HashMap
      * <p>
-     * Called in the searchViewModel.getTimetablePlanningCourseList() observable above.
-     *
-     * @param courseList
+     * Called in the searchViewModel.getTimetablePlanningCourseList() observable above, as well as the BottomSheet
+     * submit button click callback.
      */
-    private void displayTimetable(List<Course> courseList) {
+    private void displayTimetable() {
         eventList.clear();
 
         /*Calendar startTime = Calendar.getInstance();
@@ -270,7 +289,9 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
                 }
                 break;
             case R.id.plan_fragment_choose_indexes:
-                PlanFragmentBottomSheet planFragmentBottomSheet = new PlanFragmentBottomSheet(queriedCourseList);
+                Log.d(TAG, "onClick: IndexesSel is originally - " + indexesSel);
+                PlanFragmentBottomSheet planFragmentBottomSheet = new PlanFragmentBottomSheet(queriedCourseList, indexesSel);
+                planFragmentBottomSheet.setPlanFragmentBottomSheetInterface(this);
                 planFragmentBottomSheet.show(getChildFragmentManager(), "plan_fragment_bottom_sheet");
                 break;
         }
@@ -285,10 +306,10 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
     @NotNull
     @Override
     public List<WeekViewDisplayable<Event>> onMonthChange(@NotNull Calendar calendar, @NotNull Calendar calendar1) {
-            /*
-                This check is important -- without it, the same event will be duplicated three times as the library will
-                preload three months of events!
-                 */
+        /*
+          This check is important -- without it, the same event will be duplicated three times as the library will
+          preload three months of events!
+         */
         Calendar today = Calendar.getInstance();
         if (today.get(Calendar.MONTH) == calendar.get(Calendar.MONTH)) {
             return eventList;
@@ -336,4 +357,11 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
         }
     }
 
+
+    @Override
+    public void onSubmitButtonClicked(Map<String, String> newIndexesSel) {
+        indexesSel.clear();
+        indexesSel.putAll(newIndexesSel);
+        Log.d(TAG, "onSubmitButtonClicked: indexesSel is now : " + indexesSel );
+    }
 }

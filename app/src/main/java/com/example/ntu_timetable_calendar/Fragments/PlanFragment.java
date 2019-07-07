@@ -28,7 +28,8 @@ import com.example.ntu_timetable_calendar.BottomSheets.PlanFragmentBottomSheet;
 import com.example.ntu_timetable_calendar.CourseModels.Course;
 import com.example.ntu_timetable_calendar.EventModel.Event;
 import com.example.ntu_timetable_calendar.R;
-import com.example.ntu_timetable_calendar.ViewModels.SearchViewModel;
+import com.example.ntu_timetable_calendar.ViewModels.JsonViewModel;
+import com.example.ntu_timetable_calendar.ViewModels.PlanFragmentActivityViewModel;
 import com.google.android.material.button.MaterialButton;
 
 import org.jetbrains.annotations.NotNull;
@@ -45,14 +46,15 @@ import java.util.Map;
 public class PlanFragment extends Fragment implements View.OnClickListener, EventClickListener<Event>,
         MonthChangeListener<Event>, DateTimeInterpreter, PlanFragmentBottomSheet.PlanFragmentBottomSheetInterface {
 
-    private SearchViewModel searchViewModel;
+    private JsonViewModel jsonViewModel;
+    private PlanFragmentActivityViewModel planFragmentActivityViewModel;
 
     // Variables
     private List<String> courseSelectionsList = new ArrayList<>();
     private List<String> finalSelList = new ArrayList<>();
     private List<String> allCourseCodesList = new ArrayList<>();
 
-    // We store the list of courses sent by the SearchViewModel after sending the query
+    // We store the list of courses sent by the JsonViewModel after sending the query
     private List<Course> queriedCourseList = new ArrayList<>();
 
     // A HashMap that stores the index selection for each course that the user has queried.
@@ -81,6 +83,9 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
         initViews(view);
         initViewModel();
         initWeekViewWidget();
+
+        queriedCourseList.addAll(planFragmentActivityViewModel.getQueriedCourseList());
+        indexesSel.putAll(planFragmentActivityViewModel.getIndexesSel());
     }
 
     private void initViews(View view) {
@@ -97,13 +102,15 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
     }
 
     private void initViewModel() {
-        searchViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
+        jsonViewModel = ViewModelProviders.of(this).get(JsonViewModel.class);
+        planFragmentActivityViewModel = ViewModelProviders.of(getActivity())
+                .get(PlanFragmentActivityViewModel.class);
 
         /*
           Setup viewmodel -- when it is complete and the list of all course codes is retrieved, call
           setupAutoCompleteTextView(List<String> courseCodeList)
          */
-        searchViewModel.getAllCourseCode().observe(this, new Observer<List<String>>() {
+        jsonViewModel.getAllCourseCode().observe(this, new Observer<List<String>>() {
             @Override
             public void onChanged(List<String> strings) {
                 // Save List<String> strings to allCourseCode object
@@ -115,17 +122,16 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
         /*
           Send the query to get all course codes
          */
-        searchViewModel.queryAllCourseCode();
+        jsonViewModel.queryAllCourseCode();
 
         /*
             Observe changes to the list of courses chosen by the user -- triggered when the user presses the plan button
             and the viewmodel receives the list of courses according to the query
          */
-        searchViewModel.getTimetablePlanningCourseList().observe(this, new Observer<List<Course>>() {
+        jsonViewModel.getTimetablePlanningCourseList().observe(this, new Observer<List<Course>>() {
             @Override
             public void onChanged(List<Course> courseList) {
                 saveQueriedCourseList(courseList);
-                saveCourseIndexesSelections();
                 displayTimetable();
 
                 // This sets up the WeekView widget to display starting from 0700 -- the user can still scroll up/down
@@ -136,7 +142,7 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
     }
 
     /**
-     * Save the list of courses from the searchViewModel into the member variable called queriedCourseList.
+     * Save the list of courses from the jsonViewModel into the member variable called queriedCourseList.
      * For use outside the ViewModel's onChanged Method
      *
      * @param courseList
@@ -144,16 +150,7 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
     private void saveQueriedCourseList(List<Course> courseList) {
         this.queriedCourseList.clear();
         this.queriedCourseList.addAll(courseList);
-    }
-
-    /**
-     * Set the DEFAULT index selection for each queried course to be it's first index for the HashMap indexesSel.
-     */
-    private void saveCourseIndexesSelections() {
-        this.indexesSel.clear();
-        for (Course course : queriedCourseList) {
-            this.indexesSel.put(course.getCourseCode(), course.getIndexes().get(0).getIndexNumber());
-        }
+        planFragmentActivityViewModel.setQueriedCourseList(this.queriedCourseList);
     }
 
     /**
@@ -186,6 +183,8 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
      */
     private void setupAutoCompleteTextView() {
 
+        multiAutoCompleteTextView.setText(planFragmentActivityViewModel.getEnterModuleQuery());
+
         ArrayAdapter<String> listAdapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_list_item_1, allCourseCodesList);
 
@@ -212,7 +211,8 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
 
             @Override
             public void afterTextChanged(Editable editable) {
-                String str = editable.toString().toUpperCase();
+                String str = editable.toString().toUpperCase().trim();
+                planFragmentActivityViewModel.setEnterModuleQuery(str);
 
                 // Removes all whitespaces and commas
                 List<String> items = Arrays.asList(str.split("\\s*,\\s*"));
@@ -258,7 +258,7 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
      * into a list of event objects stored in the class member variable eventList, according to the indexes of each course
      * stored in the indexesSel HashMap
      * <p>
-     * Called in the searchViewModel.getTimetablePlanningCourseList() observable above, as well as the BottomSheet
+     * Called in the jsonViewModel.getTimetablePlanningCourseList() observable above, as well as the BottomSheet
      * submit button click callback.
      */
     private void displayTimetable() {
@@ -285,12 +285,12 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
                 break;
             case R.id.plan_fragment_plan_button:
                 if (validationCheck()) {
-                    searchViewModel.queryPlanningTimetableCourses(finalSelList);
+                    jsonViewModel.queryPlanningTimetableCourses(finalSelList);
                 }
                 break;
             case R.id.plan_fragment_choose_indexes:
                 Log.d(TAG, "onClick: IndexesSel is originally - " + indexesSel);
-                PlanFragmentBottomSheet planFragmentBottomSheet = new PlanFragmentBottomSheet(queriedCourseList, indexesSel);
+                PlanFragmentBottomSheet planFragmentBottomSheet = new PlanFragmentBottomSheet();
                 planFragmentBottomSheet.setPlanFragmentBottomSheetInterface(this);
                 planFragmentBottomSheet.show(getChildFragmentManager(), "plan_fragment_bottom_sheet");
                 break;
@@ -357,11 +357,10 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
         }
     }
 
-
     @Override
     public void onSubmitButtonClicked(Map<String, String> newIndexesSel) {
         indexesSel.clear();
         indexesSel.putAll(newIndexesSel);
-        Log.d(TAG, "onSubmitButtonClicked: indexesSel is now : " + indexesSel );
+        planFragmentActivityViewModel.setIndexesSel(this.indexesSel);
     }
 }

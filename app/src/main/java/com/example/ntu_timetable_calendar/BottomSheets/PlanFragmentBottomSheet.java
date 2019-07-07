@@ -10,6 +10,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,6 +18,7 @@ import com.example.ntu_timetable_calendar.CourseModels.Course;
 import com.example.ntu_timetable_calendar.Helper.BottomNavColor;
 import com.example.ntu_timetable_calendar.R;
 import com.example.ntu_timetable_calendar.RVAdapters.PlanFragmentBottomSheetRVAdapter;
+import com.example.ntu_timetable_calendar.ViewModels.PlanFragmentActivityViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.button.MaterialButton;
 
@@ -40,6 +42,8 @@ public class PlanFragmentBottomSheet extends BottomSheetDialogFragment implement
     // button is pressed, all changes are discarded as the callback method is not triggered.
     private Map<String, String> newIndexesSel = new HashMap<>();
 
+    private PlanFragmentActivityViewModel planFragmentActivityViewModel;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     public interface PlanFragmentBottomSheetInterface {
@@ -55,17 +59,6 @@ public class PlanFragmentBottomSheet extends BottomSheetDialogFragment implement
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public PlanFragmentBottomSheet() {
-    }
-
-    public PlanFragmentBottomSheet(List<Course> courseList, Map<String, String> indexesSel) {
-        this.courseList = courseList;
-        // Make a copy of the original indexesSel in internalIndexesSel variable
-        this.newIndexesSel.putAll(indexesSel);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -77,6 +70,7 @@ public class PlanFragmentBottomSheet extends BottomSheetDialogFragment implement
         super.onViewCreated(view, savedInstanceState);
 
         initViews(view);
+        initViewModels();
         initRecyclerView();
     }
 
@@ -100,6 +94,16 @@ public class PlanFragmentBottomSheet extends BottomSheetDialogFragment implement
         submitBtn = view.findViewById(R.id.plan_fragment_bs_submit_btn);
         submitBtn.setOnClickListener(this);
         recyclerView = view.findViewById(R.id.plan_fragment_bs_rv);
+    }
+
+    /**
+     * We get passed the data to show in the bottom sheet from the PlanFragment through the PlanFragmentActivityViewModel
+     */
+    private void initViewModels() {
+        planFragmentActivityViewModel = ViewModelProviders.of(getActivity()).get(PlanFragmentActivityViewModel.class);
+        this.courseList = planFragmentActivityViewModel.getQueriedCourseList();
+        // Make a copy of the original indexesSel in internalIndexesSel variable
+        this.newIndexesSel.putAll(planFragmentActivityViewModel.getIndexesSel());
     }
 
     private void initRecyclerView() {

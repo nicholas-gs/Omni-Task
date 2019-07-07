@@ -26,8 +26,8 @@ import com.example.ntu_timetable_calendar.ExamModels.Exam;
 import com.example.ntu_timetable_calendar.ExpandableCardView.ExpandableCardView;
 import com.example.ntu_timetable_calendar.Helper.StringHelper;
 import com.example.ntu_timetable_calendar.R;
-import com.example.ntu_timetable_calendar.ViewModels.ActivityViewModel;
-import com.example.ntu_timetable_calendar.ViewModels.SearchViewModel;
+import com.example.ntu_timetable_calendar.ViewModels.SearchFragmentActivityViewModel;
+import com.example.ntu_timetable_calendar.ViewModels.JsonViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,8 +46,8 @@ public class CourseDetailFragment extends Fragment {
     // Variables
     private List<Index> indexList; // Course POJO passed from SearchFragment
     private Exam exam;
-    private SearchViewModel searchViewModel;
-    private ActivityViewModel activityViewModel;
+    private JsonViewModel jsonViewModel;
+    private SearchFragmentActivityViewModel searchFragmentActivityViewModel;
     private IndexRVAdapter indexRVAdapter;
 
     private static final String TAG = "CardView";
@@ -104,29 +104,29 @@ public class CourseDetailFragment extends Fragment {
 
 
     /**
-     * Setup both the activityViewModel (pass the course object from the search fragment to this fragment),
+     * Setup both the searchFragmentActivityViewModel (pass the course object from the search fragment to this fragment),
      * as well as the searchFragmentViewModel (tied to this fragment's lifecycle). The latter is so that we can send
      * a query for the course's exam data.
      * <p>
      * DO NOT CHANGE THE ORDER OF INSTANTIATION OF THE TWO VIEWMODELS!!!!!
      */
     private void setupViewModel() {
-        searchViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
-        activityViewModel = ViewModelProviders.of(Objects.requireNonNull(getActivity())).get(ActivityViewModel.class);
+        jsonViewModel = ViewModelProviders.of(this).get(JsonViewModel.class);
+        searchFragmentActivityViewModel = ViewModelProviders.of(Objects.requireNonNull(getActivity())).get(SearchFragmentActivityViewModel.class);
 
-        searchViewModel.getFilteredExamData().observe(getViewLifecycleOwner(), new Observer<List<Exam>>() {
+        jsonViewModel.getFilteredExamData().observe(getViewLifecycleOwner(), new Observer<List<Exam>>() {
             @Override
             public void onChanged(List<Exam> exams) {
                 bindExamData(exams);
             }
         });
 
-        activityViewModel.getCourseToDetail().observe(this, new Observer<Course>() {
+        searchFragmentActivityViewModel.getCourseToDetail().observe(this, new Observer<Course>() {
             @Override
             public void onChanged(Course course) {
                 saveIndexes(course);
                 bindCourseData(course);
-                searchViewModel.queryExamData(course.getCourseCode());
+                jsonViewModel.queryExamData(course.getCourseCode());
             }
         });
     }

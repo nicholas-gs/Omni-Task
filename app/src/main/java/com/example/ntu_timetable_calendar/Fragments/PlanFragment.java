@@ -280,8 +280,7 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.plan_fragment_clear_button:
-                multiAutoCompleteTextView.setText("");
-                courseSelectionsList.clear();
+                clearButtonPressed();
                 break;
             case R.id.plan_fragment_plan_button:
                 if (validationCheck()) {
@@ -289,12 +288,25 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
                 }
                 break;
             case R.id.plan_fragment_choose_indexes:
-                Log.d(TAG, "onClick: IndexesSel is originally - " + indexesSel);
                 PlanFragmentBottomSheet planFragmentBottomSheet = new PlanFragmentBottomSheet();
                 planFragmentBottomSheet.setPlanFragmentBottomSheetInterface(this);
                 planFragmentBottomSheet.show(getChildFragmentManager(), "plan_fragment_bottom_sheet");
                 break;
         }
+    }
+
+    /**
+     * Functionality for the clear button pressed
+     * 1) Clear the multiAutoCompleteTextView
+     * 2) Clear the courseSelectionsList and indexesSel variable
+     * 3) Clear the parameters in the planFragmentActivityViewModel
+     */
+    private void clearButtonPressed() {
+        multiAutoCompleteTextView.setText("");
+        courseSelectionsList.clear();
+        indexesSel.clear();
+        planFragmentActivityViewModel.setQueriedCourseList(new ArrayList<Course>());
+        planFragmentActivityViewModel.setIndexesSel(new HashMap<String, String>());
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////

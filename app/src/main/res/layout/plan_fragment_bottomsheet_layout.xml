@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_centerInParent="true"
+    android:background="@color/colorPrimary"
+    android:orientation="vertical"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_toStartOf="@id/plan_fragment_bs_close_btn"
+        android:maxLines="1"
+        android:paddingStart="16dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="8dp"
+        android:text="@string/choose_index_for_modules"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/colorWhite"
+        android:textSize="16sp" />
+
+    <ImageView
+        android:id="@+id/plan_fragment_bs_close_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="16dp"
+        android:clickable="true"
+        android:contentDescription="@string/close_bottom_sheet"
+        android:focusable="true"
+        android:paddingStart="4dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="0dp"
+        android:paddingBottom="0dp"
+        android:src="@drawable/ic_close_lightblue_24dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/plan_fragment_bs_submit_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="@color/colorAccent"
+        android:text="@string/submit"
+        android:textColor="@color/colorWhite" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/plan_fragment_bs_rv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/plan_fragment_bs_submit_btn"
+        android:layout_marginTop="24dp" />
+
+
+</RelativeLayout>

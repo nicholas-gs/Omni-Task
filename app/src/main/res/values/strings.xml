@@ -9,4 +9,7 @@
     <string name="clear">Clear</string>
     <string name="error_message">Please check entries! (Comma separated)</string>
     <string name="choose_indexes">Choose Indexes</string>
+    <string name="choose_index_for_modules">Choose index for modules</string>
+    <string name="close_bottom_sheet">Close bottom sheet</string>
+    <string name="submit">Submit</string>
 </resources>

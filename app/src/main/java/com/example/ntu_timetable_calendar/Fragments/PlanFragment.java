@@ -4,7 +4,6 @@ import android.graphics.RectF;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -25,6 +23,7 @@ import com.alamkanak.weekview.EventClickListener;
 import com.alamkanak.weekview.MonthChangeListener;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewDisplayable;
+import com.example.ntu_timetable_calendar.BottomSheets.PlanFragmentBottomSheet;
 import com.example.ntu_timetable_calendar.CourseModels.Course;
 import com.example.ntu_timetable_calendar.EventModel.Event;
 import com.example.ntu_timetable_calendar.R;
@@ -40,7 +39,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-public class PlanFragment extends Fragment implements View.OnClickListener {
+public class PlanFragment extends Fragment implements View.OnClickListener, EventClickListener<Event>,
+        MonthChangeListener<Event>, DateTimeInterpreter {
 
     private SearchViewModel searchViewModel;
 
@@ -49,15 +49,18 @@ public class PlanFragment extends Fragment implements View.OnClickListener {
     private List<String> finalSelList = new ArrayList<>();
     private List<String> allCourseCodesList = new ArrayList<>();
 
+    // We store the list of courses sent by the SearchViewModel after sending the query
+    private List<Course> queriedCourseList = new ArrayList<>();
+
     // We store the events we want to display in the weekview widget here
-    List<WeekViewDisplayable> eventList = new ArrayList<>();
+    private List<WeekViewDisplayable<Event>> eventList = new ArrayList<>();
 
     private static final String TAG = "PlanFragmentTAG";
 
     // Views
     private MaterialButton planButton, clearButton, chooseIndexesButton;
     private TextView errorTV;
-    private WeekView mWeekView;
+    private WeekView<Event> mWeekView;
 
     @Nullable
     @Override
@@ -114,9 +117,24 @@ public class PlanFragment extends Fragment implements View.OnClickListener {
         searchViewModel.getTimetablePlanningCourseList().observe(this, new Observer<List<Course>>() {
             @Override
             public void onChanged(List<Course> courseList) {
+                saveQueriedCourseList(courseList);
                 displayTimetable(courseList);
+
+                // This sets up the WeekView widget to display starting from 0700 -- the user can still scroll up/down
+                mWeekView.goToHour(7);
             }
         });
+
+    }
+
+    /**
+     * Save the list of courses from the searchViewModel into the member variable called queriedCourseList.
+     * For use outside the ViewModel's onChanged Method
+     * @param courseList
+     */
+    private void saveQueriedCourseList(List<Course> courseList){
+        this.queriedCourseList.clear();
+        this.queriedCourseList.addAll(courseList);
     }
 
     /**
@@ -125,65 +143,20 @@ public class PlanFragment extends Fragment implements View.OnClickListener {
     private void initWeekViewWidget() {
 
         /*
-          IMPORTANT! - We pass the list of events that we want to display in the widget here.
+        This sets up the calendar to show the days MONDAY to FRIDAY and 0700.
+        And since horizontal scrolling is disabled, the user cannot scroll to other days.
+        It also sets the widget to start from 0700, but the user can still scroll up and down.
          */
-        mWeekView.setMonthChangeListener(new MonthChangeListener() {
-            @NotNull
-            @Override
-            public List<WeekViewDisplayable> onMonthChange(@NotNull Calendar calendar, @NotNull Calendar calendar1) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        mWeekView.goToDate(cal);
+        mWeekView.goToHour(7);
 
-                // This sets up the WeekView widget to display starting from Monday and 0700 -- DO NOT MOVE THESE LINES OF CODE
-                Calendar cal = Calendar.getInstance();
-                cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-                mWeekView.goToDate(cal);
-                mWeekView.goToHour(7);
+        mWeekView.setMonthChangeListener(this);
 
+        mWeekView.setOnEventClickListener(this);
 
-
-                /*
-                This check is important -- without it, the same event will be duplicated three times as the library will
-                preload three months of events!
-                 */
-                Calendar today = Calendar.getInstance();
-                if (today.get(Calendar.MONTH) == calendar.get(Calendar.MONTH)) {
-                    return eventList;
-                } else {
-                    List<WeekViewDisplayable> emptyList = new ArrayList<>();
-                    return emptyList;
-                }
-
-            }
-        });
-
-        mWeekView.setOnEventClickListener(new EventClickListener() {
-            @Override
-            public void onEventClick(Object o, @NotNull RectF rectF) {
-
-            }
-        });
-
-        /*
-          This method affects how the time (vertical axis) and date/day (horizontal axis) are displayed. I override the
-          original implementation in order to remove the date as I only want to show day.
-         */
-        mWeekView.setDateTimeInterpreter(new DateTimeInterpreter() {
-            @NotNull
-            @Override
-            public String interpretDate(@NotNull Calendar calendar) {
-                SimpleDateFormat weekdayNameFormat = new SimpleDateFormat("EEE", Locale.getDefault());
-                return weekdayNameFormat.format(calendar.getTime());
-            }
-
-            @NotNull
-            @Override
-            public String interpretTime(int i) {
-                if (i < 10) {
-                    return "0" + i + ":00";
-                } else {
-                    return i + ":00";
-                }
-            }
-        });
+        mWeekView.setDateTimeInterpreter(this);
 
     }
 
@@ -272,8 +245,9 @@ public class PlanFragment extends Fragment implements View.OnClickListener {
     private void displayTimetable(List<Course> courseList) {
         eventList.clear();
 
-       /* Calendar startTime = Calendar.getInstance();
+        /*Calendar startTime = Calendar.getInstance();
         Calendar endTime = (Calendar) startTime.clone();
+        startTime.set(Calendar.DAY_OF_WEEK, Calendar.TUESDAY);
         startTime.add(Calendar.MINUTE, -120);
 
         eventList.add(new Event(1, "Testing Event", startTime, endTime, "Testing Location",
@@ -296,7 +270,70 @@ public class PlanFragment extends Fragment implements View.OnClickListener {
                 }
                 break;
             case R.id.plan_fragment_choose_indexes:
+                PlanFragmentBottomSheet planFragmentBottomSheet = new PlanFragmentBottomSheet(queriedCourseList);
+                planFragmentBottomSheet.show(getChildFragmentManager(), "plan_fragment_bottom_sheet");
                 break;
         }
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * IMPORTANT! - We pass the list of events that we want to display in the WeekView widget here.
+     */
+
+    @NotNull
+    @Override
+    public List<WeekViewDisplayable<Event>> onMonthChange(@NotNull Calendar calendar, @NotNull Calendar calendar1) {
+            /*
+                This check is important -- without it, the same event will be duplicated three times as the library will
+                preload three months of events!
+                 */
+        Calendar today = Calendar.getInstance();
+        if (today.get(Calendar.MONTH) == calendar.get(Calendar.MONTH)) {
+            return eventList;
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * WeekView widget event click listener
+     *
+     * @param event
+     * @param rectF
+     */
+    @Override
+    public void onEventClick(Event event, @NotNull RectF rectF) {
+
+    }
+
+    /**
+     * This method affects how the date/day (horizontal axis) are displayed. I override the
+     * original implementation in order to remove the date as I only want to show day.
+     *
+     * @param calendar
+     * @return
+     */
+    @NotNull
+    @Override
+    public String interpretDate(@NotNull Calendar calendar) {
+        SimpleDateFormat weekdayNameFormat = new SimpleDateFormat("EEE", Locale.getDefault());
+        return weekdayNameFormat.format(calendar.getTime());
+    }
+
+    /**
+     * This method affects how the time (vertical axis) are displayed. I override the
+     * original implementation in order to show time in 24h format.
+     */
+    @NotNull
+    @Override
+    public String interpretTime(int i) {
+        if (i < 10) {
+            return "0" + i + ":00";
+        } else {
+            return i + ":00";
+        }
+    }
+
 }

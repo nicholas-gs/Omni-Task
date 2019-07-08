@@ -100,7 +100,7 @@ public class PlanFragmentBottomSheet extends BottomSheetDialogFragment implement
      * We get passed the data to show in the bottom sheet from the PlanFragment through the PlanFragmentActivityViewModel
      */
     private void initViewModels() {
-        planFragmentActivityViewModel = ViewModelProviders.of(getActivity()).get(PlanFragmentActivityViewModel.class);
+        planFragmentActivityViewModel = ViewModelProviders.of(requireActivity()).get(PlanFragmentActivityViewModel.class);
         this.courseList = planFragmentActivityViewModel.getQueriedCourseList();
         // Make a copy of the original indexesSel in internalIndexesSel variable
         this.newIndexesSel.putAll(planFragmentActivityViewModel.getIndexesSel());

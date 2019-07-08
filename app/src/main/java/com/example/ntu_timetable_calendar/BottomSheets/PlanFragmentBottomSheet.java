@@ -31,7 +31,7 @@ public class PlanFragmentBottomSheet extends BottomSheetDialogFragment implement
 
     // Views
     private ImageView closeBtn;
-    private MaterialButton submitBtn;
+    private MaterialButton planBtn;
     private RecyclerView recyclerView;
 
     // Variables
@@ -48,7 +48,7 @@ public class PlanFragmentBottomSheet extends BottomSheetDialogFragment implement
 
     public interface PlanFragmentBottomSheetInterface {
         // Callback method for when submit button is clicked
-        void onSubmitButtonClicked(Map<String, String> newIndexesSel);
+        void onPlanButtonClicked(Map<String, String> newIndexesSel);
     }
 
     private PlanFragmentBottomSheetInterface planFragmentBottomSheetInterface;
@@ -91,8 +91,8 @@ public class PlanFragmentBottomSheet extends BottomSheetDialogFragment implement
     private void initViews(View view) {
         closeBtn = view.findViewById(R.id.plan_fragment_bs_close_btn);
         closeBtn.setOnClickListener(this);
-        submitBtn = view.findViewById(R.id.plan_fragment_bs_submit_btn);
-        submitBtn.setOnClickListener(this);
+        planBtn = view.findViewById(R.id.plan_fragment_bs_plan_btn);
+        planBtn.setOnClickListener(this);
         recyclerView = view.findViewById(R.id.plan_fragment_bs_rv);
     }
 
@@ -129,7 +129,7 @@ public class PlanFragmentBottomSheet extends BottomSheetDialogFragment implement
      */
     private void submitIndexSelections() {
         if (planFragmentBottomSheetInterface != null) {
-            planFragmentBottomSheetInterface.onSubmitButtonClicked(this.newIndexesSel);
+            planFragmentBottomSheetInterface.onPlanButtonClicked(this.newIndexesSel);
         }
         dismiss();
     }
@@ -140,7 +140,7 @@ public class PlanFragmentBottomSheet extends BottomSheetDialogFragment implement
             case R.id.plan_fragment_bs_close_btn:
                 dismiss();
                 break;
-            case R.id.plan_fragment_bs_submit_btn:
+            case R.id.plan_fragment_bs_plan_btn:
                 submitIndexSelections();
                 break;
         }

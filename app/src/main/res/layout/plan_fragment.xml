@@ -16,7 +16,7 @@
         android:paddingBottom="0dp">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/plan_fragment_plan_button"
+            android:id="@+id/submit_fragment_plan_button"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -24,7 +24,7 @@
             android:layout_toStartOf="@id/plan_fragment_clear_button"
             android:paddingStart="0dp"
             android:paddingEnd="2dp"
-            android:text="@string/plan"
+            android:text="@string/submit"
             android:textColor="@color/colorAccent" />
 
         <com.google.android.material.button.MaterialButton
@@ -43,7 +43,7 @@
             android:id="@+id/plan_fragment_autocompletetextview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/plan_fragment_plan_button"
+            android:layout_below="@id/submit_fragment_plan_button"
             android:layout_centerHorizontal="true"
             android:background="@color/colorPrimary"
             android:dropDownVerticalOffset="6dp"

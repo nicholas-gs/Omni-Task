@@ -4,7 +4,6 @@ import android.graphics.RectF;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,7 +65,7 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
     private static final String TAG = "PlanFragmentTAG";
 
     // Views
-    private MaterialButton planButton, clearButton, chooseIndexesButton;
+    private MaterialButton submitButton, clearButton, chooseIndexesButton;
     private TextView errorTV;
     private WeekView<Event> mWeekView;
     private MultiAutoCompleteTextView multiAutoCompleteTextView;
@@ -89,8 +88,8 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
     }
 
     private void initViews(View view) {
-        planButton = view.findViewById(R.id.plan_fragment_plan_button);
-        planButton.setOnClickListener(this);
+        submitButton = view.findViewById(R.id.submit_fragment_plan_button);
+        submitButton.setOnClickListener(this);
         clearButton = view.findViewById(R.id.plan_fragment_clear_button);
         clearButton.setOnClickListener(this);
         chooseIndexesButton = view.findViewById(R.id.plan_fragment_choose_indexes);
@@ -103,7 +102,7 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
 
     private void initViewModel() {
         jsonViewModel = ViewModelProviders.of(this).get(JsonViewModel.class);
-        planFragmentActivityViewModel = ViewModelProviders.of(getActivity())
+        planFragmentActivityViewModel = ViewModelProviders.of(requireActivity())
                 .get(PlanFragmentActivityViewModel.class);
 
         /*
@@ -185,7 +184,7 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
 
         multiAutoCompleteTextView.setText(planFragmentActivityViewModel.getEnterModuleQuery());
 
-        ArrayAdapter<String> listAdapter = new ArrayAdapter<>(getContext(),
+        ArrayAdapter<String> listAdapter = new ArrayAdapter<>(requireContext(),
                 android.R.layout.simple_list_item_1, allCourseCodesList);
 
         multiAutoCompleteTextView.setAdapter(listAdapter);
@@ -282,8 +281,9 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
             case R.id.plan_fragment_clear_button:
                 clearButtonPressed();
                 break;
-            case R.id.plan_fragment_plan_button:
+            case R.id.submit_fragment_plan_button:
                 if (validationCheck()) {
+                    chooseIndexesButton.performClick();
                     jsonViewModel.queryPlanningTimetableCourses(finalSelList);
                 }
                 break;
@@ -303,6 +303,7 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
      */
     private void clearButtonPressed() {
         multiAutoCompleteTextView.setText("");
+        errorTV.setVisibility(View.GONE);
         courseSelectionsList.clear();
         indexesSel.clear();
         planFragmentActivityViewModel.setQueriedCourseList(new ArrayList<Course>());
@@ -370,7 +371,7 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
     }
 
     @Override
-    public void onSubmitButtonClicked(Map<String, String> newIndexesSel) {
+    public void onPlanButtonClicked(Map<String, String> newIndexesSel) {
         indexesSel.clear();
         indexesSel.putAll(newIndexesSel);
         planFragmentActivityViewModel.setIndexesSel(this.indexesSel);

@@ -41,7 +41,7 @@
         android:src="@drawable/ic_close_lightblue_24dp" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/plan_fragment_bs_submit_btn"
+        android:id="@+id/plan_fragment_bs_plan_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/title"
@@ -50,14 +50,14 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:backgroundTint="@color/colorAccent"
-        android:text="@string/submit"
+        android:text="@string/plan"
         android:textColor="@color/colorWhite" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/plan_fragment_bs_rv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/plan_fragment_bs_submit_btn"
+        android:layout_below="@id/plan_fragment_bs_plan_btn"
         android:layout_marginTop="24dp" />
 
 

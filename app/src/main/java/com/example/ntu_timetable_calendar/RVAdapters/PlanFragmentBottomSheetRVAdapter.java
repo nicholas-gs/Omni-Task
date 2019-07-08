@@ -65,8 +65,16 @@ public class PlanFragmentBottomSheetRVAdapter extends RecyclerView.Adapter<PlanF
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                     if (itemSpinnerInterface != null) {
-                        itemSpinnerInterface.spinnerItemSelected(courseList.get(getAdapterPosition()).getCourseCode(),
-                                adapterView.getItemAtPosition(i).toString());
+
+                        // Sometimes there is a IndexOutOfBoundsException which seems to happen when you remove a course and
+                        // press submit, showing the bottom sheet. But only on certain instances, and can't really duplicate
+                        try {
+                            itemSpinnerInterface.spinnerItemSelected(courseList.get(getAdapterPosition()).getCourseCode(),
+                                    adapterView.getItemAtPosition(i).toString());
+                        } catch (IndexOutOfBoundsException e) {
+                            e.printStackTrace();
+                        }
+
                     }
                 }
 
@@ -115,7 +123,11 @@ public class PlanFragmentBottomSheetRVAdapter extends RecyclerView.Adapter<PlanF
         spinnerArrayAdapter.setDropDownViewResource(R.layout.course_detail_spinner_dropdown_item);
         spinner.setAdapter(spinnerArrayAdapter);
 
-        spinner.setSelection(spinnerArrayAdapter.getPosition(indexesSel.get(course.getCourseCode())));
+        try {
+            spinner.setSelection(spinnerArrayAdapter.getPosition(indexesSel.get(course.getCourseCode())));
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
 
     }
 

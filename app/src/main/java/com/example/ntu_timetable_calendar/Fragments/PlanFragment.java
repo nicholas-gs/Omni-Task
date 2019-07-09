@@ -35,7 +35,6 @@ import com.google.android.material.button.MaterialButton;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -144,11 +143,14 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
         planFragmentActivityViewModel.getTimetableEvents().observe(requireActivity(), new Observer<List<Event>>() {
             @Override
             public void onChanged(List<Event> eventList) {
-                Log.d(TAG, "onChanged: CALLED");
-                displayTimetable(eventList);
 
-                // This sets up the WeekView widget to display starting from 0700 -- the user can still scroll up/down
+                // Make sure the WeekView widget go to 0700 and start from Monday
                 mWeekView.goToHour(7);
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+                mWeekView.goToDate(calendar);
+
+                displayTimetable(eventList);
             }
         });
 
@@ -158,7 +160,7 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
      * Save the list of courses from the jsonViewModel into the member variable called queriedCourseList.
      * For use outside the ViewModel's onChanged Method
      *
-     * @param courseList
+     * @param courseList - List of courses to save in the class member variable
      */
     private void saveQueriedCourseList(List<Course> courseList) {
         this.queriedCourseList.clear();
@@ -273,7 +275,9 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
      */
     private void displayTimetable(List<Event> eventList) {
         Log.d(TAG, "displayTimetable: Called");
+        Log.d(TAG, "displayTimetable: Size of eventList - " + eventList.size());
         this.eventList.clear();
+        //mWeekView.notifyDataSetChanged();
         this.eventList.addAll(eventList);
 
         // Important -- Notifies the WeekView widget to refresh its data and display the new events/timetable
@@ -335,7 +339,7 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
     /**
      * Bottomsheet plan button click listener
      *
-     * @param newIndexesSel
+     * @param newIndexesSel - HashMap of indexes selected by the user for each course, returned by the bottom sheet
      */
     @Override
     public void onPlanButtonClicked(Map<String, String> newIndexesSel) {
@@ -369,8 +373,8 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
     /**
      * WeekView widget event click listener
      *
-     * @param event
-     * @param rectF
+     * @param event Event clicked
+     * @param rectF The drawable clicked
      */
     @Override
     public void onEventClick(Event event, @NotNull RectF rectF) {
@@ -381,8 +385,8 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
      * This method affects how the date/day (horizontal axis) are displayed. I override the
      * original implementation in order to remove the date as I only want to show day.
      *
-     * @param calendar
-     * @return
+     * @param calendar Calendar
+     * @return String to display
      */
     @NotNull
     @Override

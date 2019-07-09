@@ -104,7 +104,6 @@
         app:columnGap="1dp"
         app:dayBackgroundColor="@color/colorPrimary"
         app:defaultEventColor="@color/colorPrimary"
-        app:eventCornerRadius="4dp"
         app:eventTextColor="@color/colorWhite"
         app:firstDayOfWeek="monday"
         app:headerRowBackgroundColor="@color/colorPrimary"

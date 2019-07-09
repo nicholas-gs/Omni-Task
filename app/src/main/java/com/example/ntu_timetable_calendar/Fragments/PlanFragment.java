@@ -2,8 +2,10 @@ package com.example.ntu_timetable_calendar.Fragments;
 
 import android.graphics.RectF;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +35,7 @@ import com.google.android.material.button.MaterialButton;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,10 +56,10 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
     private List<String> finalSelList = new ArrayList<>();
     private List<String> allCourseCodesList = new ArrayList<>();
 
-    // We store the list of courses sent by the JsonViewModel after sending the query
+    // Temporary store the list of courses sent by the JsonViewModel after sending the query
     private List<Course> queriedCourseList = new ArrayList<>();
 
-    // A HashMap that stores the index selection for each course that the user has queried.
+    // A HashMap for temporary storage of the index selection for each course that the user has queried.
     private Map<String, String> indexesSel = new HashMap<>();
 
     // We store the events we want to display in the weekview widget here
@@ -97,7 +100,6 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
         mWeekView = view.findViewById(R.id.plan_fragment_weekView);
         errorTV = view.findViewById(R.id.plan_fragment_error_textview);
         multiAutoCompleteTextView = view.findViewById(R.id.plan_fragment_autocompletetextview);
-
     }
 
     private void initViewModel() {
@@ -113,6 +115,7 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
             @Override
             public void onChanged(List<String> strings) {
                 // Save List<String> strings to allCourseCode object
+                allCourseCodesList.clear();
                 allCourseCodesList.addAll(strings);
                 setupAutoCompleteTextView();
             }
@@ -124,14 +127,25 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
         jsonViewModel.queryAllCourseCode();
 
         /*
-            Observe changes to the list of courses chosen by the user -- triggered when the user presses the plan button
+            Observe changes to the list of courses chosen by the user -- triggered when the user presses the submit button
             and the viewmodel receives the list of courses according to the query
          */
         jsonViewModel.getTimetablePlanningCourseList().observe(this, new Observer<List<Course>>() {
             @Override
             public void onChanged(List<Course> courseList) {
                 saveQueriedCourseList(courseList);
-                displayTimetable();
+            }
+        });
+
+        /*
+            When triggered, it means that is a new timetable to display. It is triggered BottomSheet submit button
+            click callback below
+         */
+        planFragmentActivityViewModel.getTimetableEvents().observe(requireActivity(), new Observer<List<Event>>() {
+            @Override
+            public void onChanged(List<Event> eventList) {
+                Log.d(TAG, "onChanged: CALLED");
+                displayTimetable(eventList);
 
                 // This sets up the WeekView widget to display starting from 0700 -- the user can still scroll up/down
                 mWeekView.goToHour(7);
@@ -253,23 +267,14 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
     }
 
     /**
-     * Takes in the list of queried courses and displays them in the timetable widget after 'converting' them
-     * into a list of event objects stored in the class member variable eventList, according to the indexes of each course
-     * stored in the indexesSel HashMap
+     * Takes in the list of event objects and stores them in the class member variable eventList,
      * <p>
-     * Called in the jsonViewModel.getTimetablePlanningCourseList() observable above, as well as the BottomSheet
-     * submit button click callback.
+     * Called in the planFragmentActivityViewModel.getTimetableEvents() observable
      */
-    private void displayTimetable() {
-        eventList.clear();
-
-        /*Calendar startTime = Calendar.getInstance();
-        Calendar endTime = (Calendar) startTime.clone();
-        startTime.set(Calendar.DAY_OF_WEEK, Calendar.TUESDAY);
-        startTime.add(Calendar.MINUTE, -120);
-
-        eventList.add(new Event(1, "Testing Event", startTime, endTime, "Testing Location",
-                ContextCompat.getColor(getContext(), R.color.event_color_03), false, false));*/
+    private void displayTimetable(List<Event> eventList) {
+        Log.d(TAG, "displayTimetable: Called");
+        this.eventList.clear();
+        this.eventList.addAll(eventList);
 
         // Important -- Notifies the WeekView widget to refresh its data and display the new events/timetable
         mWeekView.notifyDataSetChanged();
@@ -282,10 +287,7 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
                 clearButtonPressed();
                 break;
             case R.id.submit_fragment_plan_button:
-                if (validationCheck()) {
-                    chooseIndexesButton.performClick();
-                    jsonViewModel.queryPlanningTimetableCourses(finalSelList);
-                }
+                submitButtonPressed();
                 break;
             case R.id.plan_fragment_choose_indexes:
                 PlanFragmentBottomSheet planFragmentBottomSheet = new PlanFragmentBottomSheet();
@@ -296,7 +298,7 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
     }
 
     /**
-     * Functionality for the clear button pressed
+     * Functionality for the fragment's clear button pressed
      * 1) Clear the multiAutoCompleteTextView
      * 2) Clear the courseSelectionsList and indexesSel variable
      * 3) Clear the parameters in the planFragmentActivityViewModel
@@ -304,10 +306,43 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
     private void clearButtonPressed() {
         multiAutoCompleteTextView.setText("");
         errorTV.setVisibility(View.GONE);
+
         courseSelectionsList.clear();
+        queriedCourseList.clear();
         indexesSel.clear();
-        planFragmentActivityViewModel.setQueriedCourseList(new ArrayList<Course>());
-        planFragmentActivityViewModel.setIndexesSel(new HashMap<String, String>());
+
+        planFragmentActivityViewModel.setEnterModuleQuery("");
+        planFragmentActivityViewModel.setQueriedCourseList(this.queriedCourseList);
+        planFragmentActivityViewModel.setIndexesSel(this.indexesSel);
+    }
+
+    /**
+     * Functionality for the fragment's submit button
+     */
+    private void submitButtonPressed() {
+        if (validationCheck()) {
+            jsonViewModel.queryPlanningTimetableCourses(finalSelList);
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    chooseIndexesButton.performClick();
+                }
+            }, 100);
+        }
+    }
+
+    /**
+     * Bottomsheet plan button click listener
+     *
+     * @param newIndexesSel
+     */
+    @Override
+    public void onPlanButtonClicked(Map<String, String> newIndexesSel) {
+        indexesSel.clear();
+        indexesSel.putAll(newIndexesSel);
+        planFragmentActivityViewModel.setIndexesSel(this.indexesSel);
+        planFragmentActivityViewModel.convertCoursesToEvents();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -315,10 +350,10 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
     /**
      * IMPORTANT! - We pass the list of events that we want to display in the WeekView widget here.
      */
-
     @NotNull
     @Override
-    public List<WeekViewDisplayable<Event>> onMonthChange(@NotNull Calendar calendar, @NotNull Calendar calendar1) {
+    public List<WeekViewDisplayable<Event>> onMonthChange(@NotNull Calendar
+                                                                  calendar, @NotNull Calendar calendar1) {
         /*
           This check is important -- without it, the same event will be duplicated three times as the library will
           preload three months of events!
@@ -370,10 +405,4 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
         }
     }
 
-    @Override
-    public void onPlanButtonClicked(Map<String, String> newIndexesSel) {
-        indexesSel.clear();
-        indexesSel.putAll(newIndexesSel);
-        planFragmentActivityViewModel.setIndexesSel(this.indexesSel);
-    }
 }

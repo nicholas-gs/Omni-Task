@@ -11,8 +11,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +29,7 @@ import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewDisplayable;
 import com.example.ntu_timetable_calendar.BottomSheets.PlanFragmentBottomSheet;
 import com.example.ntu_timetable_calendar.CourseModels.Course;
+import com.example.ntu_timetable_calendar.Dialogs.SaveTimetableDialog;
 import com.example.ntu_timetable_calendar.EventModel.Event;
 import com.example.ntu_timetable_calendar.R;
 import com.example.ntu_timetable_calendar.ViewModels.JsonViewModel;
@@ -43,9 +46,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+
+import es.dmoral.toasty.Toasty;
 
 public class PlanFragment extends Fragment implements View.OnClickListener, EventClickListener<Event>,
-        MonthChangeListener<Event>, DateTimeInterpreter, PlanFragmentBottomSheet.PlanFragmentBottomSheetInterface {
+        MonthChangeListener<Event>, DateTimeInterpreter, PlanFragmentBottomSheet.PlanFragmentBottomSheetInterface,
+        SaveTimetableDialog.DialogInterface {
 
     private JsonViewModel jsonViewModel;
     private PlanFragmentActivityViewModel planFragmentActivityViewModel;
@@ -68,6 +75,7 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
 
     // Views
     private MaterialButton submitButton, clearButton, chooseIndexesButton;
+    private ImageView saveIcon;
     private TextView errorTV;
     private WeekView<Event> mWeekView;
     private MultiAutoCompleteTextView multiAutoCompleteTextView;
@@ -94,6 +102,8 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
         submitButton.setOnClickListener(this);
         clearButton = view.findViewById(R.id.plan_fragment_clear_button);
         clearButton.setOnClickListener(this);
+        saveIcon = view.findViewById(R.id.plan_fragment_save_icon);
+        saveIcon.setOnClickListener(this);
         chooseIndexesButton = view.findViewById(R.id.plan_fragment_choose_indexes);
         chooseIndexesButton.setOnClickListener(this);
         mWeekView = view.findViewById(R.id.plan_fragment_weekView);
@@ -298,6 +308,14 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
                 planFragmentBottomSheet.setPlanFragmentBottomSheetInterface(this);
                 planFragmentBottomSheet.show(getChildFragmentManager(), "plan_fragment_bottom_sheet");
                 break;
+            case R.id.plan_fragment_save_icon:
+                if (saveIcon.isSelected()) {
+                    saveIcon.setSelected(false);
+                } else {
+                    saveIcon.setSelected(true);
+                    openSaveTimetableDialog();
+                }
+                break;
         }
     }
 
@@ -336,6 +354,15 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
                 }
             }, 100);
         }
+    }
+
+    /**
+     * Show a dialog that allows the user to enter name of the new timetable for the user to save in Room
+     */
+    private void openSaveTimetableDialog() {
+        SaveTimetableDialog saveTimetableDialog = new SaveTimetableDialog();
+        saveTimetableDialog.setDialogInterface(this);
+        saveTimetableDialog.show(getChildFragmentManager(), "save_timetable_dialog");
     }
 
     /**
@@ -411,4 +438,36 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
         }
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Interface callback for save timetable dialog save button pressed
+     *
+     * @param timetableName String of the name of timetable that the user entered
+     */
+    @Override
+    public void saveButtonPressed(final String timetableName) {
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Toasty.success(Objects.requireNonNull(getContext()), timetableName + " saved!", Toast.LENGTH_SHORT, true).show();
+            }
+        }, 200);
+
+        if (saveIcon.isSelected()) {
+            saveIcon.setSelected(false);
+        }
+    }
+
+    /**
+     * Interface callback for save timetable dialog cancel button pressed
+     */
+    @Override
+    public void cancelButtonPressed() {
+        if (saveIcon.isSelected()) {
+            saveIcon.setSelected(false);
+        }
+    }
 }

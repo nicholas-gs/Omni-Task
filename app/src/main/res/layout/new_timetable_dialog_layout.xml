@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimary"
+    android:paddingStart="16dp"
+    android:paddingTop="16dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="8dp">
+
+    <TextView
+        android:id="@+id/tv1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="@string/new_timetable"
+        android:textColor="@color/colorWhite"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/plan_fragment_savetimetable_dialog_edittext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="@color/colorAccent"
+        android:hint="@string/untitled_timetable"
+        android:inputType="text"
+        android:maxLines="1"
+        android:textColor="@color/colorWhite"
+        android:textColorHint="@color/colorContentText" />
+
+    <com.google.android.material.button.MaterialButton
+
+        android:id="@+id/plan_fragment_savetimetable_dialog_save_btn"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/plan_fragment_savetimetable_dialog_edittext"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="24dp"
+        android:minWidth="36dp"
+        android:text="@string/save"
+        android:textAllCaps="false"
+        android:textColor="@color/colorWhite" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/plan_fragment_savetimetable_dialog_cancel_btn"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/plan_fragment_savetimetable_dialog_edittext"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="16dp"
+        android:layout_toStartOf="@id/plan_fragment_savetimetable_dialog_save_btn"
+        android:minWidth="36dp"
+        android:text="@string/cancel"
+        android:textAllCaps="false"
+        android:textColor="@color/colorWhite" />
+
+</RelativeLayout>

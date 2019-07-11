@@ -7,6 +7,7 @@
 
     <color name="colorWhite">#FAFAFA</color>
     <color name="colorContentText">#d3d3d3</color>
+    <color name="colorDarkGray">#7A7A7A</color>
 
     <!-- Timetable widget events colors -->
     <color name="event_color_01">#59dbe0</color>

@@ -93,6 +93,19 @@
             android:text="@string/choose_indexes"
             android:textColor="@color/event_color_03" />
 
+        <ImageView
+            android:contentDescription="@string/save_timetable"
+            android:id="@+id/plan_fragment_save_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/plan_fragment_error_textview"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="12dp"
+            android:layout_marginTop="12dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/star_selector" />
+
     </RelativeLayout>
 
     <com.alamkanak.weekview.WeekView

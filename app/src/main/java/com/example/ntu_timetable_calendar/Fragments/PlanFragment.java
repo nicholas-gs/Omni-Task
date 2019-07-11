@@ -145,7 +145,7 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
             public void onChanged(List<Event> eventList) {
 
                 // Make sure the WeekView widget go to 0700 and start from Monday
-                mWeekView.goToHour(7);
+                mWeekView.goToHour(8);
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
                 mWeekView.goToDate(calendar);
@@ -306,6 +306,7 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
      * 1) Clear the multiAutoCompleteTextView
      * 2) Clear the courseSelectionsList and indexesSel variable
      * 3) Clear the parameters in the planFragmentActivityViewModel
+     * 4) Clear the list of events to clear the WeekView widget
      */
     private void clearButtonPressed() {
         multiAutoCompleteTextView.setText("");
@@ -318,6 +319,7 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
         planFragmentActivityViewModel.setEnterModuleQuery("");
         planFragmentActivityViewModel.setQueriedCourseList(this.queriedCourseList);
         planFragmentActivityViewModel.setIndexesSel(this.indexesSel);
+        planFragmentActivityViewModel.convertCoursesToEvents();
     }
 
     /**

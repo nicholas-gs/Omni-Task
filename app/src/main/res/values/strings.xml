@@ -13,8 +13,9 @@
     <string name="close_bottom_sheet">Close bottom sheet</string>
     <string name="submit">Submit</string>
     <string name="untitled_timetable">Untitled Timetable</string>
-    <string name="new_timetable">New timetable</string>
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>
     <string name="save_timetable">Save timetable</string>
+    <string name="close">Close</string>
+    <string name="detail">Detail</string>
 </resources>

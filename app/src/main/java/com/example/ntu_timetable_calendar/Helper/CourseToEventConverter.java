@@ -44,7 +44,7 @@ public abstract class CourseToEventConverter {
      * Converts a list of courses, with their chosen index, into a list of events for display in a WeekView widget.
      *
      * @param courseList List of courses chosen by user
-     * @param indexList HashMap key - Course code, HashMap value - Chosen index
+     * @param indexList  HashMap key - Course code, HashMap value - Chosen index
      * @return List of events for display in WeekView widget
      */
     public static List<Event> covertCourseToEvent(List<Course> courseList, Map<String, String> indexList) {
@@ -94,12 +94,12 @@ public abstract class CourseToEventConverter {
     /**
      * Convert an individual Detail POJO into a Event POJO
      *
-     * @param detail Detail POJO to convert into a Event POJO
-     * @param calendar Calendar object
+     * @param detail     Detail POJO to convert into a Event POJO
+     * @param calendar   Calendar object
      * @param courseCode Course code for detail
-     * @param index Index that detail POJO belongs to
-     * @param colors List of colors for a event
-     * @param i Counter for choosing a color for the event object
+     * @param index      Index that detail POJO belongs to
+     * @param colors     List of colors for a event
+     * @param i          Counter for choosing a color for the event object
      * @return Return the new event created
      */
     private static Event convertDetailToEvent(Detail detail, Calendar calendar, String courseCode, Index index,
@@ -133,7 +133,7 @@ public abstract class CourseToEventConverter {
         startTime.set(Calendar.YEAR, calendar.get(Calendar.YEAR));
         endTime.set(Calendar.YEAR, calendar.get(Calendar.YEAR));
 
-        String title = courseCode + " " + detail.getRemarks();
+        String title = courseCode + " " + detail.getType() + " " + detail.getRemarks();
 
         return new Event(Long.parseLong(index.getIndexNumber()), title, startTime, endTime, detail.getLocation(),
                 colors[i % 4], false, false);

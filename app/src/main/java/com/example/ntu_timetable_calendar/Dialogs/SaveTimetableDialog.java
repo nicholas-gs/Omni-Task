@@ -1,5 +1,6 @@
 package com.example.ntu_timetable_calendar.Dialogs;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
@@ -9,7 +10,6 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.ntu_timetable_calendar.R;
@@ -45,6 +45,7 @@ public class SaveTimetableDialog extends DialogFragment implements View.OnClickL
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = LayoutInflater.from(getActivity());
 
+        @SuppressLint("InflateParams")
         View view = inflater.inflate(R.layout.new_timetable_dialog_layout, null);
 
         builder.setView(view);
@@ -72,7 +73,7 @@ public class SaveTimetableDialog extends DialogFragment implements View.OnClickL
 
     private void saveButtonPressed() {
         String name = mEdittext.getText().toString().trim();
-        if(name.length() == 0){
+        if (name.length() == 0) {
             name = getString(R.string.untitled_timetable);
         }
         if (dialogInterface != null) {

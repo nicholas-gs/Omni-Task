@@ -30,6 +30,7 @@ import com.alamkanak.weekview.WeekViewDisplayable;
 import com.example.ntu_timetable_calendar.BottomSheets.PlanFragmentBottomSheet;
 import com.example.ntu_timetable_calendar.CourseModels.Course;
 import com.example.ntu_timetable_calendar.Dialogs.SaveTimetableDialog;
+import com.example.ntu_timetable_calendar.Dialogs.TimetableEventDetailDialog;
 import com.example.ntu_timetable_calendar.EventModel.Event;
 import com.example.ntu_timetable_calendar.R;
 import com.example.ntu_timetable_calendar.ViewModels.JsonViewModel;
@@ -70,8 +71,6 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
 
     // We store the events we want to display in the weekview widget here
     private List<WeekViewDisplayable<Event>> eventList = new ArrayList<>();
-
-    private static final String TAG = "PlanFragmentTAG";
 
     // Views
     private MaterialButton submitButton, clearButton, chooseIndexesButton;
@@ -284,8 +283,6 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
      * Called in the planFragmentActivityViewModel.getTimetableEvents() observable
      */
     private void displayTimetable(List<Event> eventList) {
-        Log.d(TAG, "displayTimetable: Called");
-        Log.d(TAG, "displayTimetable: Size of eventList - " + eventList.size());
         this.eventList.clear();
         //mWeekView.notifyDataSetChanged();
         this.eventList.addAll(eventList);
@@ -407,7 +404,8 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
      */
     @Override
     public void onEventClick(Event event, @NotNull RectF rectF) {
-
+        TimetableEventDetailDialog dialog = new TimetableEventDetailDialog(event);
+        dialog.show(getChildFragmentManager(), "timetable_event_detail_dialog");
     }
 
     /**

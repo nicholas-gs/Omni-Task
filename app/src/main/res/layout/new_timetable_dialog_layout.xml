@@ -50,13 +50,25 @@
         android:textColorHint="@color/colorContentText"
         tools:ignore="Autofill" />
 
+    <CheckBox
+        android:layout_alignParentStart="true"
+        android:textSize="16sp"
+        android:id="@+id/plan_fragment_savetimetable_checkbox"
+        android:layout_marginTop="4dp"
+        android:layout_below="@id/plan_fragment_savetimetable_dialog_description_edittext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:buttonTint="@color/colorAccent"
+        android:text="@string/main_timetable"
+        android:textColor="@color/colorWhite" />
+
     <com.google.android.material.button.MaterialButton
 
         android:id="@+id/plan_fragment_savetimetable_dialog_save_btn"
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/plan_fragment_savetimetable_dialog_description_edittext"
+        android:layout_below="@id/plan_fragment_savetimetable_checkbox"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="24dp"
         android:minWidth="36dp"
@@ -69,7 +81,7 @@
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/plan_fragment_savetimetable_dialog_description_edittext"
+        android:layout_below="@id/plan_fragment_savetimetable_checkbox"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
         android:layout_toStartOf="@id/plan_fragment_savetimetable_dialog_save_btn"

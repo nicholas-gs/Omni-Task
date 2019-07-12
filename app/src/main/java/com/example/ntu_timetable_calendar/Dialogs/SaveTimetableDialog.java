@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
@@ -22,6 +23,7 @@ public class SaveTimetableDialog extends DialogFragment implements View.OnClickL
 
     private EditText nameEditText, descriptionEditText;
     private MaterialButton saveBtn, cancelBtn;
+    private CheckBox mCheckBox;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -29,7 +31,7 @@ public class SaveTimetableDialog extends DialogFragment implements View.OnClickL
      * Interface callback method for dialog button pressed
      */
     public interface DialogCallbackInterface {
-        void saveButtonPressed(String timetableName, String timetableDescription);
+        void saveButtonPressed(String timetableName, String timetableDescription, boolean isMainTimeTable);
 
         void cancelButtonPressed();
     }
@@ -67,6 +69,7 @@ public class SaveTimetableDialog extends DialogFragment implements View.OnClickL
         saveBtn.setOnClickListener(this);
         cancelBtn = view.findViewById(R.id.plan_fragment_savetimetable_dialog_cancel_btn);
         cancelBtn.setOnClickListener(this);
+        mCheckBox = view.findViewById(R.id.plan_fragment_savetimetable_checkbox);
     }
 
     @Override
@@ -84,6 +87,7 @@ public class SaveTimetableDialog extends DialogFragment implements View.OnClickL
     private void saveButtonPressed() {
         String name = Objects.requireNonNull(nameEditText.getText()).toString().trim();
         String description = descriptionEditText.getText().toString().trim();
+        boolean isMainTimeTable;
 
         if (name.length() == 0) {
             name = getString(R.string.untitled_timetable);
@@ -93,8 +97,10 @@ public class SaveTimetableDialog extends DialogFragment implements View.OnClickL
             description = getString(R.string.no_description);
         }
 
+        isMainTimeTable = mCheckBox.isChecked();
+
         if (dialogCallbackInterface != null) {
-            dialogCallbackInterface.saveButtonPressed(name, description);
+            dialogCallbackInterface.saveButtonPressed(name, description, isMainTimeTable);
         }
         dismiss();
     }

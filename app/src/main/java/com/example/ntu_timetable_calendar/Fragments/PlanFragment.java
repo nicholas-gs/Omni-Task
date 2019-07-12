@@ -14,7 +14,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,7 +27,7 @@ import com.alamkanak.weekview.MonthChangeListener;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewDisplayable;
 import com.example.ntu_timetable_calendar.BottomSheets.PlanFragmentBottomSheet;
-import com.example.ntu_timetable_calendar.CourseModels.Course;
+import com.example.ntu_timetable_calendar.JsonModels.Course;
 import com.example.ntu_timetable_calendar.Dialogs.SaveTimetableDialog;
 import com.example.ntu_timetable_calendar.Dialogs.TimetableEventDetailDialog;
 import com.example.ntu_timetable_calendar.EventModel.Event;
@@ -440,17 +439,18 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
 
     /**
      * Save timetable dialog save button click callback
-     * @param timetableName String of the name of the new timetable saved
+     *
+     * @param timetableName        String of the name of the new timetable saved
      * @param timetableDescription String of the description of the new timetable saved
      */
     @Override
-    public void saveButtonPressed(final String timetableName, final String timetableDescription) {
+    public void saveButtonPressed(final String timetableName, final String timetableDescription, final boolean isMainTimeTable) {
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-
+                Toasty.success(Objects.requireNonNull(getContext()), timetableName + " saved", Toasty.LENGTH_SHORT).show();
             }
         }, 200);
 

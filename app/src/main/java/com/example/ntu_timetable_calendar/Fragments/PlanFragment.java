@@ -53,7 +53,7 @@ import es.dmoral.toasty.Toasty;
 
 public class PlanFragment extends Fragment implements View.OnClickListener, EventClickListener<Event>,
         MonthChangeListener<Event>, DateTimeInterpreter, PlanFragmentBottomSheet.PlanFragmentBottomSheetInterface,
-        SaveTimetableDialog.DialogInterface {
+        SaveTimetableDialog.DialogCallbackInterface {
 
     private JsonViewModel jsonViewModel;
     private PlanFragmentActivityViewModel planFragmentActivityViewModel;

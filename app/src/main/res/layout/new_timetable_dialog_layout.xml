@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:text="@string/new_timetable"
+        android:text="@string/save_timetable"
         android:textColor="@color/colorWhite"
         android:textSize="18sp"
         android:textStyle="bold" />

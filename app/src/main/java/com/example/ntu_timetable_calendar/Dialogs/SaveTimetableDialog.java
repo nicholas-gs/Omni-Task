@@ -3,6 +3,7 @@ package com.example.ntu_timetable_calendar.Dialogs;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,16 +26,16 @@ public class SaveTimetableDialog extends DialogFragment implements View.OnClickL
     /**
      * Interface callback method for dialog button pressed
      */
-    public interface DialogInterface {
+    public interface DialogCallbackInterface {
         void saveButtonPressed(String timetableName);
 
         void cancelButtonPressed();
     }
 
-    private DialogInterface dialogInterface;
+    private DialogCallbackInterface dialogCallbackInterface;
 
-    public void setDialogInterface(DialogInterface dialogInterface) {
-        this.dialogInterface = dialogInterface;
+    public void setDialogInterface(DialogCallbackInterface dialogCallbackInterface) {
+        this.dialogCallbackInterface = dialogCallbackInterface;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,7 +57,11 @@ public class SaveTimetableDialog extends DialogFragment implements View.OnClickL
         cancelBtn = view.findViewById(R.id.plan_fragment_savetimetable_dialog_cancel_btn);
         cancelBtn.setOnClickListener(this);
 
-        return builder.create();
+        AlertDialog alertDialog = builder.create();
+
+        alertDialog.setCanceledOnTouchOutside(false);
+
+        return alertDialog;
     }
 
     @Override
@@ -76,17 +81,26 @@ public class SaveTimetableDialog extends DialogFragment implements View.OnClickL
         if (name.length() == 0) {
             name = getString(R.string.untitled_timetable);
         }
-        if (dialogInterface != null) {
-            dialogInterface.saveButtonPressed(name);
+        if (dialogCallbackInterface != null) {
+            dialogCallbackInterface.saveButtonPressed(name);
         }
         dismiss();
     }
 
     private void cancelButtonPressed() {
-        if (dialogInterface != null) {
-            dialogInterface.cancelButtonPressed();
+        if (dialogCallbackInterface != null) {
+            dialogCallbackInterface.cancelButtonPressed();
         }
         dismiss();
+    }
+
+    @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        super.onDismiss(dialog);
+
+        if (dialogCallbackInterface != null) {
+            dialogCallbackInterface.cancelButtonPressed();
+        }
     }
 
 }

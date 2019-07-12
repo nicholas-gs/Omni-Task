@@ -16,9 +16,11 @@ import androidx.fragment.app.DialogFragment;
 import com.example.ntu_timetable_calendar.R;
 import com.google.android.material.button.MaterialButton;
 
+import java.util.Objects;
+
 public class SaveTimetableDialog extends DialogFragment implements View.OnClickListener {
 
-    private EditText mEdittext;
+    private EditText nameEditText, descriptionEditText;
     private MaterialButton saveBtn, cancelBtn;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -27,7 +29,7 @@ public class SaveTimetableDialog extends DialogFragment implements View.OnClickL
      * Interface callback method for dialog button pressed
      */
     public interface DialogCallbackInterface {
-        void saveButtonPressed(String timetableName);
+        void saveButtonPressed(String timetableName, String timetableDescription);
 
         void cancelButtonPressed();
     }
@@ -50,18 +52,21 @@ public class SaveTimetableDialog extends DialogFragment implements View.OnClickL
         View view = inflater.inflate(R.layout.new_timetable_dialog_layout, null);
 
         builder.setView(view);
+        initViews(view);
 
-        mEdittext = view.findViewById(R.id.plan_fragment_savetimetable_dialog_edittext);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+
+        return alertDialog;
+    }
+
+    private void initViews(View view) {
+        nameEditText = view.findViewById(R.id.plan_fragment_savetimetable_dialog_name_edittext);
+        descriptionEditText = view.findViewById(R.id.plan_fragment_savetimetable_dialog_description_edittext);
         saveBtn = view.findViewById(R.id.plan_fragment_savetimetable_dialog_save_btn);
         saveBtn.setOnClickListener(this);
         cancelBtn = view.findViewById(R.id.plan_fragment_savetimetable_dialog_cancel_btn);
         cancelBtn.setOnClickListener(this);
-
-        AlertDialog alertDialog = builder.create();
-
-        alertDialog.setCanceledOnTouchOutside(false);
-
-        return alertDialog;
     }
 
     @Override
@@ -77,12 +82,19 @@ public class SaveTimetableDialog extends DialogFragment implements View.OnClickL
     }
 
     private void saveButtonPressed() {
-        String name = mEdittext.getText().toString().trim();
+        String name = Objects.requireNonNull(nameEditText.getText()).toString().trim();
+        String description = descriptionEditText.getText().toString().trim();
+
         if (name.length() == 0) {
             name = getString(R.string.untitled_timetable);
         }
+
+        if(description.length() == 0){
+            description = getString(R.string.no_description);
+        }
+
         if (dialogCallbackInterface != null) {
-            dialogCallbackInterface.saveButtonPressed(name);
+            dialogCallbackInterface.saveButtonPressed(name, description);
         }
         dismiss();
     }

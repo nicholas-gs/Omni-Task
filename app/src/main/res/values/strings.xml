@@ -12,10 +12,11 @@
     <string name="choose_index_for_modules">Choose index for modules</string>
     <string name="close_bottom_sheet">Close bottom sheet</string>
     <string name="submit">Submit</string>
-    <string name="untitled_timetable">Untitled Timetable</string>
+    <string name="untitled_timetable">Untitled timetable</string>
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>
     <string name="save_timetable">Save timetable</string>
     <string name="close">Close</string>
     <string name="detail">Detail</string>
+    <string name="no_description">No description</string>
 </resources>

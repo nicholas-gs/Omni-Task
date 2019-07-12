@@ -439,18 +439,18 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Interface callback for save timetable dialog save button pressed
-     *
-     * @param timetableName String of the name of timetable that the user entered
+     * Save timetable dialog save button click callback
+     * @param timetableName String of the name of the new timetable saved
+     * @param timetableDescription String of the description of the new timetable saved
      */
     @Override
-    public void saveButtonPressed(final String timetableName) {
+    public void saveButtonPressed(final String timetableName, final String timetableDescription) {
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Toasty.success(Objects.requireNonNull(getContext()), timetableName + " saved!", Toast.LENGTH_SHORT, true).show();
+
             }
         }, 200);
 

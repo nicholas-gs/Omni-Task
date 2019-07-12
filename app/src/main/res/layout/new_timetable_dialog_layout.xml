@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/colorPrimary"
@@ -20,7 +21,7 @@
         android:textStyle="bold" />
 
     <EditText
-        android:id="@+id/plan_fragment_savetimetable_dialog_edittext"
+        android:id="@+id/plan_fragment_savetimetable_dialog_name_edittext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/tv1"
@@ -31,7 +32,23 @@
         android:inputType="text"
         android:maxLines="1"
         android:textColor="@color/colorWhite"
-        android:textColorHint="@color/colorContentText" />
+        android:textColorHint="@color/colorContentText"
+        tools:ignore="Autofill" />
+
+    <EditText
+        android:id="@+id/plan_fragment_savetimetable_dialog_description_edittext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/plan_fragment_savetimetable_dialog_name_edittext"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="4dp"
+        android:backgroundTint="@color/colorAccent"
+        android:hint="@string/no_description"
+        android:inputType="text"
+        android:maxLines="1"
+        android:textColor="@color/colorWhite"
+        android:textColorHint="@color/colorContentText"
+        tools:ignore="Autofill" />
 
     <com.google.android.material.button.MaterialButton
 
@@ -39,7 +56,7 @@
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/plan_fragment_savetimetable_dialog_edittext"
+        android:layout_below="@id/plan_fragment_savetimetable_dialog_description_edittext"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="24dp"
         android:minWidth="36dp"
@@ -52,7 +69,7 @@
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/plan_fragment_savetimetable_dialog_edittext"
+        android:layout_below="@id/plan_fragment_savetimetable_dialog_description_edittext"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
         android:layout_toStartOf="@id/plan_fragment_savetimetable_dialog_save_btn"

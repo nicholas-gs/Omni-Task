@@ -9,7 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.ntu_timetable_calendar.CourseModels.Detail;
+import com.example.ntu_timetable_calendar.JsonModels.Detail;
 import com.example.ntu_timetable_calendar.R;
 
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public class IndexRVAdapter extends RecyclerView.Adapter<IndexRVAdapter.MyViewHo
 
     /**
      * Use this method to pass data to be presented to the recyclerview
-     * @param details
+     * @param details  List of detail to display in RecyclerView
      */
     public void setData(List<Detail> details){
         this.detailList = details;

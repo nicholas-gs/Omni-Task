@@ -1,7 +1,7 @@
 package com.example.ntu_timetable_calendar.Helper;
 
-import com.example.ntu_timetable_calendar.CourseModels.Course;
-import com.example.ntu_timetable_calendar.CourseModels.Index;
+import com.example.ntu_timetable_calendar.JsonModels.Course;
+import com.example.ntu_timetable_calendar.JsonModels.Index;
 
 public abstract class StringHelper {
 

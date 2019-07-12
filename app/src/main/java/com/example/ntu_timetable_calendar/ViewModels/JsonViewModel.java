@@ -8,9 +8,9 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.ntu_timetable_calendar.CourseModels.Course;
-import com.example.ntu_timetable_calendar.ExamModels.Exam;
-import com.example.ntu_timetable_calendar.Repository.JsonRepository;
+import com.example.ntu_timetable_calendar.JsonModels.Course;
+import com.example.ntu_timetable_calendar.JsonModels.Exam;
+import com.example.ntu_timetable_calendar.JsonRepository.JsonRepository;
 
 import java.util.List;
 

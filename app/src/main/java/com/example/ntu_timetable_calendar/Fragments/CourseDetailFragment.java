@@ -20,9 +20,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ntu_timetable_calendar.RVAdapters.IndexRVAdapter;
-import com.example.ntu_timetable_calendar.CourseModels.Course;
-import com.example.ntu_timetable_calendar.CourseModels.Index;
-import com.example.ntu_timetable_calendar.ExamModels.Exam;
+import com.example.ntu_timetable_calendar.JsonModels.Course;
+import com.example.ntu_timetable_calendar.JsonModels.Index;
+import com.example.ntu_timetable_calendar.JsonModels.Exam;
 import com.example.ntu_timetable_calendar.ExpandableCardView.ExpandableCardView;
 import com.example.ntu_timetable_calendar.Helper.StringHelper;
 import com.example.ntu_timetable_calendar.R;
@@ -138,7 +138,7 @@ public class CourseDetailFragment extends Fragment {
     /**
      * Bind data to the fragment's header (course detail)
      *
-     * @param course
+     * @param course Course to display it's information
      */
     private void bindCourseData(Course course) {
         nameTV.setText(StringHelper.formatNameString(course.getName()));
@@ -151,7 +151,7 @@ public class CourseDetailFragment extends Fragment {
     /**
      * Bind data to the expandable card view
      *
-     * @param exams
+     * @param exams Exam detail to display
      */
     private void bindExamData(List<Exam> exams) {
 
@@ -159,7 +159,7 @@ public class CourseDetailFragment extends Fragment {
 
             expandableCardView.setIsExpandable(true);
             expandableCardView.setTitle(-1, "Final Exam");
-            expandableCardView.setIndicator(-1, ContextCompat.getDrawable(getContext(), R.drawable.arrow_down));
+            expandableCardView.setIndicator(-1, ContextCompat.getDrawable(Objects.requireNonNull(getContext()), R.drawable.arrow_down));
 
             exam = exams.get(0);
             String dateStr = exam.getDay() + ", " + exam.getDate();
@@ -186,7 +186,7 @@ public class CourseDetailFragment extends Fragment {
             listOfIndexes.add(index.getIndexNumber());
         }
 
-        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(getContext(), R.layout.course_detail_fragment_spinner, listOfIndexes);
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(Objects.requireNonNull(getContext()), R.layout.course_detail_fragment_spinner, listOfIndexes);
         spinnerArrayAdapter.setDropDownViewResource(R.layout.course_detail_spinner_dropdown_item);
         spinner.setAdapter(spinnerArrayAdapter);
 

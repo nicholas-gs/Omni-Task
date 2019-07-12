@@ -2,9 +2,9 @@ package com.example.ntu_timetable_calendar.Helper;
 
 import android.graphics.Color;
 
-import com.example.ntu_timetable_calendar.CourseModels.Course;
-import com.example.ntu_timetable_calendar.CourseModels.Detail;
-import com.example.ntu_timetable_calendar.CourseModels.Index;
+import com.example.ntu_timetable_calendar.JsonModels.Course;
+import com.example.ntu_timetable_calendar.JsonModels.Detail;
+import com.example.ntu_timetable_calendar.JsonModels.Index;
 import com.example.ntu_timetable_calendar.EventModel.Event;
 
 import java.util.ArrayList;

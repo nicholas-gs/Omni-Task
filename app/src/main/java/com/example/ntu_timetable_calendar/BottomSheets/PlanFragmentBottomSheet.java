@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.ntu_timetable_calendar.CourseModels.Course;
+import com.example.ntu_timetable_calendar.JsonModels.Course;
 import com.example.ntu_timetable_calendar.Helper.BottomNavColor;
 import com.example.ntu_timetable_calendar.R;
 import com.example.ntu_timetable_calendar.RVAdapters.PlanFragmentBottomSheetRVAdapter;
@@ -74,6 +74,7 @@ public class PlanFragmentBottomSheet extends BottomSheetDialogFragment implement
         initRecyclerView();
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
@@ -116,8 +117,8 @@ public class PlanFragmentBottomSheet extends BottomSheetDialogFragment implement
     /**
      * Callback method for RecyclerView item spinner item selected, defined in PlanFragmentBottomSheetRVAdapter
      *
-     * @param courseCode
-     * @param newIndexSelection
+     * @param courseCode String of course code which index selection is made for
+     * @param newIndexSelection String of index selected
      */
     @Override
     public void spinnerItemSelected(String courseCode, String newIndexSelection) {

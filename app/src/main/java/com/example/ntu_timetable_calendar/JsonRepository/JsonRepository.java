@@ -1,13 +1,13 @@
-package com.example.ntu_timetable_calendar.Repository;
+package com.example.ntu_timetable_calendar.JsonRepository;
 
 import android.app.Application;
 import android.os.AsyncTask;
 
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.ntu_timetable_calendar.CourseModels.Course;
-import com.example.ntu_timetable_calendar.DAO.JsonDAO;
-import com.example.ntu_timetable_calendar.ExamModels.Exam;
+import com.example.ntu_timetable_calendar.JsonModels.Course;
+import com.example.ntu_timetable_calendar.JsonDAO.JsonDAO;
+import com.example.ntu_timetable_calendar.JsonModels.Exam;
 import com.example.ntu_timetable_calendar.JsonDatabase.JsonDatabase;
 
 import java.util.List;
@@ -49,7 +49,7 @@ public class JsonRepository {
     /**
      * Send a query (String) for course objects and asynchronously sends the query to the DAO
      *
-     * @param queryStr
+     * @param queryStr String of course to query
      */
     public void queryCourseData(String queryStr) {
         new QueryCourseDataAsyncTask(jsonDAO, queryStr).execute();
@@ -76,7 +76,7 @@ public class JsonRepository {
     /**
      * Send a query (String) for exam objects and asynchronously sends the query to the DAO
      *
-     * @param queryStr
+     * @param queryStr String of course to query
      */
     public void queryExamData(String queryStr) {
         new QueryExamDataAsyncTask(jsonDAO, queryStr).execute();

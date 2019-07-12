@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.ntu_timetable_calendar.CourseModels.Course;
+import com.example.ntu_timetable_calendar.JsonModels.Course;
 import com.example.ntu_timetable_calendar.Helper.StringHelper;
 import com.example.ntu_timetable_calendar.R;
 
@@ -54,7 +54,7 @@ public class SearchRVAdapter extends ListAdapter<Course, RecyclerView.ViewHolder
 
         @Override
         public boolean areContentsTheSame(@NonNull Course oldItem, @NonNull Course newItem) {
-            /**
+            /*
              * We programmatically increment the flag variable inside the first Course POJO in the SearchFragment class
              * in order to ensure that the new item at index 0 is always different, hence the number of results textview
              * is always updated.

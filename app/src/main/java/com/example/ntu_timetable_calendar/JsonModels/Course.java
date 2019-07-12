@@ -1,4 +1,4 @@
-package com.example.ntu_timetable_calendar.CourseModels;
+package com.example.ntu_timetable_calendar.JsonModels;
 
 import com.google.gson.annotations.SerializedName;
 

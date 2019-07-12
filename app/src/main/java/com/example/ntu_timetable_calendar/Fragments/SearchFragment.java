@@ -22,7 +22,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.ntu_timetable_calendar.CourseModels.Course;
+import com.example.ntu_timetable_calendar.JsonModels.Course;
 import com.example.ntu_timetable_calendar.Helper.KeyboardHelper;
 import com.example.ntu_timetable_calendar.Helper.ListHelper;
 import com.example.ntu_timetable_calendar.ItemDecorators.SearchRVItemDecorator;
@@ -199,8 +199,8 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
     /**
      * RecyclerView Item Clicked callback method
      *
-     * @param position
-     * @param course
+     * @param position Position of RecyclerView item clicked
+     * @param course Course object that was clicked
      */
     @Override
     public void onClick(int position, Course course) {

@@ -1,4 +1,4 @@
-package com.example.ntu_timetable_calendar.ExamModels;
+package com.example.ntu_timetable_calendar.JsonModels;
 
 public class Exam {
     private String date;

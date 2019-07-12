@@ -1,11 +1,11 @@
-package com.example.ntu_timetable_calendar.DAO;
+package com.example.ntu_timetable_calendar.JsonDAO;
 
 import android.os.AsyncTask;
 
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.ntu_timetable_calendar.CourseModels.Course;
-import com.example.ntu_timetable_calendar.ExamModels.Exam;
+import com.example.ntu_timetable_calendar.JsonModels.Course;
+import com.example.ntu_timetable_calendar.JsonModels.Exam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +55,7 @@ public class JsonDAO {
      * <p>
      * NOTE : When the queryStr is empty, i.e is "", it returns the entire list
      *
-     * @param queryStr
+     * @param queryStr String of course to query
      */
     public void queryCourseData(String queryStr) {
         new QueryCourseDataAsyncTask(allCourses, filteredCourseList, queryStr).execute();
@@ -102,7 +102,7 @@ public class JsonDAO {
      * <p>
      * NOTE : When the queryStr is empty, i.e is "", it returns the entire list
      *
-     * @param queryStr
+     * @param queryStr String of exam code to query
      */
     public void queryExamData(String queryStr) {
         new QueryExamDataAsyncTask(allExams, filteredExamList, queryStr).execute();
@@ -156,7 +156,7 @@ public class JsonDAO {
         List<Course> listOfAllCourses;
         MutableLiveData<List<String>> listOfAllCourseCode;
 
-        public QueryAllCourseCodeAsyncTask(List<Course> listOfAllCourses, MutableLiveData<List<String>> listOfAllCourseCode) {
+        QueryAllCourseCodeAsyncTask(List<Course> listOfAllCourses, MutableLiveData<List<String>> listOfAllCourseCode) {
             this.listOfAllCourses = listOfAllCourses;
             this.listOfAllCourseCode = listOfAllCourseCode;
         }
@@ -187,7 +187,7 @@ public class JsonDAO {
      * <p>
      * Used by the plan fragment when user enters a list of course code (String).
      *
-     * @param listOfCourseCodes
+     * @param listOfCourseCodes List of course code string to query
      */
     public void queryPlanningTimetableCourseList(List<String> listOfCourseCodes) {
         new QueryPlanningTimetableCourseListAsyncTask(allCourses, listOfCourseCodes, timetablePlanningCourseList)

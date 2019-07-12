@@ -12,8 +12,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.ntu_timetable_calendar.CourseModels.Course;
-import com.example.ntu_timetable_calendar.CourseModels.Index;
+import com.example.ntu_timetable_calendar.JsonModels.Course;
+import com.example.ntu_timetable_calendar.JsonModels.Index;
 import com.example.ntu_timetable_calendar.Helper.StringHelper;
 import com.example.ntu_timetable_calendar.R;
 
@@ -109,8 +109,8 @@ public class PlanFragmentBottomSheetRVAdapter extends RecyclerView.Adapter<PlanF
     /**
      * Bind the data for each course item's spinner with the course's indexes
      *
-     * @param course
-     * @param spinner
+     * @param course Course to display it's indexes
+     * @param spinner Spinner to display a course's indexes
      */
     private void bindSpinnerData(Course course, Spinner spinner) {
 

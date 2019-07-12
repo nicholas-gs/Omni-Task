@@ -7,7 +7,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.ntu_timetable_calendar.CourseModels.Course;
+import com.example.ntu_timetable_calendar.JsonModels.Course;
 
 /**
  * This viewmodel is scoped to the activity's lifecycle and acts as a means of

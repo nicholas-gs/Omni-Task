@@ -2,9 +2,9 @@ package com.example.ntu_timetable_calendar.JsonDatabase;
 
 import android.content.Context;
 
-import com.example.ntu_timetable_calendar.CourseModels.Course;
-import com.example.ntu_timetable_calendar.DAO.JsonDAO;
-import com.example.ntu_timetable_calendar.ExamModels.Exam;
+import com.example.ntu_timetable_calendar.JsonModels.Course;
+import com.example.ntu_timetable_calendar.JsonDAO.JsonDAO;
+import com.example.ntu_timetable_calendar.JsonModels.Exam;
 import com.example.ntu_timetable_calendar.Helper.JsonParserHelper;
 import com.example.ntu_timetable_calendar.R;
 import com.google.gson.Gson;
@@ -54,8 +54,7 @@ public class JsonDatabase {
      * Singleton pattern in converting the json of all courses into a map to improve performance,
      * since the json file is quite large, we only want to deserialize once!
      *
-     * @param context
-     * @return
+     * @param context Application context
      */
     private static synchronized void getAllCourses(Context context) {
         if (allCourses == null) {
@@ -86,8 +85,7 @@ public class JsonDatabase {
     /**
      * Singleton pattern in converting the json of all exams into a map to improve performance.
      *
-     * @param context
-     * @return
+     * @param context Application context
      */
     private static synchronized void getAllExams(Context context) {
         if (allExams == null) {

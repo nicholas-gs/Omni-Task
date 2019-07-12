@@ -8,7 +8,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.ntu_timetable_calendar.CourseModels.Course;
+import com.example.ntu_timetable_calendar.JsonModels.Course;
 import com.example.ntu_timetable_calendar.EventModel.Event;
 import com.example.ntu_timetable_calendar.Helper.CourseToEventConverter;
 

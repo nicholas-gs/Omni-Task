@@ -1,4 +1,4 @@
-package com.example.ntu_timetable_calendar.GSON;
+package com.example.ntu_timetable_calendar.Helper;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

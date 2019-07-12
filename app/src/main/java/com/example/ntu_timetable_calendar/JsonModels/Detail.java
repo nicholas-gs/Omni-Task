@@ -1,4 +1,4 @@
-package com.example.ntu_timetable_calendar.CourseModels;
+package com.example.ntu_timetable_calendar.JsonModels;
 
 public class Detail {
 

@@ -1,9 +1,9 @@
 package com.example.ntu_timetable_calendar.Helper;
 
-import com.example.ntu_timetable_calendar.CourseModels.Course;
-import com.example.ntu_timetable_calendar.CourseModels.Detail;
-import com.example.ntu_timetable_calendar.CourseModels.Index;
-import com.example.ntu_timetable_calendar.CourseModels.Time;
+import com.example.ntu_timetable_calendar.JsonModels.Course;
+import com.example.ntu_timetable_calendar.JsonModels.Detail;
+import com.example.ntu_timetable_calendar.JsonModels.Index;
+import com.example.ntu_timetable_calendar.JsonModels.Time;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +18,8 @@ public class ListHelper {
      * a new list is inserted. Without it, diffutil will see that the course object at index 0 is always the same,
      * hence the results textview will not be updated with the actual number of results.
      *
-     * @param position
-     * @param courseList
+     * @param position Position to insert a dummy Course object in the courseList
+     * @param courseList List of courses to insert a dummy object
      */
     public void insertDummyCourse(int position, List<Course> courseList) {
         List<Index> indexList = new ArrayList<>();

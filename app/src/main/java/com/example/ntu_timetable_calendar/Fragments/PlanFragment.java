@@ -27,13 +27,15 @@ import com.alamkanak.weekview.MonthChangeListener;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewDisplayable;
 import com.example.ntu_timetable_calendar.BottomSheets.PlanFragmentBottomSheet;
-import com.example.ntu_timetable_calendar.JsonModels.Course;
 import com.example.ntu_timetable_calendar.Dialogs.SaveTimetableDialog;
 import com.example.ntu_timetable_calendar.Dialogs.TimetableEventDetailDialog;
+import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
 import com.example.ntu_timetable_calendar.EventModel.Event;
+import com.example.ntu_timetable_calendar.JsonModels.Course;
 import com.example.ntu_timetable_calendar.R;
 import com.example.ntu_timetable_calendar.ViewModels.JsonViewModel;
 import com.example.ntu_timetable_calendar.ViewModels.PlanFragmentActivityViewModel;
+import com.example.ntu_timetable_calendar.ViewModels.SQLViewModel;
 import com.google.android.material.button.MaterialButton;
 
 import org.jetbrains.annotations.NotNull;
@@ -52,15 +54,18 @@ import es.dmoral.toasty.Toasty;
 
 public class PlanFragment extends Fragment implements View.OnClickListener, EventClickListener<Event>,
         MonthChangeListener<Event>, DateTimeInterpreter, PlanFragmentBottomSheet.PlanFragmentBottomSheetInterface,
-        SaveTimetableDialog.DialogCallbackInterface {
+        SaveTimetableDialog.DialogCallbackInterface, SQLViewModel.InsertTimetableCompletedListener {
 
     private JsonViewModel jsonViewModel;
     private PlanFragmentActivityViewModel planFragmentActivityViewModel;
+    private SQLViewModel sqlViewModel;
 
     // Variables
     private List<String> courseSelectionsList = new ArrayList<>();
     private List<String> finalSelList = new ArrayList<>();
     private List<String> allCourseCodesList = new ArrayList<>();
+
+    private TimetableEntity timetableEntity;
 
     // Temporary store the list of courses sent by the JsonViewModel after sending the query
     private List<Course> queriedCourseList = new ArrayList<>();
@@ -88,7 +93,9 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initViews(view);
-        initViewModel();
+        initJsonViewModel();
+        initActivityViewModel();
+        initSQLViewModel();
         initWeekViewWidget();
 
         queriedCourseList.addAll(planFragmentActivityViewModel.getQueriedCourseList());
@@ -109,10 +116,8 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
         multiAutoCompleteTextView = view.findViewById(R.id.plan_fragment_autocompletetextview);
     }
 
-    private void initViewModel() {
+    private void initJsonViewModel() {
         jsonViewModel = ViewModelProviders.of(this).get(JsonViewModel.class);
-        planFragmentActivityViewModel = ViewModelProviders.of(requireActivity())
-                .get(PlanFragmentActivityViewModel.class);
 
         /*
           Setup viewmodel -- when it is complete and the list of all course codes is retrieved, call
@@ -144,7 +149,12 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
             }
         });
 
-        /*
+    }
+
+    private void initActivityViewModel() {
+        planFragmentActivityViewModel = ViewModelProviders.of(requireActivity())
+                .get(PlanFragmentActivityViewModel.class);
+          /*
             When triggered, it means that is a new timetable to display. It is triggered BottomSheet submit button
             click callback below
          */
@@ -161,7 +171,11 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
                 displayTimetable(eventList);
             }
         });
+    }
 
+    private void initSQLViewModel() {
+        sqlViewModel = ViewModelProviders.of(requireActivity()).get(SQLViewModel.class);
+        sqlViewModel.setmListener(this);
     }
 
     /**
@@ -446,6 +460,9 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
     @Override
     public void saveButtonPressed(final String timetableName, final String timetableDescription, final boolean isMainTimeTable) {
 
+        this.timetableEntity = new TimetableEntity(timetableName, timetableDescription, isMainTimeTable);
+        sqlViewModel.insertTimetable(this.timetableEntity);
+
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -466,6 +483,19 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
     public void cancelButtonPressed() {
         if (saveIcon.isSelected()) {
             saveIcon.setSelected(false);
+        }
+    }
+
+    /**
+     * Callback method from SQLViewModel that returns the id of the newly inserted timetable
+     *
+     * @param timetableId id of the newly inserted timetable
+     */
+    @Override
+    public void onInsertCallback(Long timetableId) {
+        // If the newly inserted timetable is the main timetable, set is as such and set the previous main timetable to false
+        if (timetableEntity.getIsMainTimetable()) {
+            sqlViewModel.setIsMainTimetable(timetableId.intValue());
         }
     }
 }

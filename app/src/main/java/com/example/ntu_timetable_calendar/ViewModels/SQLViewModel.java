@@ -4,9 +4,12 @@ import android.app.Application;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 
 import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
 import com.example.ntu_timetable_calendar.SQLRepository.SQLRepository;
+
+import java.util.List;
 
 public class SQLViewModel extends AndroidViewModel implements SQLRepository.InsertTimetableCompletedListener {
 
@@ -63,19 +66,19 @@ public class SQLViewModel extends AndroidViewModel implements SQLRepository.Inse
         sqlRepository.deleteAllTimetables();
     }
 
-    public void getAllTimetables() {
-        sqlRepository.getAllTimetables();
+    public LiveData<List<TimetableEntity>> getAllTimetables() {
+        return sqlRepository.getAllTimetables();
     }
 
-    public void getMainTimetable() {
-        sqlRepository.getMainTimetable();
+    public LiveData<TimetableEntity> getMainTimetable() {
+        return sqlRepository.getMainTimetable();
     }
 
     public void setIsMainTimetable(int timetableId) {
         sqlRepository.setIsMainTimetable(timetableId);
     }
 
-    public void setAllTimetablesToNotMain(){
+    public void setAllTimetablesToNotMain() {
         sqlRepository.setAllTimetablesToNotMain();
     }
 

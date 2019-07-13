@@ -113,11 +113,11 @@ public class SQLRepository {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public void deleteAllTimetables(){
+    public void deleteAllTimetables() {
         new DeleteAllTimetablesAsyncTask(this.timetableDAO).execute();
     }
 
-    private static class DeleteAllTimetablesAsyncTask extends AsyncTask<Void, Void, Void>{
+    private static class DeleteAllTimetablesAsyncTask extends AsyncTask<Void, Void, Void> {
 
         private TimetableDAO timetableDAO;
 
@@ -140,17 +140,17 @@ public class SQLRepository {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public LiveData<TimetableEntity> getMainTimetable(){
+    public LiveData<TimetableEntity> getMainTimetable() {
         return timetableDAO.getMainTimetable();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public void setIsMainTimetable(int timetableId){
+    public void setIsMainTimetable(int timetableId) {
         new SetIsMainTimetableAsyncTask(this.timetableDAO).execute(timetableId);
     }
 
-    private static class SetIsMainTimetableAsyncTask extends AsyncTask<Integer, Void, Void>{
+    private static class SetIsMainTimetableAsyncTask extends AsyncTask<Integer, Void, Void> {
 
         private TimetableDAO timetableDAO;
 
@@ -160,7 +160,7 @@ public class SQLRepository {
 
         @Override
         protected Void doInBackground(Integer... integers) {
-            if(integers[0] != null){
+            if (integers[0] != null) {
                 timetableDAO.setIsMainTimetable(integers[0]);
             }
             return null;
@@ -169,11 +169,11 @@ public class SQLRepository {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public void setAllTimetablesToNotMain(){
+    public void setAllTimetablesToNotMain() {
         new SetAllTimetablesToNotMainAsyncTask(this.timetableDAO).execute();
     }
 
-    private static class SetAllTimetablesToNotMainAsyncTask extends AsyncTask<Void, Void, Void>{
+    private static class SetAllTimetablesToNotMainAsyncTask extends AsyncTask<Void, Void, Void> {
 
         private TimetableDAO timetableDAO;
 
@@ -187,7 +187,6 @@ public class SQLRepository {
             return null;
         }
     }
-
 
 
 }

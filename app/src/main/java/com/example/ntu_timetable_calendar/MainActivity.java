@@ -13,6 +13,7 @@ import com.example.ntu_timetable_calendar.Fragments.PlanFragment;
 import com.example.ntu_timetable_calendar.Fragments.SearchFragment;
 import com.example.ntu_timetable_calendar.JsonDatabase.JsonDatabase;
 import com.example.ntu_timetable_calendar.ViewModels.PlanFragmentActivityViewModel;
+import com.example.ntu_timetable_calendar.ViewModels.SQLViewModel;
 import com.example.ntu_timetable_calendar.ViewModels.SearchFragmentActivityViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -36,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
         initialiseViews();
         setUpBottomNav();
-        setupViewModel();
+        initActivityViewModels();
     }
 
     private void initialiseViews() {
@@ -76,10 +77,14 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void setupViewModel(){
+    /**
+     * Initialize ViewModel whose lifecycle is tied to the application
+     */
+    private void initActivityViewModels(){
         SearchFragmentActivityViewModel searchFragmentActivityViewModel = ViewModelProviders.of(this).get(SearchFragmentActivityViewModel.class);
         searchFragmentActivityViewModel.setSearchQuery(null);
         PlanFragmentActivityViewModel planFragmentActivityViewModel = ViewModelProviders.of(this).get(PlanFragmentActivityViewModel.class);
+        SQLViewModel sqlViewModel = ViewModelProviders.of(this).get(SQLViewModel.class);
     }
 
 }

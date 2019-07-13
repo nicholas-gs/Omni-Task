@@ -33,7 +33,7 @@ public class TimetableEntity {
         return id;
     }
 
-    public boolean isMainTimetable() {
+    public boolean getIsMainTimetable() {
         return isMainTimetable;
     }
 

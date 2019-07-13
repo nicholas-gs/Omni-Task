@@ -5,12 +5,14 @@ import androidx.room.Embedded;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
+import androidx.room.RoomWarnings;
 
 import static androidx.room.ForeignKey.CASCADE;
 
 /**
  * Each CourseEntity represents a one hour block of the timetable that the user has saved
  */
+@SuppressWarnings(RoomWarnings.PRIMARY_KEY_FROM_EMBEDDED_IS_DROPPED)
 @Entity(tableName = "course_table", foreignKeys = @ForeignKey(entity = TimetableEntity.class, parentColumns = "id",
         childColumns = "timeTableId", onDelete = CASCADE))
 public class CourseEntity {

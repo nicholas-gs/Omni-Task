@@ -6,10 +6,13 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.example.ntu_timetable_calendar.Entity.CourseEntity;
 import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
+import com.example.ntu_timetable_calendar.JsonModels.Course;
 import com.example.ntu_timetable_calendar.SQLRepository.SQLRepository;
 
 import java.util.List;
+import java.util.Map;
 
 public class SQLViewModel extends AndroidViewModel implements SQLRepository.InsertTimetableCompletedListener {
 
@@ -80,6 +83,28 @@ public class SQLViewModel extends AndroidViewModel implements SQLRepository.Inse
 
     public void setAllTimetablesToNotMain() {
         sqlRepository.setAllTimetablesToNotMain();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public LiveData<List<CourseEntity>> getAllCourses() {
+        return sqlRepository.getAllCourses();
+    }
+
+    public LiveData<List<CourseEntity>> getTimetableCourses(int timetableId) {
+        return sqlRepository.getTimetableCourses(timetableId);
+    }
+
+    public void insertCourses(int timetableId, List<Course> courseList, Map<String, String> indexSel) {
+        sqlRepository.insertCourses(timetableId, courseList, indexSel);
+    }
+
+    public void updateCourse(CourseEntity courseEntity) {
+        sqlRepository.updateCourse(courseEntity);
+    }
+
+    public void deleteCourse(CourseEntity courseEntity) {
+        sqlRepository.deleteCourse(courseEntity);
     }
 
 }

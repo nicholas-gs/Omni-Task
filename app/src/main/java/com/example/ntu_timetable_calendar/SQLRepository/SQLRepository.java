@@ -7,10 +7,14 @@ import androidx.lifecycle.LiveData;
 
 import com.example.ntu_timetable_calendar.DAO.CourseDAO;
 import com.example.ntu_timetable_calendar.DAO.TimetableDAO;
+import com.example.ntu_timetable_calendar.Entity.CourseEntity;
 import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
+import com.example.ntu_timetable_calendar.Helper.CourseToEntityConverter;
+import com.example.ntu_timetable_calendar.JsonModels.Course;
 import com.example.ntu_timetable_calendar.Room.SQLDatabase;
 
 import java.util.List;
+import java.util.Map;
 
 public class SQLRepository {
 
@@ -188,5 +192,87 @@ public class SQLRepository {
         }
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public LiveData<List<CourseEntity>> getAllCourses() {
+        return courseDAO.getAllCourses();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public LiveData<List<CourseEntity>> getTimetableCourses(int timetableId) {
+        return courseDAO.getTimetableCourses(timetableId);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void insertCourses(int timetableId, List<Course> courseList, Map<String, String> indexSel) {
+        new InsertCourseAsyncTask(this.courseDAO, timetableId, courseList, indexSel).execute();
+    }
+
+    private static class InsertCourseAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        private CourseDAO courseDAO;
+        private int timetableId;
+        private List<Course> courseList;
+        private Map<String, String> indexSel;
+
+        InsertCourseAsyncTask(CourseDAO courseDAO, int timetableId, List<Course> courseList, Map<String, String> indexSel) {
+            this.courseDAO = courseDAO;
+            this.timetableId = timetableId;
+            this.courseList = courseList;
+            this.indexSel = indexSel;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            CourseToEntityConverter courseToEntityConverter = new CourseToEntityConverter(timetableId, courseList, indexSel);
+            List<CourseEntity> courseEntityList = courseToEntityConverter.converter();
+            courseDAO.insert(courseEntityList);
+            return null;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void updateCourse(CourseEntity courseEntity) {
+        new UpdateCourseAsyncTask(this.courseDAO).execute(courseEntity);
+    }
+
+    private static class UpdateCourseAsyncTask extends AsyncTask<CourseEntity, Void, Void> {
+
+        private CourseDAO courseDAO;
+
+        UpdateCourseAsyncTask(CourseDAO courseDAO) {
+            this.courseDAO = courseDAO;
+        }
+
+        @Override
+        protected Void doInBackground(CourseEntity... courseEntities) {
+            courseDAO.update(courseEntities[0]);
+            return null;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void deleteCourse(CourseEntity courseEntity) {
+        new DeleteCourseAsyncTask(this.courseDAO).execute(courseEntity);
+    }
+
+    private static class DeleteCourseAsyncTask extends AsyncTask<CourseEntity, Void, Void> {
+
+        private CourseDAO courseDAO;
+
+        DeleteCourseAsyncTask(CourseDAO courseDAO) {
+            this.courseDAO = courseDAO;
+        }
+
+        @Override
+        protected Void doInBackground(CourseEntity... courseEntities) {
+            courseDAO.delete(courseEntities[0]);
+            return null;
+        }
+    }
 
 }

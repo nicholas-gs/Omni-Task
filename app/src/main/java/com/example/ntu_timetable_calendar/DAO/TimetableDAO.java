@@ -29,7 +29,7 @@ public interface TimetableDAO {
     @Query("DELETE FROM timetable_table")
     void deleteAllTimetables();
 
-    @Query("SELECT * FROM timetable_table WHERE isMainTimetable = 1")
+    @Query("SELECT * FROM timetable_table WHERE isMainTimetable = 1 LIMIT 1")
     LiveData<TimetableEntity> getMainTimetable();
 
     @Query("UPDATE timetable_table SET isMainTimetable = CASE WHEN id = :timetableId THEN 1 " +

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,7 +47,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 import es.dmoral.toasty.Toasty;
 
@@ -82,6 +80,7 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
     private TextView errorTV;
     private WeekView<Event> mWeekView;
     private MultiAutoCompleteTextView multiAutoCompleteTextView;
+    private static final String TAG = "PlanFragmentTAG";
 
     @Nullable
     @Override
@@ -460,20 +459,18 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
     @Override
     public void saveButtonPressed(final String timetableName, final String timetableDescription, final boolean isMainTimeTable) {
 
-        this.timetableEntity = new TimetableEntity(timetableName, timetableDescription, isMainTimeTable);
-        sqlViewModel.insertTimetable(this.timetableEntity);
+        // Don't allow user to save timetable if it is empty
+        if (courseSelectionsList.size() == 0) {
+            Toasty.info(requireContext(), "Timetable is empty", Toasty.LENGTH_SHORT).show();
+        } else {
+            this.timetableEntity = new TimetableEntity(timetableName, timetableDescription, isMainTimeTable);
+            sqlViewModel.insertTimetable(this.timetableEntity);
 
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Toasty.success(Objects.requireNonNull(getContext()), timetableName + " saved", Toasty.LENGTH_SHORT).show();
+            if (saveIcon.isSelected()) {
+                saveIcon.setSelected(false);
             }
-        }, 200);
-
-        if (saveIcon.isSelected()) {
-            saveIcon.setSelected(false);
         }
+
     }
 
     /**
@@ -497,5 +494,16 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
         if (timetableEntity.getIsMainTimetable()) {
             sqlViewModel.setIsMainTimetable(timetableId.intValue());
         }
+        // Save the courses into Room
+        sqlViewModel.insertCourses(timetableId.intValue(), this.queriedCourseList, this.indexesSel);
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Toasty.success(requireContext(), "Timetable saved", Toasty.LENGTH_SHORT).show();
+            }
+        }, 200);
+
     }
 }

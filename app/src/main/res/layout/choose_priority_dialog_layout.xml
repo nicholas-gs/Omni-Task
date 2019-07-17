@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimary"
+    android:orientation="vertical"
+    android:paddingStart="16dp"
+    android:paddingTop="16dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="8dp">
+
+    <TextView
+        android:id="@+id/tv4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/choose_priority"
+        android:textColor="@color/colorWhite"
+        android:textSize="20sp" />
+
+
+    <TextView
+        android:id="@+id/choose_priority_dialog_priority1_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:drawableStart="@drawable/ic_flag_red_24dp"
+        android:drawablePadding="16dp"
+        android:focusable="true"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:text="@string/priority_1"
+        android:textColor="@color/colorContentText"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/choose_priority_dialog_priority2_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:drawableStart="@drawable/ic_flag_yellow_24dp"
+        android:drawablePadding="16dp"
+        android:focusable="true"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:text="@string/priority_2"
+        android:textColor="@color/colorContentText"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/choose_priority_dialog_priority3_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:drawableStart="@drawable/ic_flag_green_24dp"
+        android:drawablePadding="16dp"
+        android:focusable="true"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:text="@string/priority_3"
+        android:textColor="@color/colorContentText"
+        android:textSize="16sp" />
+
+
+    <TextView
+        android:id="@+id/choose_priority_dialog_priority4_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:drawableStart="@drawable/ic_flag_lightblue_24dp"
+        android:drawablePadding="16dp"
+        android:focusable="true"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:text="@string/priority_4"
+        android:textColor="@color/colorContentText"
+        android:textSize="16sp" />
+
+
+    <TextView
+        android:id="@+id/choose_priority_dialog_no_priority_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:drawableStart="@drawable/ic_flag_darkgray_24dp"
+        android:drawablePadding="16dp"
+        android:focusable="true"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:text="@string/no_priority"
+        android:textColor="@color/colorContentText"
+        android:textSize="16sp" />
+
+</LinearLayout>

@@ -20,4 +20,22 @@
     <string name="detail">Detail</string>
     <string name="no_description">No description</string>
     <string name="main_timetable">Main Timetable</string>
+    <string name="tasks">Tasks</string>
+    <string name="add_new_task">Add new task</string>
+    <string name="add_task">Add Task</string>
+    <string name="add_title">Add title</string>
+    <string name="add_description">Add description</string>
+    <string name="add_alarm">Add alarm</string>
+    <string name="choose_class">Choose Class</string>
+    <string name="add_priority">Add Priority</string>
+    <string name="add_project">Add Project</string>
+    <string name="priority_1">Priority 1</string>
+    <string name="priority_2">Priority 2</string>
+    <string name="priority_3">Priority 3</string>
+    <string name="priority_4">Priority 4</string>
+    <string name="choose_priority">Choose Priority</string>
+    <string name="no_priority">No Priority</string>
+    <string name="alarm_timing">Alarm timing</string>
+    <string name="confirm">Confirm</string>
+    <string name="custom">Custom</string>
 </resources>

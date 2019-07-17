@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.example.ntu_timetable_calendar.Fragments.CalendarFragment;
+import com.example.ntu_timetable_calendar.Fragments.TaskFragment;
 import com.example.ntu_timetable_calendar.Fragments.HomeFragment;
 import com.example.ntu_timetable_calendar.Fragments.PlanFragment;
 import com.example.ntu_timetable_calendar.Fragments.SearchFragment;
@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.bottomNav_calendar:
                         getSupportFragmentManager().beginTransaction().replace(R.id.activitymain_fragment_container,
-                                new CalendarFragment(), "calendar_fragment").commit();
+                                new TaskFragment(), "task_fragment").commit();
                         break;
                 }
                 return true;

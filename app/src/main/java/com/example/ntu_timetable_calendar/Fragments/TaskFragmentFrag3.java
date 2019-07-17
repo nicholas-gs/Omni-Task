@@ -11,11 +11,11 @@ import androidx.fragment.app.Fragment;
 
 import com.example.ntu_timetable_calendar.R;
 
-public class CalendarFragment extends Fragment {
+public class TaskFragmentFrag3 extends Fragment {
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.calendar_fragment, container, false);
+        return inflater.inflate(R.layout.task_fragment_frag3_layout, container, false);
     }
 }

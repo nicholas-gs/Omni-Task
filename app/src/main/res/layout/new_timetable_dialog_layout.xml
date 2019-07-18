@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/colorPrimary"
+    android:background="?android:attr/windowBackground"
     android:paddingStart="16dp"
     android:paddingTop="16dp"
     android:paddingEnd="16dp"
@@ -16,7 +16,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:text="@string/save_timetable"
-        android:textColor="@color/colorWhite"
+        android:textColor="@color/colorBlack"
         android:textSize="18sp"
         android:textStyle="bold" />
 
@@ -27,12 +27,12 @@
         android:layout_below="@id/tv1"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
-        android:backgroundTint="@color/colorAccent"
+        android:backgroundTint="@color/colorBlack"
         android:hint="@string/untitled_timetable"
-        android:inputType="text"
+        android:inputType="textCapSentences"
         android:maxLines="1"
-        android:textColor="@color/colorWhite"
-        android:textColorHint="@color/colorContentText"
+        android:textColor="@color/colorBlack"
+        android:textColorHint="@color/colorDarkGray"
         tools:ignore="Autofill" />
 
     <EditText
@@ -42,28 +42,28 @@
         android:layout_below="@id/plan_fragment_savetimetable_dialog_name_edittext"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="4dp"
-        android:backgroundTint="@color/colorAccent"
+        android:backgroundTint="@color/colorBlack"
         android:hint="@string/no_description"
-        android:inputType="text"
+        android:inputType="textCapSentences"
         android:maxLines="1"
-        android:textColor="@color/colorWhite"
-        android:textColorHint="@color/colorContentText"
+        android:textColor="@color/colorBlack"
+        android:textColorHint="@color/colorDarkGray"
         tools:ignore="Autofill" />
 
     <CheckBox
-        android:layout_alignParentStart="true"
-        android:textSize="16sp"
         android:id="@+id/plan_fragment_savetimetable_checkbox"
-        android:layout_marginTop="4dp"
-        android:layout_below="@id/plan_fragment_savetimetable_dialog_description_edittext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/plan_fragment_savetimetable_dialog_description_edittext"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="4dp"
         android:buttonTint="@color/colorAccent"
         android:text="@string/main_timetable"
-        android:textColor="@color/colorWhite" />
+        android:textColor="@color/colorAccent"
+        android:textSize="16sp"
+        android:textStyle="bold" />
 
     <com.google.android.material.button.MaterialButton
-
         android:id="@+id/plan_fragment_savetimetable_dialog_save_btn"
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
@@ -74,7 +74,8 @@
         android:minWidth="36dp"
         android:text="@string/save"
         android:textAllCaps="false"
-        android:textColor="@color/colorWhite" />
+        android:textColor="@color/colorPrimaryDark"
+        android:textStyle="bold" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/plan_fragment_savetimetable_dialog_cancel_btn"
@@ -88,6 +89,7 @@
         android:minWidth="36dp"
         android:text="@string/cancel"
         android:textAllCaps="false"
-        android:textColor="@color/colorWhite" />
+        android:textColor="@color/colorPrimaryDark"
+        android:textStyle="bold" />
 
 </RelativeLayout>

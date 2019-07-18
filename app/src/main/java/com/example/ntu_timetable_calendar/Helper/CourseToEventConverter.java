@@ -13,32 +13,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This abstract class and its method convertCourseToEvent(...) is used by the PlanFragment.
+ */
 public abstract class CourseToEventConverter {
 
-    /**
-     * Enum that returns the Calendar.DAY_OF_WEEK for a given day string
-     */
-    public enum DayOfWeek {
-        SUN(1), MON(2), TUE(3), WED(4), THU(5), FRI(6), SAT(7);
-
-        private final int value;
-
-        DayOfWeek(int value) {
-
-            this.value = value;
-        }
-
-        public int getValue() {
-
-            return value;
-        }
-
-        @Override
-        public String toString() {
-
-            return value + "";
-        }
-    }
 
     /**
      * Converts a list of courses, with their chosen index, into a list of events for display in a WeekView widget.
@@ -47,7 +26,7 @@ public abstract class CourseToEventConverter {
      * @param indexList  HashMap key - Course code, HashMap value - Chosen index
      * @return List of events for display in WeekView widget
      */
-    public static List<Event> covertCourseToEvent(List<Course> courseList, Map<String, String> indexList) {
+    public static List<Event> convertCourseToEvent(List<Course> courseList, Map<String, String> indexList) {
 
         // We iterate through a integer in order to give the events different colors
         int i = 1;

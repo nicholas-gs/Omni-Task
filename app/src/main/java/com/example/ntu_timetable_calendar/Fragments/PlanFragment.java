@@ -202,7 +202,7 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
         mWeekView.goToDate(cal);
-        mWeekView.goToHour(7);
+        mWeekView.goToHour(8);
 
         mWeekView.setMonthChangeListener(this);
 

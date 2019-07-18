@@ -38,4 +38,10 @@
     <string name="custom">Custom</string>
     <string name="saved_timetables">Saved timetables</string>
     <string name="about">About</string>
+    <string name="SAVED_TIMETABLES_INTENT">saved_timetable_intent</string>
+    <string name="ABOUT_APP_INTENT">about_app_intent</string>
+    <string name="ACTIVITY_INTENT">activity_intent</string>
+    <string name="is_main_timetable">Is main timetable</string>
+    <string name="edit_timetable">Edit timetable</string>
+    <string name="changes_saved">Changes saved</string>
 </resources>

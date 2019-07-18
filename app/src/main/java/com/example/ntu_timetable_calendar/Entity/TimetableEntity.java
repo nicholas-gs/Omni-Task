@@ -26,6 +26,17 @@ public class TimetableEntity {
         this.id = timetableId;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setMainTimetable(boolean mainTimetable) {
+        isMainTimetable = mainTimetable;
+    }
 
     // Getters
 

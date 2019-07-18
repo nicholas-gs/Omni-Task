@@ -111,7 +111,7 @@ public class PlanFragmentActivityViewModel extends AndroidViewModel {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            eventList.postValue(CourseToEventConverter.covertCourseToEvent(courseList, indexesSel));
+            eventList.postValue(CourseToEventConverter.convertCourseToEvent(courseList, indexesSel));
 
             return null;
         }

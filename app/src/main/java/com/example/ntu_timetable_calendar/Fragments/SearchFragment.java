@@ -44,7 +44,6 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
     private ImageView clearBtn;
 
     // Variables
-    private static final String TAG = "SearchFragment";
     private JsonViewModel jsonViewModel;
     private SearchRVAdapter searchRVAdapter;
     private Observer<List<Course>> observer;
@@ -127,7 +126,6 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Log.d(TAG, "run: RUNNING");
 
                 if (searchFragmentActivityViewModel != null) {
                     // Get the previously stored query
@@ -214,6 +212,5 @@ public class SearchFragment extends Fragment implements SearchRVAdapter.onItemCl
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "onDestroy: SearchFragment Destroyed");
     }
 }

@@ -88,7 +88,7 @@ public class CourseDetailFragment extends Fragment {
         timeTV = view.findViewById(R.id.course_detail_time);
         durationTV = view.findViewById(R.id.course_detail_duration);
 
-        toolbar.setNavigationIcon(ContextCompat.getDrawable(Objects.requireNonNull(getContext()), R.drawable.ic_arrow_back_lightblue_24dp));
+        toolbar.setNavigationIcon(ContextCompat.getDrawable(Objects.requireNonNull(getContext()), R.drawable.ic_arrow_back_white_24dp));
 
         // Close fragment
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {

@@ -18,7 +18,6 @@
         android:layout_marginStart="12dp"
         android:paddingBottom="8dp"
         android:singleLine="false"
-        android:text="ART AS COMMODITY"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textColor="@color/colorWhite"
         android:textSize="18sp" />
@@ -33,7 +32,6 @@
         android:layout_marginStart="12dp"
         android:layout_marginTop="2dp"
         android:layout_toStartOf="@id/course_detail_au"
-        android:text="Code"
         android:textColor="@color/colorContentText"
         android:textSize="16sp" />
 
@@ -49,7 +47,6 @@
         android:paddingStart="0dp"
         android:paddingEnd="4dp"
         android:singleLine="true"
-        android:text="AU : "
         android:textColor="@color/colorContentText"
         android:textSize="16sp" />
 

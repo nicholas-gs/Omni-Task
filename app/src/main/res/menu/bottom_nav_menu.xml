@@ -2,14 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:title="@string/HOME_STRING"
+        android:title="@string/home"
         android:id="@+id/bottomNav_home"
         android:icon="@drawable/bottom_nav_home_selector"
         />
 
 
     <item
-        android:title="@string/TODO_STRING"
+        android:title="@string/tasks"
         android:id="@+id/bottomNav_calendar"
         android:icon="@drawable/bottom_nav_todo_selector"
         />
@@ -17,13 +17,13 @@
 
 
     <item
-        android:title="@string/SEARCH_STRING"
+        android:title="@string/search"
         android:id="@+id/bottomNav_search"
         android:icon="@drawable/bottom_nav_search_selector"
         />
 
     <item
-        android:title="@string/PLAN_STRING"
+        android:title="@string/plan"
         android:id="@+id/bottomNav_plan"
         android:icon="@drawable/bottom_nav_plan_selector"
         />

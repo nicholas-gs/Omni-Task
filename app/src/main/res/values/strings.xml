@@ -1,9 +1,7 @@
 <resources>
     <string name="app_name">ntu-timetable-calendar</string>
-    <string name="HOME_STRING">Home</string>
-    <string name="TODO_STRING">Todo</string>
-    <string name="SEARCH_STRING">Search</string>
-    <string name="PLAN_STRING">Plan</string>
+    <string name="home">Home</string>
+    <string name="search">Search</string>
     <string name="enter_modules">Enter modules</string>
     <string name="plan">Plan</string>
     <string name="clear">Clear</string>
@@ -38,4 +36,6 @@
     <string name="alarm_timing">Alarm timing</string>
     <string name="confirm">Confirm</string>
     <string name="custom">Custom</string>
+    <string name="saved_timetables">Saved timetables</string>
+    <string name="about">About</string>
 </resources>

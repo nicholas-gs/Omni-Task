@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/timetable_detail_appbarlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/timetable_detail_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark"
+            app:menu="@menu/timetable_detail_toolbar_menu"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:title="Timetable detail"
+            app:titleTextColor="@color/colorWhite" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+        <com.alamkanak.weekview.WeekView
+            android:id="@+id/timetable_detail_weekview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
+            android:visibility="visible"
+            app:columnGap="1dp"
+            app:dayBackgroundColor="@color/colorPrimary"
+            app:defaultEventColor="@color/colorPrimary"
+            app:eventTextColor="@color/colorWhite"
+            app:firstDayOfWeek="monday"
+            app:headerRowBackgroundColor="@color/colorPrimary"
+            app:headerRowBottomLineColor="@color/colorContentText"
+            app:headerRowPadding="12dp"
+            app:headerRowTextColor="@color/colorContentText"
+            app:headerRowTextSize="14sp"
+            app:horizontalScrollingEnabled="false"
+            app:hourHeight="40dp"
+            app:numberOfVisibleDays="5"
+            app:showFirstDayOfWeekFirst="true"
+            app:showHeaderRowBottomLine="true"
+            app:showTimeColumnHourSeparator="false"
+            app:showTimeColumnSeparator="true"
+            app:timeColumnBackgroundColor="@android:color/transparent"
+            app:timeColumnPadding="8dp"
+            app:timeColumnSeparatorColor="@color/colorContentText"
+            app:timeColumnSeparatorStrokeWidth="1dp"
+            app:timeColumnTextColor="@color/colorWhite"
+            app:timeColumnTextSize="12sp"
+            app:todayBackgroundColor="@android:color/transparent"
+            app:todayHeaderTextColor="@color/colorContentText" />
+
+    </RelativeLayout>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

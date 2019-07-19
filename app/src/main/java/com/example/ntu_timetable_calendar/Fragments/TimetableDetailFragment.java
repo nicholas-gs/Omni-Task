@@ -33,6 +33,7 @@ import com.example.ntu_timetable_calendar.EventModel.Event;
 import com.example.ntu_timetable_calendar.Helper.EntityToEventConverter;
 import com.example.ntu_timetable_calendar.R;
 import com.example.ntu_timetable_calendar.ViewModels.SQLViewModel;
+import com.example.ntu_timetable_calendar.ViewModels.SavedTimetableActivityViewModel;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -54,6 +55,7 @@ public class TimetableDetailFragment extends Fragment implements MonthChangeList
 
     private TimetableEntity timetableEntity;
     private SQLViewModel sqlViewModel;
+    private SavedTimetableActivityViewModel savedTimetableActivityViewModel;
 
     // We store the events we want to display in the weekview widget here
     private List<WeekViewDisplayable<Event>> eventList = new ArrayList<>();
@@ -62,10 +64,6 @@ public class TimetableDetailFragment extends Fragment implements MonthChangeList
 
     public TimetableDetailFragment() {
 
-    }
-
-    TimetableDetailFragment(TimetableEntity timetableEntity) {
-        this.timetableEntity = timetableEntity;
     }
 
     @Nullable
@@ -116,6 +114,8 @@ public class TimetableDetailFragment extends Fragment implements MonthChangeList
     }
 
     private void setupViewModel() {
+        savedTimetableActivityViewModel = ViewModelProviders.of(requireActivity()).get(SavedTimetableActivityViewModel.class);
+        this.timetableEntity = savedTimetableActivityViewModel.getTimetableEntity();
         sqlViewModel = ViewModelProviders.of(this).get(SQLViewModel.class);
         sqlViewModel.getTimetableCourses(timetableEntity.getId()).observe(this, new Observer<List<CourseEntity>>() {
             @Override

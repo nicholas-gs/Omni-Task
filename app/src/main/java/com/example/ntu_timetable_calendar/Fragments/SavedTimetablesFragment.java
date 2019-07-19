@@ -21,6 +21,7 @@ import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
 import com.example.ntu_timetable_calendar.R;
 import com.example.ntu_timetable_calendar.RVAdapters.SavedTimetablesRVAdapter;
 import com.example.ntu_timetable_calendar.ViewModels.SQLViewModel;
+import com.example.ntu_timetable_calendar.ViewModels.SavedTimetableActivityViewModel;
 
 import java.util.List;
 import java.util.Objects;
@@ -33,6 +34,9 @@ public class SavedTimetablesFragment extends Fragment implements SavedTimetables
 
     private SQLViewModel sqlViewModel;
     private SavedTimetablesRVAdapter mAdapter;
+
+    // ViewModel
+    private SavedTimetableActivityViewModel savedTimetableActivityViewModel;
 
     @Nullable
     @Override
@@ -47,6 +51,7 @@ public class SavedTimetablesFragment extends Fragment implements SavedTimetables
         initViews(view);
         initRecyclerView();
         initSQLViewModel();
+        initActivityViewModel();
     }
 
     private void initViews(View view) {
@@ -74,6 +79,14 @@ public class SavedTimetablesFragment extends Fragment implements SavedTimetables
         });
     }
 
+    /**
+     * Initialise the SavedTimetableActivityViewModel that is used to pass data between this fragment and the TimetableDetailFragment/Prevent
+     * crashes with orientation changes
+     */
+    private void initActivityViewModel(){
+        savedTimetableActivityViewModel = ViewModelProviders.of(requireActivity()).get(SavedTimetableActivityViewModel.class);
+    }
+
     private void initRecyclerView() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         mRecyclerView.setHasFixedSize(true);
@@ -88,14 +101,14 @@ public class SavedTimetablesFragment extends Fragment implements SavedTimetables
         mRecyclerView.setAdapter(mAdapter);
     }
 
-
     @Override
     public void itemListener(TimetableEntity timetableEntity) {
+        savedTimetableActivityViewModel.setTimetableEntity(timetableEntity);
         FragmentTransaction fragmentTransaction =  Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction();
         fragmentTransaction.setCustomAnimations(R.anim.fragment_slide_up, R.anim.fragment_slide_down, R.anim.fragment_slide_up,
                 R.anim.fragment_slide_down);
         fragmentTransaction.add(R.id.second_activity_fragment_container,
-                new TimetableDetailFragment(timetableEntity),
+                new TimetableDetailFragment(),
                 "saved_timetables_fragment").addToBackStack(null).commit();
     }
 }

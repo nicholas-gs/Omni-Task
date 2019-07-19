@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -90,7 +91,10 @@ public class SavedTimetablesFragment extends Fragment implements SavedTimetables
 
     @Override
     public void itemListener(TimetableEntity timetableEntity) {
-        Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.second_activity_fragment_container,
+        FragmentTransaction fragmentTransaction =  Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.setCustomAnimations(R.anim.fragment_slide_up, R.anim.fragment_slide_down, R.anim.fragment_slide_up,
+                R.anim.fragment_slide_down);
+        fragmentTransaction.add(R.id.second_activity_fragment_container,
                 new TimetableDetailFragment(timetableEntity),
                 "saved_timetables_fragment").addToBackStack(null).commit();
     }

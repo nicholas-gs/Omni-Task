@@ -2,6 +2,7 @@ package com.example.ntu_timetable_calendar.Fragments;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -20,10 +21,12 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.alamkanak.weekview.DateTimeInterpreter;
+import com.alamkanak.weekview.EventClickListener;
 import com.alamkanak.weekview.MonthChangeListener;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewDisplayable;
 import com.example.ntu_timetable_calendar.Dialogs.EditTimetableDialog;
+import com.example.ntu_timetable_calendar.Dialogs.TimetableEventDetailDialog;
 import com.example.ntu_timetable_calendar.Entity.CourseEntity;
 import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
 import com.example.ntu_timetable_calendar.EventModel.Event;
@@ -42,7 +45,8 @@ import java.util.Objects;
 
 import es.dmoral.toasty.Toasty;
 
-public class TimetableDetailFragment extends Fragment implements MonthChangeListener<Event>, DateTimeInterpreter, EditTimetableDialog.EditTimetableDialogInterface {
+public class TimetableDetailFragment extends Fragment implements MonthChangeListener<Event>, DateTimeInterpreter,
+        EditTimetableDialog.EditTimetableDialogInterface, EventClickListener<Event> {
 
     // Views
     private Toolbar mToolbar;
@@ -84,6 +88,7 @@ public class TimetableDetailFragment extends Fragment implements MonthChangeList
 
         mWeekView.setMonthChangeListener(this);
         mWeekView.setDateTimeInterpreter(this);
+        mWeekView.setOnEventClickListener(this);
     }
 
     private void setupToolbar() {
@@ -250,4 +255,15 @@ public class TimetableDetailFragment extends Fragment implements MonthChangeList
         }, 200);
     }
 
+    /**
+     * WeekView widget event click listener
+     *
+     * @param event Event clicked
+     * @param rectF The drawable clicked
+     */
+    @Override
+    public void onEventClick(Event event, @NotNull RectF rectF) {
+        TimetableEventDetailDialog dialog = new TimetableEventDetailDialog(event);
+        dialog.show(getChildFragmentManager(), "timetable_event_detail_dialog");
+    }
 }

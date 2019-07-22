@@ -22,7 +22,6 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class TaskFragment extends Fragment implements View.OnClickListener {
 

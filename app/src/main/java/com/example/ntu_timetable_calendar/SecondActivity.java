@@ -1,11 +1,13 @@
 package com.example.ntu_timetable_calendar;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.ntu_timetable_calendar.Fragments.AboutAppFragment;
+import com.example.ntu_timetable_calendar.Fragments.AddNewTaskFragment;
 import com.example.ntu_timetable_calendar.Fragments.SavedTimetablesFragment;
 import com.example.ntu_timetable_calendar.ViewModels.SavedTimetableActivityViewModel;
 
@@ -31,6 +33,9 @@ public class SecondActivity extends AppCompatActivity {
         } else if (intentStr.equals(getString(R.string.ABOUT_APP_INTENT))) {
             getSupportFragmentManager().beginTransaction().replace(R.id.second_activity_fragment_container, new AboutAppFragment(),
                     "about_app_fragment").commit();
+        } else if (intentStr.equals(getString(R.string.ADD_NEW_TASK_INTENT))){
+            getSupportFragmentManager().beginTransaction().replace(R.id.second_activity_fragment_container, new AddNewTaskFragment(),
+                    "add_new_task_fragment").commit();
         }
     }
 }

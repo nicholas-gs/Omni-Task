@@ -1,5 +1,6 @@
 package com.example.ntu_timetable_calendar.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.example.ntu_timetable_calendar.PagerAdapter.TodoPagerAdapter;
 import com.example.ntu_timetable_calendar.R;
+import com.example.ntu_timetable_calendar.SecondActivity;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
@@ -76,10 +78,10 @@ public class TaskFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.todo_fragment_fab) {
-            Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction()
-                    .add(R.id.activitymain_fragment_container, new AddNewTaskFragment(), "add_new_task_fragment")
-                    .hide(this).addToBackStack(null).commit();
+            String intentString = getString(R.string.ADD_NEW_TASK_INTENT);
+            Intent intent = new Intent(getActivity(), SecondActivity.class);
+            intent.putExtra(getString(R.string.ACTIVITY_INTENT), intentString);
+            startActivity(intent);
         }
-
     }
 }

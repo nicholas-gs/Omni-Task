@@ -1,4 +1,4 @@
-package com.example.ntu_timetable_calendar.Helper;
+package com.example.ntu_timetable_calendar.Converters;
 
 import androidx.annotation.NonNull;
 

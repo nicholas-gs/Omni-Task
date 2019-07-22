@@ -9,7 +9,7 @@ import com.example.ntu_timetable_calendar.DAO.CourseDAO;
 import com.example.ntu_timetable_calendar.DAO.TimetableDAO;
 import com.example.ntu_timetable_calendar.Entity.CourseEntity;
 import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
-import com.example.ntu_timetable_calendar.Helper.CourseToEntityConverter;
+import com.example.ntu_timetable_calendar.Converters.CourseToEntityConverter;
 import com.example.ntu_timetable_calendar.JsonModels.Course;
 import com.example.ntu_timetable_calendar.Room.SQLDatabase;
 

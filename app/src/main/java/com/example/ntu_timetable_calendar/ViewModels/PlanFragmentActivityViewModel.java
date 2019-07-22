@@ -10,7 +10,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.ntu_timetable_calendar.JsonModels.Course;
 import com.example.ntu_timetable_calendar.EventModel.Event;
-import com.example.ntu_timetable_calendar.Helper.CourseToEventConverter;
+import com.example.ntu_timetable_calendar.Converters.CourseToEventConverter;
 
 import java.util.ArrayList;
 import java.util.HashMap;

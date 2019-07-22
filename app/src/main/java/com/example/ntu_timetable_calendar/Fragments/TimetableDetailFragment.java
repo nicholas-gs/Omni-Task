@@ -30,7 +30,7 @@ import com.example.ntu_timetable_calendar.Dialogs.TimetableEventDetailDialog;
 import com.example.ntu_timetable_calendar.Entity.CourseEntity;
 import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
 import com.example.ntu_timetable_calendar.EventModel.Event;
-import com.example.ntu_timetable_calendar.Helper.EntityToEventConverter;
+import com.example.ntu_timetable_calendar.Converters.EntityToEventConverter;
 import com.example.ntu_timetable_calendar.R;
 import com.example.ntu_timetable_calendar.ViewModels.SQLViewModel;
 import com.example.ntu_timetable_calendar.ViewModels.SavedTimetableActivityViewModel;

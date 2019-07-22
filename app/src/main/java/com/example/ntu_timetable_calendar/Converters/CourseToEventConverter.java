@@ -1,7 +1,8 @@
-package com.example.ntu_timetable_calendar.Helper;
+package com.example.ntu_timetable_calendar.Converters;
 
 import android.graphics.Color;
 
+import com.example.ntu_timetable_calendar.Helper.DayOfWeek;
 import com.example.ntu_timetable_calendar.JsonModels.Course;
 import com.example.ntu_timetable_calendar.JsonModels.Detail;
 import com.example.ntu_timetable_calendar.JsonModels.Index;

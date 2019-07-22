@@ -1,4 +1,4 @@
-package com.example.ntu_timetable_calendar.Helper;
+package com.example.ntu_timetable_calendar.Converters;
 
 import android.graphics.Color;
 import android.util.Log;
@@ -6,6 +6,7 @@ import android.util.Log;
 import com.example.ntu_timetable_calendar.Entity.CourseEntity;
 import com.example.ntu_timetable_calendar.Entity.DetailEntity;
 import com.example.ntu_timetable_calendar.EventModel.Event;
+import com.example.ntu_timetable_calendar.Helper.DayOfWeek;
 
 import java.util.ArrayList;
 import java.util.Calendar;

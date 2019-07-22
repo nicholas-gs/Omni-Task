@@ -45,4 +45,6 @@
     <string name="is_main_timetable">Is main timetable</string>
     <string name="edit_timetable">Edit timetable</string>
     <string name="changes_saved">Changes saved</string>
+    <string name="description_is_empty">Description is empty!</string>
+    <string name="title_is_empty">Title is empty!</string>
 </resources>

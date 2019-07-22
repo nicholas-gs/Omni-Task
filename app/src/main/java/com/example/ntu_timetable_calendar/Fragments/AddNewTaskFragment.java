@@ -5,7 +5,6 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,9 +28,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.text.DateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
@@ -43,8 +40,8 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
 
     private AppBarLayout mAppBarLayout;
     private Toolbar mToolbar;
-    private TextInputLayout mInputLayout;
-    private TextInputEditText mEdittext;
+    private TextInputLayout mTitleInputLayout, mDescriptionInputLayout;
+    private TextInputEditText mTitleEdittext, mDescriptionEdittext;
     private Switch chooseClassSwitch;
     private TextView endDateTV, endTimeTV, addAlarmTV, addPriorityTV, addProjectTV;
 
@@ -52,7 +49,7 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
     private int PRIORITY_1, PRIORITY_2, PRIORITY_3, PRIORITY_4, NO_PRIORITY;
 
     // Variables to save
-    private Calendar calendar; // Save the time and day chosen for task deadline by the user using the pickers
+    private Calendar chosenCalendar; // Save the time and day chosen for task deadline by the user using the pickers
     private String title, description;
     private int priorityChosen;
     private boolean[] alarmTimingChosen;
@@ -68,8 +65,8 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
         super.onViewCreated(view, savedInstanceState);
 
         // Set the default deadline as 1 day after today
-        calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        chosenCalendar = Calendar.getInstance();
+        chosenCalendar.add(Calendar.DAY_OF_MONTH, 1);
 
         intiVariables();
         initViews(view);
@@ -81,8 +78,10 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
     private void initViews(View view) {
         mAppBarLayout = view.findViewById(R.id.add_new_task_appbarlayout);
         mToolbar = view.findViewById(R.id.add_new_task_toolbar);
-        mInputLayout = view.findViewById(R.id.add_new_task_title_textinputlayout);
-        mEdittext = view.findViewById(R.id.add_new_task_title_edittext);
+        mTitleInputLayout = view.findViewById(R.id.add_new_task_title_textinputlayout);
+        mTitleEdittext = view.findViewById(R.id.add_new_task_title_edittext);
+        mDescriptionInputLayout = view.findViewById(R.id.add_new_task_description_textinputlayout);
+        mDescriptionEdittext = view.findViewById(R.id.add_new_task_description_edittext);
 
         chooseClassSwitch = view.findViewById(R.id.add_new_task_choose_class_switch);
         endDateTV = view.findViewById(R.id.add_new_task_end_date_tv);
@@ -132,6 +131,9 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
         });
     }
 
+    /**
+     * Fragment shown to user when the user clicks the close button on the toolbar -- prompts user if they want to discard the task
+     */
     private void closeFragmentDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setMessage("Are you sure you want to discard this task?");
@@ -172,15 +174,17 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
      * Save the new task
      */
     private void saveTask() {
-        Toasty.success(requireContext(), "Task saved", Toasty.LENGTH_SHORT).show();
-        Objects.requireNonNull(getActivity()).onBackPressed();
+        if(validationCheck()){
+            Toasty.success(requireContext(), "Task saved", Toasty.LENGTH_SHORT).show();
+            Objects.requireNonNull(getActivity()).finish();
+        }
     }
 
     /**
      * Set the current date and time for the 2 text views
      */
     private void initCurrentTimeTextViews() {
-        Date currentTime = calendar.getTime();
+        Date currentTime = chosenCalendar.getTime();
         String currentDateStr = DateFormat.getDateInstance(DateFormat.FULL).format(currentTime);
         endDateTV.setText(currentDateStr.trim());
 
@@ -193,11 +197,11 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.add_new_task_end_date_tv:
-                MyDatePickerDialog datePicker = new MyDatePickerDialog(this.calendar);
+                MyDatePickerDialog datePicker = new MyDatePickerDialog(this.chosenCalendar);
                 datePicker.show(getChildFragmentManager(), "date_picker");
                 break;
             case R.id.add_new_task_end_time_tv:
-                MyTimePickerDialog timePicker = new MyTimePickerDialog(this.calendar);
+                MyTimePickerDialog timePicker = new MyTimePickerDialog(this.chosenCalendar);
                 timePicker.show(getChildFragmentManager(), "time_picker");
                 break;
             case R.id.add_new_task_alarm_tv:
@@ -266,7 +270,6 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
 
     }
 
-    private static final String TAG = "AddNewTaskFragmentTAG";
     /**
      * AlertDialog for user to choose the time for the alarm/reminder for the task
      */
@@ -285,14 +288,20 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 int count = 0;
-                for(boolean b : alarmTimingChosen){
-                    if(b){
+                for (boolean b : alarmTimingChosen) {
+                    if (b) {
                         count++;
                     }
                 }
-
-                String str = String.format(Locale.ENGLISH , "%d alarms", count);
-                addAlarmTV.setText(str);
+                if (count == 0) {
+                    addAlarmTV.setText(getString(R.string.add_alarm));
+                } else if (count == 1) {
+                    String str = String.format(Locale.ENGLISH, "%d alarm", count);
+                    addAlarmTV.setText(str);
+                } else {
+                    String str = String.format(Locale.ENGLISH, "%d alarms", count);
+                    addAlarmTV.setText(str);
+                }
                 dialogInterface.dismiss();
             }
         });
@@ -339,6 +348,33 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
     }
 
     /**
+     * Internal validation check to see if the Task's details that the user is trying to save is valid
+     * @return boolean value true -- valid and proceed to save the task into Room, false -- not valid and don't save
+     */
+    private boolean validationCheck(){
+        mTitleInputLayout.setErrorEnabled(false);
+        mDescriptionInputLayout.setErrorEnabled(false);
+
+        boolean validTitle = true;
+        boolean validDescription = true;
+
+        this.title = Objects.requireNonNull(mTitleEdittext.getText()).toString().trim();
+        this.description = Objects.requireNonNull(mDescriptionEdittext.getText()).toString().trim();
+
+        if(title.length() == 0){
+            mTitleInputLayout.setError(getString(R.string.title_is_empty));
+            validTitle = false;
+        }
+
+        if(description.length() == 0){
+            mDescriptionInputLayout.setError(getString(R.string.description_is_empty));
+            validDescription = false;
+        }
+
+        return (validTitle && validDescription);
+    }
+
+    /**
      * Callback method for the date picker dialog
      *
      * @param datePicker dialog box
@@ -348,13 +384,12 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
      */
     @Override
     public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
-        calendar.set(Calendar.YEAR, i);
-        calendar.set(Calendar.MONTH, i1);
-        calendar.set(Calendar.DAY_OF_MONTH, i2);
-        Date currentTime = calendar.getTime();
+        chosenCalendar.set(Calendar.YEAR, i);
+        chosenCalendar.set(Calendar.MONTH, i1);
+        chosenCalendar.set(Calendar.DAY_OF_MONTH, i2);
+        Date currentTime = chosenCalendar.getTime();
         String currentDateStr = DateFormat.getDateInstance(DateFormat.FULL).format(currentTime);
         endDateTV.setText(currentDateStr.trim());
-        datePicker.updateDate(i, i1, i2);
     }
 
     /**
@@ -366,9 +401,9 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
      */
     @Override
     public void onTimeSet(TimePicker timePicker, int i, int i1) {
-        calendar.set(Calendar.HOUR_OF_DAY, i);
-        calendar.set(Calendar.MINUTE, i1);
-        String timeStr = DateFormat.getTimeInstance(DateFormat.SHORT).format(calendar.getTime());
+        chosenCalendar.set(Calendar.HOUR_OF_DAY, i);
+        chosenCalendar.set(Calendar.MINUTE, i1);
+        String timeStr = DateFormat.getTimeInstance(DateFormat.SHORT).format(chosenCalendar.getTime());
         endTimeTV.setText(timeStr.trim());
     }
 

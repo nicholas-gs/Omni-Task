@@ -41,7 +41,9 @@
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:textColorHint="@color/colorContentText"
-                app:counterEnabled="true"
+                app:errorEnabled="true"
+                app:errorTextColor="@color/colorAccent"
+                app:counterEnabled="false"
                 app:counterTextColor="@color/colorPrimaryLight"
                 app:hintTextColor="@color/colorPrimaryLight">
 
@@ -55,18 +57,19 @@
                     android:textColor="@color/colorWhite"
                     android:textColorHint="@color/colorPrimaryLight"
                     android:textCursorDrawable="@drawable/color_cursor" />
-
             </com.google.android.material.textfield.TextInputLayout>
 
 
             <com.google.android.material.textfield.TextInputLayout
+                app:errorEnabled="true"
+                app:errorTextColor="@color/colorAccent"
                 android:id="@+id/add_new_task_description_textinputlayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/add_new_task_title_textinputlayout"
                 android:background="@android:color/transparent"
                 android:textColorHint="@color/colorContentText"
-                app:counterEnabled="true"
+                app:counterEnabled="false"
                 app:counterTextColor="@color/colorPrimaryLight"
                 app:hintTextColor="@color/colorPrimaryLight">
 

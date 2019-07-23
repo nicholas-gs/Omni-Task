@@ -60,6 +60,7 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
     private SQLViewModel sqlViewModel;
 
     // Variables
+    private boolean openBottomSheet = false;
     private List<String> courseSelectionsList = new ArrayList<>();
     private List<String> finalCourseCodeSelList = new ArrayList<>();
     private List<String> allCourseCodesList = new ArrayList<>();
@@ -101,6 +102,7 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
         initWeekViewWidget();
 
         queriedCourseList.addAll(planFragmentActivityViewModel.getQueriedCourseList());
+        queriedExamList.addAll(planFragmentActivityViewModel.getQueriedExamList());
         indexesSel.putAll(planFragmentActivityViewModel.getIndexesSel());
     }
 
@@ -148,8 +150,10 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
             @Override
             public void onChanged(List<Course> courseList) {
                 saveQueriedCourseList(courseList);
-                chooseIndexesButton.performClick();
-
+                if (openBottomSheet) {
+                    chooseIndexesButton.performClick();
+                    openBottomSheet = false;
+                }
             }
         });
 
@@ -382,6 +386,7 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
      */
     private void submitButtonPressed() {
         if (validationCheck()) {
+            openBottomSheet = true;
             jsonViewModel.queryPlanningTimetableCourses(finalCourseCodeSelList);
             jsonViewModel.queryExamData(finalCourseCodeSelList);
         }

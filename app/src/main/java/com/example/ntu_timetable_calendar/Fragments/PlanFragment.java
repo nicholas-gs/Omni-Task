@@ -31,6 +31,7 @@ import com.example.ntu_timetable_calendar.Dialogs.TimetableEventDetailDialog;
 import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
 import com.example.ntu_timetable_calendar.EventModel.Event;
 import com.example.ntu_timetable_calendar.JsonModels.Course;
+import com.example.ntu_timetable_calendar.JsonModels.Exam;
 import com.example.ntu_timetable_calendar.R;
 import com.example.ntu_timetable_calendar.ViewModels.JsonViewModel;
 import com.example.ntu_timetable_calendar.ViewModels.PlanFragmentActivityViewModel;
@@ -60,13 +61,16 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
 
     // Variables
     private List<String> courseSelectionsList = new ArrayList<>();
-    private List<String> finalSelList = new ArrayList<>();
+    private List<String> finalCourseCodeSelList = new ArrayList<>();
     private List<String> allCourseCodesList = new ArrayList<>();
 
     private TimetableEntity timetableEntity;
 
     // Temporary store the list of courses sent by the JsonViewModel after sending the query
     private List<Course> queriedCourseList = new ArrayList<>();
+
+    // Temporary store the list of exam sent by the JsonViewModel after sending the query
+    private List<Exam> queriedExamList = new ArrayList<>();
 
     // A HashMap for temporary storage of the index selection for each course that the user has queried.
     private Map<String, String> indexesSel = new HashMap<>();
@@ -80,7 +84,6 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
     private TextView errorTV;
     private WeekView<Event> mWeekView;
     private MultiAutoCompleteTextView multiAutoCompleteTextView;
-    private static final String TAG = "PlanFragmentTAG";
 
     @Nullable
     @Override
@@ -145,6 +148,15 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
             @Override
             public void onChanged(List<Course> courseList) {
                 saveQueriedCourseList(courseList);
+                chooseIndexesButton.performClick();
+
+            }
+        });
+
+        jsonViewModel.getFilteredExamData().observe(this, new Observer<List<Exam>>() {
+            @Override
+            public void onChanged(List<Exam> examList) {
+                savedQueriedExamList(examList);
             }
         });
 
@@ -188,6 +200,19 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
         this.queriedCourseList.addAll(courseList);
         planFragmentActivityViewModel.setQueriedCourseList(this.queriedCourseList);
     }
+
+    /**
+     * Save the list of Exam POJO from the jsonViewModel into the member variable called queriedExamList.
+     * For use outside the ViewModel's onChanged Method
+     *
+     * @param examList - List of exam to save in the class member variable
+     */
+    private void savedQueriedExamList(List<Exam> examList) {
+        this.queriedExamList.clear();
+        this.queriedExamList.addAll(examList);
+        planFragmentActivityViewModel.setQueriedExamList(this.queriedExamList);
+    }
+
 
     /**
      * Functionality of the weekview widget is defined here
@@ -268,18 +293,18 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
      */
     private boolean validationCheck() {
 
-        // Clear finalSelList list to get rid of previous entries!
-        finalSelList.clear();
+        // Clear finalCourseCodeSelList list to get rid of previous entries!
+        finalCourseCodeSelList.clear();
         // Removes all whitespaces and converts to upper case for sanity check
         for (int i = 0; i < courseSelectionsList.size(); i++) {
-            finalSelList.add(courseSelectionsList.get(i).trim().toUpperCase());
+            finalCourseCodeSelList.add(courseSelectionsList.get(i).trim().toUpperCase());
         }
 
-        if (finalSelList.size() == 0) {
+        if (finalCourseCodeSelList.size() == 0) {
             errorTV.setText(getString(R.string.error_message));
             errorTV.setVisibility(View.VISIBLE);
             return false;
-        } else if (allCourseCodesList.containsAll(finalSelList)) {
+        } else if (allCourseCodesList.containsAll(finalCourseCodeSelList)) {
             errorTV.setVisibility(View.GONE);
             return true;
         } else {
@@ -351,17 +376,14 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
 
     /**
      * Functionality for the fragment's submit button
+     * When the user presses submit, two things happen :
+     * 1) Send the query through jsonViewModel.queryPlanningTimetableCourses() to get the list of Course objects
+     * 2) Send the query through  jsonViewModel.queryExamData() to get the list of Exam objects
      */
     private void submitButtonPressed() {
         if (validationCheck()) {
-            jsonViewModel.queryPlanningTimetableCourses(finalSelList);
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    chooseIndexesButton.performClick();
-                }
-            }, 100);
+            jsonViewModel.queryPlanningTimetableCourses(finalCourseCodeSelList);
+            jsonViewModel.queryExamData(finalCourseCodeSelList);
         }
     }
 

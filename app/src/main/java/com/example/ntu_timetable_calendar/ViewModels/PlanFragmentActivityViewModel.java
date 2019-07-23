@@ -8,9 +8,10 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.ntu_timetable_calendar.JsonModels.Course;
-import com.example.ntu_timetable_calendar.EventModel.Event;
 import com.example.ntu_timetable_calendar.Converters.CourseToEventConverter;
+import com.example.ntu_timetable_calendar.EventModel.Event;
+import com.example.ntu_timetable_calendar.JsonModels.Course;
+import com.example.ntu_timetable_calendar.JsonModels.Exam;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +29,9 @@ public class PlanFragmentActivityViewModel extends AndroidViewModel {
 
     // We store the list of courses sent by the JsonViewModel after sending the query
     private List<Course> queriedCourseList = new ArrayList<>();
+
+    // We store the list of exams sent by the JsonViewModel after sending the query
+    private List<Exam> queriedExamList = new ArrayList<>();
 
     // Store the string inside the "Enter module" autocompletetextview
     private String enterModuleQuery = "";
@@ -49,6 +53,10 @@ public class PlanFragmentActivityViewModel extends AndroidViewModel {
         this.queriedCourseList = queriedCourseList;
     }
 
+    public void setQueriedExamList(List<Exam> queriedExamList) {
+        this.queriedExamList = queriedExamList;
+    }
+
     public void setEnterModuleQuery(String enterModuleQuery) {
         this.enterModuleQuery = enterModuleQuery;
     }
@@ -61,6 +69,10 @@ public class PlanFragmentActivityViewModel extends AndroidViewModel {
 
     public List<Course> getQueriedCourseList() {
         return queriedCourseList;
+    }
+
+    public List<Exam> getQueriedExamList() {
+        return queriedExamList;
     }
 
     public String getEnterModuleQuery() {

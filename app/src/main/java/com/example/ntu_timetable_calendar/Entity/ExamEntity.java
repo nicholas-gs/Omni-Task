@@ -5,8 +5,10 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
+import static androidx.room.ForeignKey.CASCADE;
+
 @Entity(tableName = "exam_table", foreignKeys = @ForeignKey(entity = TimetableEntity.class, parentColumns = "id",
-childColumns = "timeTableId"))
+        childColumns = "timeTableId", onDelete = CASCADE))
 public class ExamEntity {
 
     @ColumnInfo(index = true)

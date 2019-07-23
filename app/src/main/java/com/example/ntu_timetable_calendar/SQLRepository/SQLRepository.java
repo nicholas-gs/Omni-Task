@@ -5,14 +5,18 @@ import android.os.AsyncTask;
 
 import androidx.lifecycle.LiveData;
 
+import com.example.ntu_timetable_calendar.Converters.CourseToEntityConverter;
 import com.example.ntu_timetable_calendar.DAO.CourseDAO;
+import com.example.ntu_timetable_calendar.DAO.ExamDAO;
 import com.example.ntu_timetable_calendar.DAO.TimetableDAO;
 import com.example.ntu_timetable_calendar.Entity.CourseEntity;
+import com.example.ntu_timetable_calendar.Entity.ExamEntity;
 import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
-import com.example.ntu_timetable_calendar.Converters.CourseToEntityConverter;
 import com.example.ntu_timetable_calendar.JsonModels.Course;
+import com.example.ntu_timetable_calendar.JsonModels.Exam;
 import com.example.ntu_timetable_calendar.Room.SQLDatabase;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -21,11 +25,13 @@ public class SQLRepository {
     private SQLDatabase sqlDatabase;
     private TimetableDAO timetableDAO;
     private CourseDAO courseDAO;
+    private ExamDAO examDAO;
 
     public SQLRepository(Application application) {
         this.sqlDatabase = SQLDatabase.getInstance(application);
         this.timetableDAO = this.sqlDatabase.timetableDAO();
         this.courseDAO = this.sqlDatabase.courseDAO();
+        this.examDAO = this.sqlDatabase.examDAO();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -193,6 +199,9 @@ public class SQLRepository {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
     public LiveData<List<CourseEntity>> getAllCourses() {
         return courseDAO.getAllCourses();
@@ -271,6 +280,101 @@ public class SQLRepository {
         @Override
         protected Void doInBackground(CourseEntity... courseEntities) {
             courseDAO.delete(courseEntities[0]);
+            return null;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public LiveData<List<ExamEntity>> getAllExams() {
+        return examDAO.getAllExams();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public LiveData<List<ExamEntity>> getTimetableExams(int timetableId) {
+        return examDAO.getTimetableExams(timetableId);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void insertExams(List<Exam> examList, int timetableId) {
+        new InsertExamsAsyncTask(this.examDAO, timetableId, examList).execute();
+    }
+
+    private static class InsertExamsAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        private ExamDAO examDAO;
+        private int timetableId;
+        private List<Exam> examList;
+        private List<ExamEntity> examEntityList;
+
+        InsertExamsAsyncTask(ExamDAO examDAO, int timetableId, List<Exam> examList) {
+            this.examDAO = examDAO;
+            this.timetableId = timetableId;
+            this.examList = examList;
+            this.examEntityList = new ArrayList<>();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            for (Exam exam : examList) {
+                ExamEntity examEntity = new ExamEntity(this.timetableId, exam.getDate(), exam.getDay(), exam.getTime(), exam.getCode(), exam.getName(),
+                        exam.getDuration());
+                this.examEntityList.add(examEntity);
+            }
+
+            examDAO.insert(this.examEntityList);
+            return null;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void updateExam(ExamEntity examEntity) {
+        new UpdateExamAsyncTask(this.examDAO, examEntity).execute();
+    }
+
+    private static class UpdateExamAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        private ExamDAO examDAO;
+        private ExamEntity examEntity;
+
+        UpdateExamAsyncTask(ExamDAO examDAO, ExamEntity examEntity) {
+            this.examDAO = examDAO;
+            this.examEntity = examEntity;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            this.examDAO.update(this.examEntity);
+            return null;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void deleteExam(ExamEntity examEntity) {
+        new DeleteExamAsyncTask(this.examDAO, examEntity).execute();
+    }
+
+    private static class DeleteExamAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        private ExamDAO examDAO;
+        private ExamEntity examEntity;
+
+        DeleteExamAsyncTask(ExamDAO examDAO, ExamEntity examEntity) {
+            this.examDAO = examDAO;
+            this.examEntity = examEntity;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            this.examDAO.delete(this.examEntity);
             return null;
         }
     }

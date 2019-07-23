@@ -5,10 +5,10 @@ import android.os.AsyncTask;
 
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.ntu_timetable_calendar.JsonModels.Course;
 import com.example.ntu_timetable_calendar.JsonDAO.JsonDAO;
-import com.example.ntu_timetable_calendar.JsonModels.Exam;
 import com.example.ntu_timetable_calendar.JsonDatabase.JsonDatabase;
+import com.example.ntu_timetable_calendar.JsonModels.Course;
+import com.example.ntu_timetable_calendar.JsonModels.Exam;
 
 import java.util.List;
 
@@ -76,25 +76,25 @@ public class JsonRepository {
     /**
      * Send a query (String) for exam objects and asynchronously sends the query to the DAO
      *
-     * @param queryStr String of course to query
+     * @param queryStrList List of string of course codes to query
      */
-    public void queryExamData(String queryStr) {
-        new QueryExamDataAsyncTask(jsonDAO, queryStr).execute();
+    public void queryExamData(List<String> queryStrList) {
+        new QueryExamDataAsyncTask(jsonDAO, queryStrList).execute();
     }
 
     private static class QueryExamDataAsyncTask extends AsyncTask<Void, Void, Void> {
 
         private JsonDAO jsonDAO;
-        private String querystr;
+        private List<String> queryStrList;
 
-        QueryExamDataAsyncTask(JsonDAO jsonDAO, String querystr) {
+        QueryExamDataAsyncTask(JsonDAO jsonDAO, List<String> queryStrList) {
             this.jsonDAO = jsonDAO;
-            this.querystr = querystr;
+            this.queryStrList = queryStrList;
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
-            jsonDAO.queryExamData(querystr);
+            jsonDAO.queryExamData(queryStrList);
             return null;
         }
     }

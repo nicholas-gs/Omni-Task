@@ -19,15 +19,15 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.ntu_timetable_calendar.RVAdapters.IndexRVAdapter;
-import com.example.ntu_timetable_calendar.JsonModels.Course;
-import com.example.ntu_timetable_calendar.JsonModels.Index;
-import com.example.ntu_timetable_calendar.JsonModels.Exam;
 import com.example.ntu_timetable_calendar.ExpandableCardView.ExpandableCardView;
 import com.example.ntu_timetable_calendar.Helper.StringHelper;
+import com.example.ntu_timetable_calendar.JsonModels.Course;
+import com.example.ntu_timetable_calendar.JsonModels.Exam;
+import com.example.ntu_timetable_calendar.JsonModels.Index;
 import com.example.ntu_timetable_calendar.R;
-import com.example.ntu_timetable_calendar.ViewModels.SearchFragmentActivityViewModel;
+import com.example.ntu_timetable_calendar.RVAdapters.IndexRVAdapter;
 import com.example.ntu_timetable_calendar.ViewModels.JsonViewModel;
+import com.example.ntu_timetable_calendar.ViewModels.SearchFragmentActivityViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -126,7 +126,10 @@ public class CourseDetailFragment extends Fragment {
             public void onChanged(Course course) {
                 saveIndexes(course);
                 bindCourseData(course);
-                jsonViewModel.queryExamData(course.getCourseCode());
+                String s = course.getCourseCode();
+                ArrayList<String> queryStrList = new ArrayList<>();
+                queryStrList.add(s);
+                jsonViewModel.queryExamData(queryStrList);
             }
         });
     }

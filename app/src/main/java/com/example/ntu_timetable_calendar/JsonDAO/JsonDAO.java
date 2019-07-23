@@ -100,12 +100,12 @@ public class JsonDAO {
      * Asynchronously searches through the entire list of all exams for exams with the SAME code, then
      * posts the result to MutableLiveData<List<Exam>> filteredExamList and triggers the observer.
      * <p>
-     * NOTE : When the queryStr is empty, i.e is "", it returns the entire list
+     * NOTE : When the queryStrList has a size of 0, it returns the entire list
      *
-     * @param queryStr String of exam code to query
+     * @param queryStrList List of string of exam code to query
      */
-    public void queryExamData(String queryStr) {
-        new QueryExamDataAsyncTask(allExams, filteredExamList, queryStr).execute();
+    public void queryExamData(List<String> queryStrList) {
+        new QueryExamDataAsyncTask(allExams, filteredExamList, queryStrList).execute();
     }
 
 
@@ -113,25 +113,28 @@ public class JsonDAO {
 
         List<Exam> allExams;
         private MutableLiveData<List<Exam>> filteredList;
-        private String queryStr;
+        private List<String> queryStrList;
 
-        QueryExamDataAsyncTask(List<Exam> allExams, MutableLiveData<List<Exam>> filteredList, String queryStr) {
+        QueryExamDataAsyncTask(List<Exam> allExams, MutableLiveData<List<Exam>> filteredList, List<String> queryStrList) {
             this.allExams = allExams;
             this.filteredList = filteredList;
-            this.queryStr = queryStr;
+            this.queryStrList = queryStrList;
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
 
-            if (queryStr.equals("")) {
+            if (queryStrList.size() == 0) {
                 List<Exam> filteredListTemp = new ArrayList<>(allExams);
                 filteredList.postValue(filteredListTemp);
             } else {
                 List<Exam> filteredListTemp = new ArrayList<>();
-                for (Exam e : allExams) {
-                    if (e.getCode().equals(queryStr)) {
-                        filteredListTemp.add(e);
+
+                for (String queryStr : queryStrList) {
+                    for (Exam e : allExams) {
+                        if (e.getCode().equals(queryStr)) {
+                            filteredListTemp.add(e);
+                        }
                     }
                 }
                 filteredList.postValue(filteredListTemp);

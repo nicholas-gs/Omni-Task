@@ -6,7 +6,6 @@ import android.os.AsyncTask;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import com.example.ntu_timetable_calendar.JsonModels.Course;
 import com.example.ntu_timetable_calendar.JsonModels.Exam;
@@ -24,11 +23,11 @@ public class JsonViewModel extends AndroidViewModel {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
-    public MutableLiveData<List<Course>> getFilteredCourseData() {
+    public LiveData<List<Course>> getFilteredCourseData() {
         return jsonRepository.getFilteredCourseList();
     }
 
-    public MutableLiveData<List<Exam>> getFilteredExamData() {
+    public LiveData<List<Exam>> getFilteredExamData() {
         return jsonRepository.getFilteredExamList();
     }
 
@@ -65,23 +64,23 @@ public class JsonViewModel extends AndroidViewModel {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public void queryExamData(String queryStr) {
-        new QueryExamDataAsyncTask(queryStr, jsonRepository).execute();
+    public void queryExamData(List<String> queryStrList) {
+        new QueryExamDataAsyncTask(queryStrList, jsonRepository).execute();
     }
 
     private static class QueryExamDataAsyncTask extends AsyncTask<Void, Void, Void> {
 
-        private String queryStr;
+        private List<String> queryStrList;
         private JsonRepository jsonRepository;
 
-        QueryExamDataAsyncTask(String queryStr, JsonRepository jsonRepository) {
-            this.queryStr = queryStr;
+        QueryExamDataAsyncTask(List<String> queryStrList, JsonRepository jsonRepository) {
+            this.queryStrList = queryStrList;
             this.jsonRepository = jsonRepository;
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
-            jsonRepository.queryExamData(queryStr);
+            jsonRepository.queryExamData(queryStrList);
             return null;
         }
     }

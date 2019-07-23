@@ -518,7 +518,7 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
         }
         // Save the courses into Room
         sqlViewModel.insertCourses(timetableId.intValue(), this.queriedCourseList, this.indexesSel);
-
+        sqlViewModel.insertExams(this.queriedExamList, timetableId.intValue());
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override

@@ -1,12 +1,10 @@
 package com.example.ntu_timetable_calendar.Converters;
 
-import android.graphics.Color;
-import android.util.Log;
-
 import com.example.ntu_timetable_calendar.Entity.CourseEntity;
 import com.example.ntu_timetable_calendar.Entity.DetailEntity;
 import com.example.ntu_timetable_calendar.EventModel.Event;
 import com.example.ntu_timetable_calendar.Helper.DayOfWeek;
+import com.example.ntu_timetable_calendar.Helper.EventColors;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -16,15 +14,12 @@ import java.util.List;
  * Used to convert a list of CourseEntity from Room into a list of Event for display in a WeekView widget.
  * Used by TimetableDetailFragment
  */
-public abstract class EntityToEventConverter {
-    private static final String TAG = "EntityToEventConverterTAG";
+public abstract class CourseEntityToEventConverter {
 
     public static List<Event> convertEntitiesToEvents(List<CourseEntity> courseEntityList) {
-        Log.d(TAG, "convertEntitiesToEvents: Size of courseEntityList - " + courseEntityList.size());
+
         Calendar calendar = Calendar.getInstance();
         List<Event> eventList = new ArrayList<>();
-
-        int[] colors = colors();
 
         for (CourseEntity courseEntity : courseEntityList) {
 
@@ -66,21 +61,11 @@ public abstract class EntityToEventConverter {
             // Title
             String title = courseEntity.getCourseCode() + " " + detailEntity.getType() + " " + detailEntity.getRemarks();
             Long id = Long.parseLong(courseEntity.getIndexNumber());
-            Event event = new Event(id, title, startTime, endTime, detailEntity.getLocation(), colors[(id.intValue()) % 4],
+            Event event = new Event(id, title, startTime, endTime, detailEntity.getLocation(), EventColors.colors()[(id.intValue()) % 4],
                     false, false);
             eventList.add(event);
         }
         return eventList;
     }
 
-    private static int[] colors() {
-        int pink = Color.parseColor("#f57f68");
-        int green = Color.parseColor("#87d288");
-        int yellow = Color.parseColor("#f8b552");
-        int blue = Color.parseColor("#59dbe0");
-
-        return new int[]{
-                pink, green, yellow, blue
-        };
-    }
 }

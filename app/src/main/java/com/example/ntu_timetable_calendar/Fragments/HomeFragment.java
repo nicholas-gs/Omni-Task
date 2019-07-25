@@ -12,14 +12,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.alamkanak.weekview.EventClickListener;
 import com.alamkanak.weekview.MonthChangeListener;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewDisplayable;
+import com.example.ntu_timetable_calendar.Entity.CourseEventEntity;
+import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
 import com.example.ntu_timetable_calendar.EventModel.Event;
 import com.example.ntu_timetable_calendar.R;
 import com.example.ntu_timetable_calendar.SecondActivity;
+import com.example.ntu_timetable_calendar.ViewModels.SQLViewModel;
 import com.google.android.material.appbar.AppBarLayout;
 
 import org.jetbrains.annotations.NotNull;
@@ -38,6 +43,8 @@ public class HomeFragment extends Fragment implements EventClickListener<Event>,
     // We store the events we want to display in the weekview widget here
     private List<WeekViewDisplayable<Event>> eventList = new ArrayList<>();
 
+    private SQLViewModel sqlViewModel;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -49,6 +56,8 @@ public class HomeFragment extends Fragment implements EventClickListener<Event>,
         super.onViewCreated(view, savedInstanceState);
 
         initViews(view);
+        sqlViewModel = ViewModelProviders.of(this).get(SQLViewModel.class);
+        getMainTimetable();
     }
 
     private void initViews(View view) {
@@ -74,6 +83,48 @@ public class HomeFragment extends Fragment implements EventClickListener<Event>,
         mWeekView.setMonthChangeListener(this);
         mWeekView.setOnEventClickListener(this);
         mWeekView.goToHour(8);
+    }
+
+
+    private void getMainTimetable() {
+        sqlViewModel.getMainTimetable().observe(this, new Observer<TimetableEntity>() {
+            @Override
+            public void onChanged(TimetableEntity timetableEntity) {
+                if (timetableEntity != null) {
+                    getEvents(timetableEntity);
+                }
+            }
+        });
+    }
+
+    private void getEvents(TimetableEntity timetableEntity) {
+
+        sqlViewModel.getTimetableCourseEvents(timetableEntity.getId()).observe(this, new Observer<List<CourseEventEntity>>() {
+            @Override
+            public void onChanged(List<CourseEventEntity> courseEventEntityList) {
+                displayEvents(courseEventEntityList);
+            }
+        });
+    }
+
+    private void displayEvents(List<CourseEventEntity> courseEventEntityList) {
+        this.eventList.clear();
+
+        Calendar calendar = Calendar.getInstance();
+
+        for (CourseEventEntity courseEventEntity : courseEventEntityList) {
+            Calendar start = (Calendar) calendar.clone();
+            start.setTimeInMillis(courseEventEntity.getStartTime());
+            Calendar end = (Calendar) calendar.clone();
+            end.setTimeInMillis(courseEventEntity.getEndTime());
+
+            Event event = new Event(courseEventEntity.getId(), courseEventEntity.getTitle(), start, end
+                    , courseEventEntity.getLocation(), courseEventEntity.getColor(),
+                    courseEventEntity.getAllDay(), courseEventEntity.getCanceled());
+
+            this.eventList.add(event);
+        }
+        mWeekView.notifyDataSetChanged();
     }
 
     private void startSecondActivity(String intentString) {

@@ -1,12 +1,11 @@
 package com.example.ntu_timetable_calendar.Converters;
 
-import android.graphics.Color;
-
+import com.example.ntu_timetable_calendar.EventModel.Event;
 import com.example.ntu_timetable_calendar.Helper.DayOfWeek;
+import com.example.ntu_timetable_calendar.Helper.EventColors;
 import com.example.ntu_timetable_calendar.JsonModels.Course;
 import com.example.ntu_timetable_calendar.JsonModels.Detail;
 import com.example.ntu_timetable_calendar.JsonModels.Index;
-import com.example.ntu_timetable_calendar.EventModel.Event;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -31,7 +30,6 @@ public abstract class CourseToEventConverter {
 
         // We iterate through a integer in order to give the events different colors
         int i = 1;
-        int[] colors = colors();
 
         Calendar calendar = Calendar.getInstance();
         List<Event> eventList = new ArrayList<>();
@@ -58,7 +56,7 @@ public abstract class CourseToEventConverter {
                                 break;
                             }
 
-                            eventList.add(convertDetailToEvent(detail, calendar, courseCode, index, colors, i));
+                            eventList.add(convertDetailToEvent(detail, calendar, courseCode, index, i));
                         }
 
                         break;
@@ -78,12 +76,10 @@ public abstract class CourseToEventConverter {
      * @param calendar   Calendar object
      * @param courseCode Course code for detail
      * @param index      Index that detail POJO belongs to
-     * @param colors     List of colors for a event
      * @param i          Counter for choosing a color for the event object
      * @return Return the new event created
      */
-    private static Event convertDetailToEvent(Detail detail, Calendar calendar, String courseCode, Index index,
-                                              int[] colors, int i) {
+    private static Event convertDetailToEvent(Detail detail, Calendar calendar, String courseCode, Index index, int i) {
 
         Calendar startTime = (Calendar) calendar.clone();
         Calendar endTime = (Calendar) startTime.clone();
@@ -116,18 +112,7 @@ public abstract class CourseToEventConverter {
         String title = courseCode + " " + detail.getType() + " " + detail.getRemarks();
 
         return new Event(Long.parseLong(index.getIndexNumber()), title, startTime, endTime, detail.getLocation(),
-                colors[i % 4], false, false);
-    }
-
-    private static int[] colors() {
-        int pink = Color.parseColor("#f57f68");
-        int green = Color.parseColor("#87d288");
-        int yellow = Color.parseColor("#f8b552");
-        int blue = Color.parseColor("#59dbe0");
-
-        return new int[]{
-                pink, green, yellow, blue
-        };
+                EventColors.colors()[i % 4], false, false);
     }
 
 }

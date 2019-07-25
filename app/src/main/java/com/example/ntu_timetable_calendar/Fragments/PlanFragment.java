@@ -521,9 +521,17 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
         if (timetableEntity.getIsMainTimetable()) {
             sqlViewModel.setIsMainTimetable(timetableId.intValue());
         }
+
         // Save the courses into Room
         sqlViewModel.insertCourses(timetableId.intValue(), this.queriedCourseList, this.indexesSel);
+
+        // Save the exam into Room
         sqlViewModel.insertExams(this.queriedExamList, timetableId.intValue());
+
+        // Save the CourseEvents into Room
+        sqlViewModel.insertCourseEvents(this.queriedCourseList, this.indexesSel, timetableId.intValue(), getResources().getInteger(R.integer.ACADEMIC_START_MONTH),
+                getResources().getInteger(R.integer.ACADEMIC_START_DATE));
+
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -531,6 +539,5 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
                 Toasty.success(requireContext(), "Timetable saved", Toasty.LENGTH_SHORT).show();
             }
         }, 200);
-
     }
 }

@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.example.ntu_timetable_calendar.Entity.CourseEntity;
+import com.example.ntu_timetable_calendar.Entity.CourseEventEntity;
 import com.example.ntu_timetable_calendar.Entity.ExamEntity;
 import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
 import com.example.ntu_timetable_calendar.JsonModels.Course;
@@ -130,4 +131,27 @@ public class SQLViewModel extends AndroidViewModel implements SQLRepository.Inse
     public void deleteExam(ExamEntity examEntity) {
         sqlRepository.deleteExam(examEntity);
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public LiveData<List<CourseEventEntity>> getAllCourseEvents() {
+        return sqlRepository.getAllCourseEvents();
+    }
+
+    public LiveData<List<CourseEventEntity>> getTimetableCourseEvents(int timetableId) {
+        return sqlRepository.getTimetableCourseEvents(timetableId);
+    }
+
+    public void insertCourseEvents(List<Course> courseList, Map<String, String> indexSel, int timetableId, int startMonth, int startDate) {
+        sqlRepository.insertCourseEvents(courseList, indexSel, timetableId, startMonth, startDate);
+    }
+
+    public void updateCourseEvent(CourseEventEntity courseEventEntity) {
+        sqlRepository.updateCourseEvent(courseEventEntity);
+    }
+
+    public void deleteCourseEvent(CourseEventEntity courseEventEntity) {
+        sqlRepository.deleteCourseEvent(courseEventEntity);
+    }
+
 }

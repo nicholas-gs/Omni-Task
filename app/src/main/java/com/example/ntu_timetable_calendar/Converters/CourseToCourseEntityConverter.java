@@ -18,13 +18,13 @@ import java.util.Map;
  * Convert a list of courses with the Map of selection index into a list of CourseEntity for Room to save
  * Used in SQLRepository
  */
-public class CourseToEntityConverter {
+public class CourseToCourseEntityConverter {
 
     private int timetableId;
     private List<Course> courseList;
     private Map<String, String> indexSel;
 
-    public CourseToEntityConverter(int timetableId, @NonNull List<Course> courseList, @NonNull Map<String, String> indexSel) {
+    public CourseToCourseEntityConverter(int timetableId, @NonNull List<Course> courseList, @NonNull Map<String, String> indexSel) {
         this.timetableId = timetableId;
         this.courseList = courseList;
         this.indexSel = indexSel;

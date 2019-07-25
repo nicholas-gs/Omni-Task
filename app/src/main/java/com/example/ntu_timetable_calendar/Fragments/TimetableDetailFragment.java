@@ -6,7 +6,6 @@ import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,12 +24,12 @@ import com.alamkanak.weekview.EventClickListener;
 import com.alamkanak.weekview.MonthChangeListener;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewDisplayable;
+import com.example.ntu_timetable_calendar.Converters.CourseEntityToEventConverter;
 import com.example.ntu_timetable_calendar.Dialogs.EditTimetableDialog;
 import com.example.ntu_timetable_calendar.Dialogs.TimetableEventDetailDialog;
 import com.example.ntu_timetable_calendar.Entity.CourseEntity;
 import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
 import com.example.ntu_timetable_calendar.EventModel.Event;
-import com.example.ntu_timetable_calendar.Converters.EntityToEventConverter;
 import com.example.ntu_timetable_calendar.R;
 import com.example.ntu_timetable_calendar.ViewModels.SQLViewModel;
 import com.example.ntu_timetable_calendar.ViewModels.SavedTimetableActivityViewModel;
@@ -59,8 +58,6 @@ public class TimetableDetailFragment extends Fragment implements MonthChangeList
 
     // We store the events we want to display in the weekview widget here
     private List<WeekViewDisplayable<Event>> eventList = new ArrayList<>();
-
-    private static final String TAG = "EntityToEventConverterTAG";
 
     public TimetableDetailFragment() {
 
@@ -189,8 +186,8 @@ public class TimetableDetailFragment extends Fragment implements MonthChangeList
         mWeekView.setHourHeight(height / 12f);
 
         this.eventList.clear();
-        this.eventList.addAll(EntityToEventConverter.convertEntitiesToEvents(courseEntities));
-        Log.d(TAG, "displayTimetable: Size after conversion - " + this.eventList.size());
+        this.eventList.addAll(CourseEntityToEventConverter.convertEntitiesToEvents(courseEntities));
+
         mWeekView.notifyDataSetChanged();
     }
 

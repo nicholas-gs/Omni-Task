@@ -83,7 +83,7 @@ public class SavedTimetablesFragment extends Fragment implements SavedTimetables
      * Initialise the SavedTimetableActivityViewModel that is used to pass data between this fragment and the TimetableDetailFragment/Prevent
      * crashes with orientation changes
      */
-    private void initActivityViewModel(){
+    private void initActivityViewModel() {
         savedTimetableActivityViewModel = ViewModelProviders.of(requireActivity()).get(SavedTimetableActivityViewModel.class);
     }
 
@@ -104,7 +104,7 @@ public class SavedTimetablesFragment extends Fragment implements SavedTimetables
     @Override
     public void itemListener(TimetableEntity timetableEntity) {
         savedTimetableActivityViewModel.setTimetableEntity(timetableEntity);
-        FragmentTransaction fragmentTransaction =  Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction();
+        FragmentTransaction fragmentTransaction = Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction();
         fragmentTransaction.setCustomAnimations(R.anim.fragment_slide_up, R.anim.fragment_slide_down, R.anim.fragment_slide_up,
                 R.anim.fragment_slide_down);
         fragmentTransaction.add(R.id.second_activity_fragment_container,

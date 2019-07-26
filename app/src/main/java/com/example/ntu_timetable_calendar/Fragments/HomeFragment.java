@@ -97,18 +97,24 @@ public class HomeFragment extends Fragment implements EventClickListener<Event>,
         mWeekView = view.findViewById(R.id.home_fragment_weekview);
         mWeekView.setMonthChangeListener(this);
         mWeekView.setOnEventClickListener(this);
+        mWeekView.setHeaderRowTextSize(getResources().getInteger(R.integer.HEADER_14_SP));
+        setEventHeight();
+        goToNow();
     }
 
     private void setNumberOfVisibleDays(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.day_view_menu_item:
                 mWeekView.setNumberOfVisibleDays(1);
+                mWeekView.setHeaderRowTextSize(getResources().getInteger(R.integer.HEADER_14_SP));
                 break;
             case R.id.three_day_view_menu_item:
                 mWeekView.setNumberOfVisibleDays(3);
+                mWeekView.setHeaderRowTextSize(getResources().getInteger(R.integer.HEADER_14_SP));
                 break;
             case R.id.five_day_view_menu_item:
                 mWeekView.setNumberOfVisibleDays(5);
+                mWeekView.setHeaderRowTextSize(getResources().getInteger(R.integer.HEADER_12_SP));
                 break;
         }
         item.setChecked(true);
@@ -159,12 +165,6 @@ public class HomeFragment extends Fragment implements EventClickListener<Event>,
     private void displayEvents(List<CourseEventEntity> courseEventEntityList) {
         this.eventList.clear();
 
-        // Set the size factor of the WeekView widget (simulate pinching the widget). The user can still adjust the size/
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        Objects.requireNonNull(getActivity()).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int height = displayMetrics.heightPixels;
-        mWeekView.setHourHeight(height / 12f);
-
         Calendar calendar = Calendar.getInstance();
 
         for (CourseEventEntity courseEventEntity : courseEventEntityList) {
@@ -180,6 +180,16 @@ public class HomeFragment extends Fragment implements EventClickListener<Event>,
             this.eventList.add(event);
         }
         mWeekView.notifyDataSetChanged();
+    }
+
+    /**
+     * Set the size factor of the WeekView widget (simulate pinching the widget). The user can still adjust the size.
+     */
+    private void setEventHeight() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        Objects.requireNonNull(getActivity()).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int height = displayMetrics.heightPixels;
+        mWeekView.setHourHeight(height / 12f);
     }
 
     private void startSecondActivity(String intentString) {
@@ -210,12 +220,15 @@ public class HomeFragment extends Fragment implements EventClickListener<Event>,
           This check is important -- without it, the same event will be duplicated three times as the library will
           preload three months of events!
          */
-        Calendar today = Calendar.getInstance();
-        if (today.get(Calendar.MONTH) == calendar.get(Calendar.MONTH)) {
-            return eventList;
-        } else {
-            return new ArrayList<>();
+
+        List<WeekViewDisplayable<Event>> finalList = new ArrayList<>();
+
+        for (WeekViewDisplayable<Event> event : eventList) {
+            if (event.toWeekViewEvent().getStartTime().get(Calendar.MONTH) == calendar.get(Calendar.MONTH)) {
+                finalList.add(event);
+            }
         }
+        return finalList;
     }
 
 }

@@ -7,4 +7,6 @@
     <integer name="NO_PRIORITY">5</integer>
     <integer name="ACADEMIC_START_MONTH">7</integer>
     <integer name="ACADEMIC_START_DATE">12</integer>
+    <integer name="HEADER_14_SP">42</integer>
+    <integer name="HEADER_12_SP">36</integer>
 </resources>

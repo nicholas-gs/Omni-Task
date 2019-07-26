@@ -1,15 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:title="@string/saved_timetables"
-        android:id="@+id/saved_timetables_menu_item"
-        app:showAsAction="never"
-        />
 
     <item
-        android:title="@string/about"
+        android:id="@+id/go_to_today_menu_item"
+        android:title="@string/today"
+        app:showAsAction="ifRoom" />
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/day_view_menu_item"
+            android:title="@string/day_view"
+            app:showAsAction="never" />
+
+        <item
+            android:id="@+id/three_day_view_menu_item"
+            android:checked="true"
+            android:title="@string/three_day_view"
+            app:showAsAction="never" />
+
+        <item
+            android:id="@+id/five_day_view_menu_item"
+            android:title="@string/five_day_view"
+            app:showAsAction="never" />
+
+    </group>
+
+    <item
+        android:id="@+id/saved_timetables_menu_item"
+        android:title="@string/saved_timetables"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/about_menu_item"
-        app:showAsAction="never"
-        />
+        android:title="@string/about"
+        app:showAsAction="never" />
+
 </menu>

@@ -47,4 +47,8 @@
     <string name="changes_saved">Changes saved</string>
     <string name="description_is_empty">Description is empty!</string>
     <string name="title_is_empty">Title is empty!</string>
+    <string name="today">TODAY</string>
+    <string name="day_view">Day view</string>
+    <string name="three_day_view">3 day view</string>
+    <string name="five_day_view">5 day view</string>
 </resources>

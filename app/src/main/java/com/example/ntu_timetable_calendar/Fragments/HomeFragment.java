@@ -22,6 +22,7 @@ import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewDisplayable;
 import com.example.ntu_timetable_calendar.Dialogs.TimetableEventDetailDialog;
 import com.example.ntu_timetable_calendar.Entity.CourseEventEntity;
+import com.example.ntu_timetable_calendar.Entity.ExamEventEntity;
 import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
 import com.example.ntu_timetable_calendar.EventModel.Event;
 import com.example.ntu_timetable_calendar.R;
@@ -60,7 +61,7 @@ public class HomeFragment extends Fragment implements EventClickListener<Event>,
 
         sqlViewModel = ViewModelProviders.of(this).get(SQLViewModel.class);
         initViews(view);
-        getMainTimetable();
+        getMainTimetableClasses();
     }
 
     private void initViews(View view) {
@@ -102,6 +103,11 @@ public class HomeFragment extends Fragment implements EventClickListener<Event>,
         goToNow();
     }
 
+    /**
+     * Changes the number of visible days for the WeekView widget
+     *
+     * @param item Toolbar menu's item pressed
+     */
     private void setNumberOfVisibleDays(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.day_view_menu_item:
@@ -131,7 +137,7 @@ public class HomeFragment extends Fragment implements EventClickListener<Event>,
     /**
      * Since we are only going to display the main timetable in the WeekView widget, the will get only it from Room
      */
-    private void getMainTimetable() {
+    private void getMainTimetableClasses() {
         sqlViewModel.getMainTimetable().observe(this, new Observer<TimetableEntity>() {
             @Override
             public void onChanged(TimetableEntity timetableEntity) {
@@ -149,10 +155,22 @@ public class HomeFragment extends Fragment implements EventClickListener<Event>,
      * @param timetableEntity Main timetable from Room
      */
     private void getEvents(TimetableEntity timetableEntity) {
+
+        this.eventList.clear();
+
         sqlViewModel.getTimetableCourseEvents(timetableEntity.getId()).observe(this, new Observer<List<CourseEventEntity>>() {
             @Override
             public void onChanged(List<CourseEventEntity> courseEventEntityList) {
-                displayEvents(courseEventEntityList);
+                saveCourseEventEntityList(courseEventEntityList);
+                mWeekView.notifyDataSetChanged();
+            }
+        });
+
+        sqlViewModel.getTimetableExamEvents(timetableEntity.getId()).observe(this, new Observer<List<ExamEventEntity>>() {
+            @Override
+            public void onChanged(List<ExamEventEntity> examEventEntityList) {
+                saveExamEventEntityList(examEventEntityList);
+                mWeekView.notifyDataSetChanged();
             }
         });
     }
@@ -162,8 +180,7 @@ public class HomeFragment extends Fragment implements EventClickListener<Event>,
      *
      * @param courseEventEntityList List of CourseEventEntity from Room
      */
-    private void displayEvents(List<CourseEventEntity> courseEventEntityList) {
-        this.eventList.clear();
+    private void saveCourseEventEntityList(List<CourseEventEntity> courseEventEntityList) {
 
         Calendar calendar = Calendar.getInstance();
 
@@ -179,7 +196,28 @@ public class HomeFragment extends Fragment implements EventClickListener<Event>,
 
             this.eventList.add(event);
         }
-        mWeekView.notifyDataSetChanged();
+    }
+
+    /**
+     * Takes in a list of ExamEventEntity from Room and converts them into Event for display in the WeekView widget
+     *
+     * @param examEventEntityList List of ExamEventEntity from Room
+     */
+    private void saveExamEventEntityList(List<ExamEventEntity> examEventEntityList) {
+
+        Calendar calendar = Calendar.getInstance();
+
+        for (ExamEventEntity examEventEntity : examEventEntityList) {
+            Calendar start = (Calendar) calendar.clone();
+            start.setTimeInMillis(examEventEntity.getStartTime());
+            Calendar end = (Calendar) calendar.clone();
+            end.setTimeInMillis(examEventEntity.getEndTime());
+
+            Event event = new Event(examEventEntity.getId(), examEventEntity.getTitle(), start, end, examEventEntity.getLocation(), examEventEntity.getColor(),
+                    examEventEntity.getAllDay(), examEventEntity.getCanceled());
+
+            this.eventList.add(event);
+        }
     }
 
     /**

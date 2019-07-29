@@ -9,6 +9,7 @@ import androidx.lifecycle.LiveData;
 import com.example.ntu_timetable_calendar.Entity.CourseEntity;
 import com.example.ntu_timetable_calendar.Entity.CourseEventEntity;
 import com.example.ntu_timetable_calendar.Entity.ExamEntity;
+import com.example.ntu_timetable_calendar.Entity.ExamEventEntity;
 import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
 import com.example.ntu_timetable_calendar.JsonModels.Course;
 import com.example.ntu_timetable_calendar.JsonModels.Exam;
@@ -142,8 +143,8 @@ public class SQLViewModel extends AndroidViewModel implements SQLRepository.Inse
         return sqlRepository.getTimetableCourseEvents(timetableId);
     }
 
-    public void insertCourseEvents(List<Course> courseList, Map<String, String> indexSel, int timetableId, int startMonth, int startDate) {
-        sqlRepository.insertCourseEvents(courseList, indexSel, timetableId, startMonth, startDate);
+    public void insertCourseEvents(List<Course> courseList, Map<String, String> indexSel, int timetableId, int startYear, int startMonth, int startDate) {
+        sqlRepository.insertCourseEvents(courseList, indexSel, timetableId, startYear, startMonth, startDate);
     }
 
     public void updateCourseEvent(CourseEventEntity courseEventEntity) {
@@ -152,6 +153,28 @@ public class SQLViewModel extends AndroidViewModel implements SQLRepository.Inse
 
     public void deleteCourseEvent(CourseEventEntity courseEventEntity) {
         sqlRepository.deleteCourseEvent(courseEventEntity);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public LiveData<List<ExamEventEntity>> getAllExamEvents() {
+        return sqlRepository.getAllExamEvents();
+    }
+
+    public LiveData<List<ExamEventEntity>> getTimetableExamEvents(int timetableId) {
+        return sqlRepository.getTimetableExamEvents(timetableId);
+    }
+
+    public void insertExamEvents(List<Exam> examList, int timetableId) {
+        sqlRepository.insertExamEvents(examList, timetableId);
+    }
+
+    public void updateExamEvent(ExamEventEntity examEventEntity) {
+        sqlRepository.updateExamEvent(examEventEntity);
+    }
+
+    public void deleteExamEvent(ExamEventEntity examEventEntity) {
+        sqlRepository.deleteExamEvent(examEventEntity);
     }
 
 }

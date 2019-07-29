@@ -30,8 +30,8 @@ public abstract class CourseEntityToEventConverter {
                 continue;
             }
 
-            Calendar startTime = CalendarParser.parseTime(CalendarParser.START_TIME, calendar, detailEntity);
-            Calendar endTime = CalendarParser.parseTime(CalendarParser.END_TIME, calendar, detailEntity);
+            Calendar startTime = CalendarParser.parseEventTime(CalendarParser.START_TIME, calendar, detailEntity);
+            Calendar endTime = CalendarParser.parseEventTime(CalendarParser.END_TIME, calendar, detailEntity);
 
             // Title
             String title = courseEntity.getCourseCode() + " " + detailEntity.getType() + " " + detailEntity.getRemarks();

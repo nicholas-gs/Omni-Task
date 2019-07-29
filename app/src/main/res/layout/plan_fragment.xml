@@ -94,15 +94,15 @@
             android:textColor="@color/event_color_03" />
 
         <ImageView
-            android:contentDescription="@string/save_timetable"
             android:id="@+id/plan_fragment_save_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/plan_fragment_error_textview"
             android:layout_alignParentEnd="true"
-            android:layout_marginEnd="12dp"
             android:layout_marginTop="12dp"
+            android:layout_marginEnd="12dp"
             android:clickable="true"
+            android:contentDescription="@string/save_timetable"
             android:focusable="true"
             android:src="@drawable/star_selector" />
 
@@ -115,10 +115,13 @@
         android:layout_below="@id/rl1"
         android:visibility="visible"
         app:columnGap="1dp"
+        app:eventCornerRadius="@dimen/event_corner_radius"
         app:dayBackgroundColor="@color/colorPrimary"
         app:defaultEventColor="@color/colorPrimary"
+        app:eventPadding="2dp"
         app:eventTextColor="@color/colorWhite"
         app:firstDayOfWeek="monday"
+        app:fontFamily="monospace"
         app:headerRowBackgroundColor="@color/colorPrimary"
         app:headerRowBottomLineColor="@color/colorContentText"
         app:headerRowPadding="12dp"
@@ -127,6 +130,7 @@
         app:horizontalScrollingEnabled="false"
         app:hourHeight="40dp"
         app:numberOfVisibleDays="5"
+        app:overlappingEventGap="1dp"
         app:showFirstDayOfWeekFirst="true"
         app:showHeaderRowBottomLine="true"
         app:showTimeColumnHourSeparator="false"

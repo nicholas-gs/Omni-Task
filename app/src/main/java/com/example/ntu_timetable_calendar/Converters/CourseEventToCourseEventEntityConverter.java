@@ -18,9 +18,11 @@ public class CourseEventToCourseEventEntityConverter {
     private List<CourseEventEntity> finalList = new ArrayList<>();
     private int startMonth;
     private int startDate;
+    private int startYear;
 
-    public CourseEventToCourseEventEntityConverter(List<CourseEntity> courseEntityList, int startMonth, int startDate) {
+    public CourseEventToCourseEventEntityConverter(List<CourseEntity> courseEntityList, int startYear, int startMonth, int startDate) {
         this.courseEntityList = courseEntityList;
+        this.startYear = startYear;
         this.startMonth = startMonth;
         this.startDate = startDate;
     }
@@ -29,10 +31,13 @@ public class CourseEventToCourseEventEntityConverter {
 
         Calendar firstDay = Calendar.getInstance();
 
+        // Set year
+        firstDay.set(Calendar.YEAR, startYear);
+
         // Set month
         firstDay.set(Calendar.MONTH, startMonth);
 
-        // Set week
+        // Set date
         firstDay.set(Calendar.DAY_OF_MONTH, startDate);
 
         // For whatever reason, we have to call .get() in order for the calendar object to internalize the changes made to it!
@@ -45,8 +50,8 @@ public class CourseEventToCourseEventEntityConverter {
                 continue;
             }
 
-            Calendar startTime = CalendarParser.parseTime(CalendarParser.START_TIME, firstDay, courseEntity.getDetailEntity());
-            Calendar endTime = CalendarParser.parseTime(CalendarParser.END_TIME, firstDay, courseEntity.getDetailEntity());
+            Calendar startTime = CalendarParser.parseEventTime(CalendarParser.START_TIME, firstDay, courseEntity.getDetailEntity());
+            Calendar endTime = CalendarParser.parseEventTime(CalendarParser.END_TIME, firstDay, courseEntity.getDetailEntity());
 
             String title = courseEntity.getCourseCode() + " " + courseEntity.getDetailEntity().getType() + " " + courseEntity.getDetailEntity().getRemarks();
             CourseEventEntity courseEventEntity = new CourseEventEntity(courseEntity.getTimeTableId(), title, courseEntity.getDetailEntity().getLocation(),

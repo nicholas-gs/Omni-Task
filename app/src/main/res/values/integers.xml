@@ -5,6 +5,9 @@
     <integer name="PRIORITY_3">3</integer>
     <integer name="PRIORITY_4">4</integer>
     <integer name="NO_PRIORITY">5</integer>
+    <integer name="VISIBLE_DAYS_1">1</integer>
+    <integer name="VISIBLE_DAYS_3">3</integer>
+    <integer name="VISIBLE_DAYS_5">5</integer>
     <integer name="ACADEMIC_START_YEAR">2019</integer>
     <integer name="ACADEMIC_START_MONTH">7</integer>
     <integer name="ACADEMIC_START_DATE">12</integer>

@@ -12,6 +12,7 @@ import com.example.ntu_timetable_calendar.Fragments.HomeFragment;
 import com.example.ntu_timetable_calendar.Fragments.PlanFragment;
 import com.example.ntu_timetable_calendar.Fragments.SearchFragment;
 import com.example.ntu_timetable_calendar.JsonDatabase.JsonDatabase;
+import com.example.ntu_timetable_calendar.ViewModels.HomeFragmentActivityViewModel;
 import com.example.ntu_timetable_calendar.ViewModels.PlanFragmentActivityViewModel;
 import com.example.ntu_timetable_calendar.ViewModels.SQLViewModel;
 import com.example.ntu_timetable_calendar.ViewModels.SearchFragmentActivityViewModel;
@@ -85,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
         searchFragmentActivityViewModel.setSearchQuery(null);
         PlanFragmentActivityViewModel planFragmentActivityViewModel = ViewModelProviders.of(this).get(PlanFragmentActivityViewModel.class);
         SQLViewModel sqlViewModel = ViewModelProviders.of(this).get(SQLViewModel.class);
+        HomeFragmentActivityViewModel homeFragmentActivityViewModel = ViewModelProviders.of(this).get(HomeFragmentActivityViewModel.class);
     }
 
 }

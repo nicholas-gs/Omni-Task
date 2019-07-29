@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.alamkanak.weekview.EventClickListener;
 import com.alamkanak.weekview.MonthChangeListener;
+import com.alamkanak.weekview.ScrollListener;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewDisplayable;
 import com.example.ntu_timetable_calendar.Dialogs.TimetableEventDetailDialog;
@@ -27,6 +28,7 @@ import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
 import com.example.ntu_timetable_calendar.EventModel.Event;
 import com.example.ntu_timetable_calendar.R;
 import com.example.ntu_timetable_calendar.SecondActivity;
+import com.example.ntu_timetable_calendar.ViewModels.HomeFragmentActivityViewModel;
 import com.example.ntu_timetable_calendar.ViewModels.SQLViewModel;
 import com.google.android.material.appbar.AppBarLayout;
 
@@ -38,7 +40,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class HomeFragment extends Fragment implements EventClickListener<Event>,
-        MonthChangeListener<Event> {
+        MonthChangeListener<Event>, ScrollListener {
 
     private AppBarLayout mAppbarLayout;
     private Toolbar mToolbar;
@@ -47,7 +49,9 @@ public class HomeFragment extends Fragment implements EventClickListener<Event>,
     // We store the events we want to display in the WeekView widget here
     private List<WeekViewDisplayable<Event>> eventList = new ArrayList<>();
 
+    // ViewModels
     private SQLViewModel sqlViewModel;
+    private HomeFragmentActivityViewModel homeFragmentActivityViewModel;
 
     @Nullable
     @Override
@@ -59,9 +63,17 @@ public class HomeFragment extends Fragment implements EventClickListener<Event>,
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        sqlViewModel = ViewModelProviders.of(this).get(SQLViewModel.class);
+        initViewModels();
         initViews(view);
+        goToTime();
+        setEventHeight();
+        initVisibleDays();
         getMainTimetableClasses();
+    }
+
+    private void initViewModels() {
+        sqlViewModel = ViewModelProviders.of(requireActivity()).get(SQLViewModel.class);
+        homeFragmentActivityViewModel = ViewModelProviders.of(requireActivity()).get(HomeFragmentActivityViewModel.class);
     }
 
     private void initViews(View view) {
@@ -98,9 +110,37 @@ public class HomeFragment extends Fragment implements EventClickListener<Event>,
         mWeekView = view.findViewById(R.id.home_fragment_weekview);
         mWeekView.setMonthChangeListener(this);
         mWeekView.setOnEventClickListener(this);
-        mWeekView.setHeaderRowTextSize(getResources().getInteger(R.integer.HEADER_14_SP));
-        setEventHeight();
-        goToNow();
+        mWeekView.setScrollListener(this);
+    }
+
+    /**
+     * Get the number of visible days from the HomeFragmentActivityViewModel and set the WeekView widget to it by mimicking a toolbar menu click
+     */
+    private void initVisibleDays() {
+        Integer i = homeFragmentActivityViewModel.getNoOfVisibleDays();
+
+        if (i != null) {
+            if (i == getResources().getInteger(R.integer.VISIBLE_DAYS_1)) {
+                mToolbar.getMenu().performIdentifierAction(R.id.day_view_menu_item, 0);
+            } else if (i == getResources().getInteger(R.integer.VISIBLE_DAYS_3)) {
+                mToolbar.getMenu().performIdentifierAction(R.id.three_day_view_menu_item, 0);
+            } else if (i == getResources().getInteger(R.integer.VISIBLE_DAYS_5)) {
+                mToolbar.getMenu().performIdentifierAction(R.id.five_day_view_menu_item, 0);
+            }
+        }
+    }
+
+    /**
+     * Get the firstVisibleDay saved in the ViewModel and set the WeekView widget to it
+     */
+    private void goToTime() {
+        Calendar firstVisibleDay = homeFragmentActivityViewModel.getFirstDayVisible();
+        if (firstVisibleDay != null) {
+            mWeekView.goToDate(firstVisibleDay);
+            mWeekView.goToHour(8);
+        } else {
+            goToNow();
+        }
     }
 
     /**
@@ -111,16 +151,19 @@ public class HomeFragment extends Fragment implements EventClickListener<Event>,
     private void setNumberOfVisibleDays(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.day_view_menu_item:
-                mWeekView.setNumberOfVisibleDays(1);
+                mWeekView.setNumberOfVisibleDays(getResources().getInteger(R.integer.VISIBLE_DAYS_1));
                 mWeekView.setHeaderRowTextSize(getResources().getInteger(R.integer.HEADER_14_SP));
+                homeFragmentActivityViewModel.setNoOfVisibleDays(getResources().getInteger(R.integer.VISIBLE_DAYS_1));
                 break;
             case R.id.three_day_view_menu_item:
-                mWeekView.setNumberOfVisibleDays(3);
+                mWeekView.setNumberOfVisibleDays(getResources().getInteger(R.integer.VISIBLE_DAYS_3));
                 mWeekView.setHeaderRowTextSize(getResources().getInteger(R.integer.HEADER_14_SP));
+                homeFragmentActivityViewModel.setNoOfVisibleDays(getResources().getInteger(R.integer.VISIBLE_DAYS_3));
                 break;
             case R.id.five_day_view_menu_item:
-                mWeekView.setNumberOfVisibleDays(5);
+                mWeekView.setNumberOfVisibleDays(getResources().getInteger(R.integer.VISIBLE_DAYS_5));
                 mWeekView.setHeaderRowTextSize(getResources().getInteger(R.integer.HEADER_12_SP));
+                homeFragmentActivityViewModel.setNoOfVisibleDays(getResources().getInteger(R.integer.VISIBLE_DAYS_5));
                 break;
         }
         item.setChecked(true);
@@ -130,6 +173,7 @@ public class HomeFragment extends Fragment implements EventClickListener<Event>,
      * Go to current day and time for the WeekView widget
      */
     private void goToNow() {
+        homeFragmentActivityViewModel.setFirstDayVisible(null);
         mWeekView.goToToday();
         mWeekView.goToCurrentTime();
     }
@@ -269,4 +313,20 @@ public class HomeFragment extends Fragment implements EventClickListener<Event>,
         return finalList;
     }
 
+    /**
+     * WeekView widget horizontal scroll listener -- here we save the first visible date to the ViewModel. This is so that when the
+     * user returns to this HomeFragment, he does not have to scroll to the date again!
+     *
+     * @param calendar  Calendar for the first day visible
+     * @param calendar1 Calendar for the last day visible?
+     */
+    @Override
+    public void onFirstVisibleDayChanged(@NotNull Calendar calendar, @org.jetbrains.annotations.Nullable Calendar calendar1) {
+        Calendar now = Calendar.getInstance();
+        if (calendar.get(Calendar.DAY_OF_YEAR) == now.get(Calendar.DAY_OF_YEAR) && calendar.get(Calendar.YEAR) == now.get(Calendar.YEAR)) {
+            goToNow();
+        } else {
+            homeFragmentActivityViewModel.setFirstDayVisible(calendar);
+        }
+    }
 }

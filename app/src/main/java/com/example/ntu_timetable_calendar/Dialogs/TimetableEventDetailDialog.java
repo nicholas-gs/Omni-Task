@@ -72,9 +72,34 @@ public class TimetableEventDetailDialog extends DialogFragment {
         Calendar start = event.getStartTime();
         Calendar end = event.getEndTime();
 
-        String startStr = start.get(Calendar.HOUR_OF_DAY) + ":" + start.get(Calendar.MINUTE);
-        String endStr = end.get(Calendar.HOUR_OF_DAY) + ":" + end.get(Calendar.MINUTE);
+        String startStrHour = Integer.toString(start.get(Calendar.HOUR_OF_DAY));
+        if (startStrHour.length() == 1) {
+            startStrHour = "0" + startStrHour;
+        }
 
+        String startStrMin = Integer.toString(start.get(Calendar.MINUTE));
+
+        if (startStrMin.length() == 1) {
+            startStrMin = startStrMin + "0";
+        }
+        String startStr = startStrHour + ":" + startStrMin;
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+
+        String endStrHour = Integer.toString(end.get(Calendar.HOUR_OF_DAY));
+        if (endStrHour.length() == 1) {
+            endStrHour = "0" + endStrHour;
+        }
+
+        String endStrMin = Integer.toString(end.get(Calendar.MINUTE));
+
+        if (endStrMin.length() == 1) {
+            endStrMin = endStrMin + "0";
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+
+        String endStr = endStrHour + ":" + endStrMin;
         String timeStr = startStr + " - " + endStr;
 
         timeTV.setText(timeStr);

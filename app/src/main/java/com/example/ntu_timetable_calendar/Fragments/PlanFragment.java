@@ -529,8 +529,12 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
         sqlViewModel.insertExams(this.queriedExamList, timetableId.intValue());
 
         // Save the CourseEvents into Room
-        sqlViewModel.insertCourseEvents(this.queriedCourseList, this.indexesSel, timetableId.intValue(), getResources().getInteger(R.integer.ACADEMIC_START_MONTH),
+        sqlViewModel.insertCourseEvents(this.queriedCourseList, this.indexesSel, timetableId.intValue(),
+                getResources().getInteger(R.integer.ACADEMIC_START_YEAR), getResources().getInteger(R.integer.ACADEMIC_START_MONTH),
                 getResources().getInteger(R.integer.ACADEMIC_START_DATE));
+
+        // Save the exam events into Room
+        sqlViewModel.insertExamEvents(this.queriedExamList, timetableId.intValue());
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {

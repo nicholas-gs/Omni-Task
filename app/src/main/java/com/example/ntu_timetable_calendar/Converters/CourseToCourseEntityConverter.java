@@ -30,7 +30,7 @@ public class CourseToCourseEntityConverter {
         this.indexSel = indexSel;
     }
 
-    public List<CourseEntity> converter() {
+    public List<CourseEntity> convert() {
         List<CourseEntity> courseEntityList = new ArrayList<>();
 
         // Put the courses into a HashMap, with the course code as the key, to make it easier later.

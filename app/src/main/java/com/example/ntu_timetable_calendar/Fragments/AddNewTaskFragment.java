@@ -124,7 +124,7 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.add_new_task_save) {
-                    saveTask();
+                    saveTaskDialog();
                 }
                 return true;
             }
@@ -132,21 +132,61 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
     }
 
     /**
-     * Fragment shown to user when the user clicks the close button on the toolbar -- prompts user if they want to discard the task
+     * Dialog shown to user when the user clicks the close button on the toolbar -- prompts user if they want to discard the task
      */
     private void closeFragmentDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setMessage("Are you sure you want to discard this task?");
-        builder.setPositiveButton("Keep editing", new DialogInterface.OnClickListener() {
+        builder.setMessage(getString(R.string.close_new_task_dialog_message));
+        builder.setNegativeButton(getString(R.string.keep_editing), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 dialogInterface.dismiss();
             }
         });
-        builder.setNegativeButton("Discard", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getString(R.string.discard), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 Objects.requireNonNull(getActivity()).onBackPressed();
+            }
+        });
+
+        final AlertDialog alertDialog = builder.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setBackgroundColor(ContextCompat.getColor(requireContext(),
+                        android.R.color.background_light));
+                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setBackgroundColor(ContextCompat.getColor(requireContext(),
+                        android.R.color.background_light));
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(),
+                        R.color.colorPrimaryDark));
+                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(),
+                        R.color.colorPrimaryDark));
+            }
+        });
+
+        alertDialog.show();
+    }
+
+    /**
+     * Dialog shown to user when the user clicks the save button on the toolbar -- prompts user if they want to save or continue editing
+     */
+    private void saveTaskDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setMessage(getString(R.string.save_new_task_dialog_message));
+        builder.setPositiveButton(getString(R.string.save), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                saveTask();
+            }
+        });
+
+        builder.setNegativeButton(getString(R.string.keep_editing), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
             }
         });
 

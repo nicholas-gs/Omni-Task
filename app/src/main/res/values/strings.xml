@@ -51,4 +51,8 @@
     <string name="day_view">Day view</string>
     <string name="three_day_view">3 day view</string>
     <string name="five_day_view">5 day view</string>
+    <string name="close_new_task_dialog_message">Are you sure you want to discard this task?</string>
+    <string name="keep_editing">Keep editing</string>
+    <string name="discard">Discard</string>
+    <string name="save_new_task_dialog_message">Do you want to save this task?</string>
 </resources>

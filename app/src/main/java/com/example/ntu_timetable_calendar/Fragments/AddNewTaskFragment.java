@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -19,10 +20,14 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.example.ntu_timetable_calendar.Dialogs.MyDatePickerDialog;
 import com.example.ntu_timetable_calendar.Dialogs.MyTimePickerDialog;
+import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
 import com.example.ntu_timetable_calendar.R;
+import com.example.ntu_timetable_calendar.ViewModels.SQLViewModel;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -36,8 +41,9 @@ import java.util.Objects;
 import es.dmoral.toasty.Toasty;
 
 public class AddNewTaskFragment extends Fragment implements View.OnClickListener, DatePickerDialog.OnDateSetListener,
-        TimePickerDialog.OnTimeSetListener {
+        TimePickerDialog.OnTimeSetListener, CompoundButton.OnCheckedChangeListener {
 
+    // Widgets
     private AppBarLayout mAppBarLayout;
     private Toolbar mToolbar;
     private TextInputLayout mTitleInputLayout, mDescriptionInputLayout;
@@ -45,7 +51,11 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
     private Switch chooseClassSwitch;
     private TextView endDateTV, endTimeTV, addAlarmTV, addPriorityTV, addProjectTV;
 
+    // ViewModel
+    private SQLViewModel sqlViewModel;
+
     // Variables
+    private TimetableEntity mainTimetableEntity;
     private int PRIORITY_1, PRIORITY_2, PRIORITY_3, PRIORITY_4, NO_PRIORITY;
 
     // Variables to save
@@ -68,8 +78,9 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
         chosenCalendar = Calendar.getInstance();
         chosenCalendar.add(Calendar.DAY_OF_MONTH, 1);
 
-        intiVariables();
+        initVariables();
         initViews(view);
+        initViewModels();
         initToolbar();
         initCurrentTimeTextViews();
 
@@ -84,6 +95,7 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
         mDescriptionEdittext = view.findViewById(R.id.add_new_task_description_edittext);
 
         chooseClassSwitch = view.findViewById(R.id.add_new_task_choose_class_switch);
+        chooseClassSwitch.setOnCheckedChangeListener(this);
         endDateTV = view.findViewById(R.id.add_new_task_end_date_tv);
         endDateTV.setOnClickListener(this);
         endTimeTV = view.findViewById(R.id.add_new_task_end_time_tv);
@@ -96,7 +108,7 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
         addPriorityTV.setOnClickListener(this);
     }
 
-    private void intiVariables() {
+    private void initVariables() {
         PRIORITY_1 = getResources().getInteger(R.integer.PRIORITY_1);
         PRIORITY_2 = getResources().getInteger(R.integer.PRIORITY_2);
         PRIORITY_3 = getResources().getInteger(R.integer.PRIORITY_3);
@@ -104,6 +116,24 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
         NO_PRIORITY = getResources().getInteger(R.integer.NO_PRIORITY);
         priorityChosen = PRIORITY_4;
         alarmTimingChosen = new boolean[]{false, false, false, false, false};
+    }
+
+    private void initViewModels() {
+        sqlViewModel = ViewModelProviders.of(this).get(SQLViewModel.class);
+        // Get the main timetable entity from Room
+        sqlViewModel.getMainTimetable().observe(this, new Observer<TimetableEntity>() {
+            @Override
+            public void onChanged(TimetableEntity timetableEntity) {
+                saveMainTimetable(timetableEntity);
+            }
+        });
+    }
+
+    /**
+     * @param timetableEntity The main timetable from Room to be saved in the class member variable mainTimetableEntity
+     */
+    private void saveMainTimetable(TimetableEntity timetableEntity) {
+        this.mainTimetableEntity = timetableEntity;
     }
 
     private void initToolbar() {
@@ -173,7 +203,7 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
     /**
      * Dialog shown to user when the user clicks the save button on the toolbar -- prompts user if they want to save or continue editing
      */
-    private void saveTaskDialog(){
+    private void saveTaskDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setMessage(getString(R.string.save_new_task_dialog_message));
         builder.setPositiveButton(getString(R.string.save), new DialogInterface.OnClickListener() {
@@ -214,7 +244,7 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
      * Save the new task
      */
     private void saveTask() {
-        if(validationCheck()){
+        if (validationCheck()) {
             Toasty.success(requireContext(), "Task saved", Toasty.LENGTH_SHORT).show();
             Objects.requireNonNull(getActivity()).finish();
         }
@@ -389,9 +419,10 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
 
     /**
      * Internal validation check to see if the Task's details that the user is trying to save is valid
+     *
      * @return boolean value true -- valid and proceed to save the task into Room, false -- not valid and don't save
      */
-    private boolean validationCheck(){
+    private boolean validationCheck() {
         mTitleInputLayout.setErrorEnabled(false);
         mDescriptionInputLayout.setErrorEnabled(false);
 
@@ -401,17 +432,69 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
         this.title = Objects.requireNonNull(mTitleEdittext.getText()).toString().trim();
         this.description = Objects.requireNonNull(mDescriptionEdittext.getText()).toString().trim();
 
-        if(title.length() == 0){
+        if (title.length() == 0) {
             mTitleInputLayout.setError(getString(R.string.title_is_empty));
             validTitle = false;
         }
 
-        if(description.length() == 0){
+        if (description.length() == 0) {
             mDescriptionInputLayout.setError(getString(R.string.description_is_empty));
             validDescription = false;
         }
 
         return (validTitle && validDescription);
+    }
+
+    /**
+     * Interface definition for a callback to be invoked when the checked state of a compound button changed.
+     *
+     * @param compoundButton The compound button view whose state has changed.
+     * @param b              The new checked state of buttonView.
+     */
+    @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+        if (compoundButton.getId() == R.id.add_new_task_choose_class_switch) {
+            if (b) {
+                // If the user does not have a main timetable, then show a dialog
+                if (mainTimetableEntity == null) {
+                    initNoMainTimetableDialog();
+                }
+            }
+        }
+    }
+
+    private void initNoMainTimetableDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setMessage(getString(R.string.no_main_timetable_dialog_message));
+        builder.setPositiveButton(getString(R.string.okay), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+
+        final AlertDialog alertDialog = builder.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setBackgroundColor(ContextCompat.getColor(requireContext(),
+                        android.R.color.background_light));
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(),
+                        R.color.colorPrimaryDark));
+
+            }
+        });
+
+        alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                chooseClassSwitch.setChecked(false);
+            }
+        });
+
+        alertDialog.show();
     }
 
     /**

@@ -55,4 +55,6 @@
     <string name="keep_editing">Keep editing</string>
     <string name="discard">Discard</string>
     <string name="save_new_task_dialog_message">Do you want to save this task?</string>
+    <string name="okay">Okay</string>
+    <string name="no_main_timetable_dialog_message">You need a main timetable!</string>
 </resources>

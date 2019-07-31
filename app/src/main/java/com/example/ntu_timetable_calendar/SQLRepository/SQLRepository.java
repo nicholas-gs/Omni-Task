@@ -611,6 +611,12 @@ public class SQLRepository {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
+    public LiveData<List<TaskEntity>> getTasksWithinTime(int nowTime ,long deadLineTime){
+        return taskDAO.getTasksWithinTime(nowTime, deadLineTime);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
     public void insertTask(TaskEntity taskEntity) {
         new InsertTaskAsyncTask(this.taskDAO, taskEntity).execute();
     }

@@ -34,4 +34,7 @@ public interface TaskDAO {
 
     @Query("SELECT * FROM task_table WHERE id = :id LIMIT 1")
     LiveData<TaskEntity> getTask(int id);
+
+    @Query("SELECT * FROM task_table WHERE deadLine BETWEEN :nowTime AND :deadLineTime")
+    LiveData<List<TaskEntity>> getTasksWithinTime(int nowTime ,long deadLineTime);
 }

@@ -25,7 +25,9 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.ntu_timetable_calendar.Dialogs.MyDatePickerDialog;
 import com.example.ntu_timetable_calendar.Dialogs.MyTimePickerDialog;
+import com.example.ntu_timetable_calendar.Entity.TaskEntity;
 import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
+import com.example.ntu_timetable_calendar.Helper.AlarmParser;
 import com.example.ntu_timetable_calendar.R;
 import com.example.ntu_timetable_calendar.ViewModels.SQLViewModel;
 import com.google.android.material.appbar.AppBarLayout;
@@ -35,6 +37,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -57,12 +60,13 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
     // Variables
     private TimetableEntity mainTimetableEntity;
     private int PRIORITY_1, PRIORITY_2, PRIORITY_3, PRIORITY_4, NO_PRIORITY;
+    private boolean[] alarmTimingChosen;
 
     // Variables to save
-    private Calendar chosenCalendar; // Save the time and day chosen for task deadline by the user using the pickers
+    private Calendar deadlineCalendar; // Save the time and day chosen for task deadline by the user using the pickers
     private String title, description;
     private int priorityChosen;
-    private boolean[] alarmTimingChosen;
+    private List<Long> listOfAlarms;
 
     @Nullable
     @Override
@@ -75,8 +79,8 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
         super.onViewCreated(view, savedInstanceState);
 
         // Set the default deadline as 1 day after today
-        chosenCalendar = Calendar.getInstance();
-        chosenCalendar.add(Calendar.DAY_OF_MONTH, 1);
+        deadlineCalendar = Calendar.getInstance();
+        deadlineCalendar.add(Calendar.DAY_OF_MONTH, 1);
 
         initVariables();
         initViews(view);
@@ -162,6 +166,69 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
     }
 
     /**
+     * Set the current date and time for the 2 text views
+     */
+    private void initCurrentTimeTextViews() {
+        Date currentTime = deadlineCalendar.getTime();
+        String currentDateStr = DateFormat.getDateInstance(DateFormat.FULL).format(currentTime);
+        endDateTV.setText(currentDateStr.trim());
+
+        String timeStr = DateFormat.getTimeInstance(DateFormat.SHORT).format(currentTime);
+        endTimeTV.setText(timeStr.trim());
+    }
+
+    /**
+     * Save the new task
+     */
+    private void saveTask() {
+        if (validationCheck()) {
+
+            // If there is no main timetable, set the class variable timetableId to -1
+            int timetableId = (mainTimetableEntity == null) ? -1 : mainTimetableEntity.getId();
+
+            this.listOfAlarms = new AlarmParser(this.alarmTimingChosen, this.deadlineCalendar).parse();
+
+            TaskEntity taskEntity = new TaskEntity(timetableId, -1, title, description, this.deadlineCalendar.getTimeInMillis(),
+                    this.priorityChosen, this.listOfAlarms);
+
+            sqlViewModel.insertTask(taskEntity);
+
+            Toasty.success(requireContext(), "Task saved", Toasty.LENGTH_SHORT).show();
+            Objects.requireNonNull(getActivity()).finish();
+        }
+    }
+
+    /**
+     * Internal validation check to see if the Task's details that the user is trying to save is valid
+     *
+     * @return boolean value true -- valid and proceed to save the task into Room, false -- not valid and don't save
+     */
+    private boolean validationCheck() {
+        mTitleInputLayout.setErrorEnabled(false);
+        mDescriptionInputLayout.setErrorEnabled(false);
+
+        boolean validTitle = true;
+        boolean validDescription = true;
+
+        this.title = Objects.requireNonNull(mTitleEdittext.getText()).toString().trim();
+        this.description = Objects.requireNonNull(mDescriptionEdittext.getText()).toString().trim();
+
+        if (title.length() == 0) {
+            mTitleInputLayout.setError(getString(R.string.title_is_empty));
+            validTitle = false;
+        }
+
+        if (description.length() == 0) {
+            mDescriptionInputLayout.setError(getString(R.string.description_is_empty));
+            validDescription = false;
+        }
+
+        return (validTitle && validDescription);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
      * Dialog shown to user when the user clicks the close button on the toolbar -- prompts user if they want to discard the task
      */
     private void closeFragmentDialog() {
@@ -238,51 +305,6 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
         });
 
         alertDialog.show();
-    }
-
-    /**
-     * Save the new task
-     */
-    private void saveTask() {
-        if (validationCheck()) {
-            Toasty.success(requireContext(), "Task saved", Toasty.LENGTH_SHORT).show();
-            Objects.requireNonNull(getActivity()).finish();
-        }
-    }
-
-    /**
-     * Set the current date and time for the 2 text views
-     */
-    private void initCurrentTimeTextViews() {
-        Date currentTime = chosenCalendar.getTime();
-        String currentDateStr = DateFormat.getDateInstance(DateFormat.FULL).format(currentTime);
-        endDateTV.setText(currentDateStr.trim());
-
-        String timeStr = DateFormat.getTimeInstance(DateFormat.SHORT).format(currentTime);
-        endTimeTV.setText(timeStr.trim());
-
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.add_new_task_end_date_tv:
-                MyDatePickerDialog datePicker = new MyDatePickerDialog(this.chosenCalendar);
-                datePicker.show(getChildFragmentManager(), "date_picker");
-                break;
-            case R.id.add_new_task_end_time_tv:
-                MyTimePickerDialog timePicker = new MyTimePickerDialog(this.chosenCalendar);
-                timePicker.show(getChildFragmentManager(), "time_picker");
-                break;
-            case R.id.add_new_task_alarm_tv:
-                initAlarmDialog();
-                break;
-            case R.id.add_new_task_add_priority_textview:
-                initPriorityDialog();
-                break;
-            case R.id.add_new_task_add_project_textview:
-                break;
-        }
     }
 
     /**
@@ -417,52 +439,6 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
         alertDialog.show();
     }
 
-    /**
-     * Internal validation check to see if the Task's details that the user is trying to save is valid
-     *
-     * @return boolean value true -- valid and proceed to save the task into Room, false -- not valid and don't save
-     */
-    private boolean validationCheck() {
-        mTitleInputLayout.setErrorEnabled(false);
-        mDescriptionInputLayout.setErrorEnabled(false);
-
-        boolean validTitle = true;
-        boolean validDescription = true;
-
-        this.title = Objects.requireNonNull(mTitleEdittext.getText()).toString().trim();
-        this.description = Objects.requireNonNull(mDescriptionEdittext.getText()).toString().trim();
-
-        if (title.length() == 0) {
-            mTitleInputLayout.setError(getString(R.string.title_is_empty));
-            validTitle = false;
-        }
-
-        if (description.length() == 0) {
-            mDescriptionInputLayout.setError(getString(R.string.description_is_empty));
-            validDescription = false;
-        }
-
-        return (validTitle && validDescription);
-    }
-
-    /**
-     * Interface definition for a callback to be invoked when the checked state of a compound button changed.
-     *
-     * @param compoundButton The compound button view whose state has changed.
-     * @param b              The new checked state of buttonView.
-     */
-    @Override
-    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-        if (compoundButton.getId() == R.id.add_new_task_choose_class_switch) {
-            if (b) {
-                // If the user does not have a main timetable, then show a dialog
-                if (mainTimetableEntity == null) {
-                    initNoMainTimetableDialog();
-                }
-            }
-        }
-    }
-
     private void initNoMainTimetableDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setMessage(getString(R.string.no_main_timetable_dialog_message));
@@ -497,6 +473,48 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
         alertDialog.show();
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Interface definition for a callback to be invoked when the checked state of a compound button changed.
+     *
+     * @param compoundButton The compound button view whose state has changed.
+     * @param b              The new checked state of buttonView.
+     */
+    @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+        if (compoundButton.getId() == R.id.add_new_task_choose_class_switch) {
+            if (b) {
+                // If the user does not have a main timetable, then show a dialog
+                if (mainTimetableEntity == null) {
+                    initNoMainTimetableDialog();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.add_new_task_end_date_tv:
+                MyDatePickerDialog datePicker = new MyDatePickerDialog(this.deadlineCalendar);
+                datePicker.show(getChildFragmentManager(), "date_picker");
+                break;
+            case R.id.add_new_task_end_time_tv:
+                MyTimePickerDialog timePicker = new MyTimePickerDialog(this.deadlineCalendar);
+                timePicker.show(getChildFragmentManager(), "time_picker");
+                break;
+            case R.id.add_new_task_alarm_tv:
+                initAlarmDialog();
+                break;
+            case R.id.add_new_task_add_priority_textview:
+                initPriorityDialog();
+                break;
+            case R.id.add_new_task_add_project_textview:
+                break;
+        }
+    }
+
     /**
      * Callback method for the date picker dialog
      *
@@ -507,10 +525,10 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
      */
     @Override
     public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
-        chosenCalendar.set(Calendar.YEAR, i);
-        chosenCalendar.set(Calendar.MONTH, i1);
-        chosenCalendar.set(Calendar.DAY_OF_MONTH, i2);
-        Date currentTime = chosenCalendar.getTime();
+        deadlineCalendar.set(Calendar.YEAR, i);
+        deadlineCalendar.set(Calendar.MONTH, i1);
+        deadlineCalendar.set(Calendar.DAY_OF_MONTH, i2);
+        Date currentTime = deadlineCalendar.getTime();
         String currentDateStr = DateFormat.getDateInstance(DateFormat.FULL).format(currentTime);
         endDateTV.setText(currentDateStr.trim());
     }
@@ -524,9 +542,9 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
      */
     @Override
     public void onTimeSet(TimePicker timePicker, int i, int i1) {
-        chosenCalendar.set(Calendar.HOUR_OF_DAY, i);
-        chosenCalendar.set(Calendar.MINUTE, i1);
-        String timeStr = DateFormat.getTimeInstance(DateFormat.SHORT).format(chosenCalendar.getTime());
+        deadlineCalendar.set(Calendar.HOUR_OF_DAY, i);
+        deadlineCalendar.set(Calendar.MINUTE, i1);
+        String timeStr = DateFormat.getTimeInstance(DateFormat.SHORT).format(deadlineCalendar.getTime());
         endTimeTV.setText(timeStr.trim());
     }
 

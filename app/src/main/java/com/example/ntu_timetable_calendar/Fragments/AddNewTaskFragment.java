@@ -29,12 +29,14 @@ import com.example.ntu_timetable_calendar.Entity.TaskEntity;
 import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
 import com.example.ntu_timetable_calendar.Helper.AlarmParser;
 import com.example.ntu_timetable_calendar.R;
+import com.example.ntu_timetable_calendar.ViewModels.AddNewTaskFragmentViewModel;
 import com.example.ntu_timetable_calendar.ViewModels.SQLViewModel;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -56,6 +58,7 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
 
     // ViewModel
     private SQLViewModel sqlViewModel;
+    private AddNewTaskFragmentViewModel addNewTaskFragmentViewModel;
 
     // Variables
     private TimetableEntity mainTimetableEntity;
@@ -65,7 +68,7 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
     // Variables to save
     private Calendar deadlineCalendar; // Save the time and day chosen for task deadline by the user using the pickers
     private String title, description;
-    private int priorityChosen;
+    private Integer priorityChosen;
     private List<Long> listOfAlarms;
 
     @Nullable
@@ -78,16 +81,11 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Set the default deadline as 1 day after today
-        deadlineCalendar = Calendar.getInstance();
-        deadlineCalendar.add(Calendar.DAY_OF_MONTH, 1);
-
-        initVariables();
         initViews(view);
         initViewModels();
+        initVariables();
         initToolbar();
         initCurrentTimeTextViews();
-
     }
 
     private void initViews(View view) {
@@ -112,17 +110,57 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
         addPriorityTV.setOnClickListener(this);
     }
 
+    /**
+     * Initialise the Constants (The various PRIORITY variables) and the various variables from the
+     * AddNewTaskFragmentViewModel for fragment re-instantiation
+     */
     private void initVariables() {
+        // CONSTANTS
         PRIORITY_1 = getResources().getInteger(R.integer.PRIORITY_1);
         PRIORITY_2 = getResources().getInteger(R.integer.PRIORITY_2);
         PRIORITY_3 = getResources().getInteger(R.integer.PRIORITY_3);
         PRIORITY_4 = getResources().getInteger(R.integer.PRIORITY_4);
         NO_PRIORITY = getResources().getInteger(R.integer.NO_PRIORITY);
-        priorityChosen = PRIORITY_4;
-        alarmTimingChosen = new boolean[]{false, false, false, false, false};
+
+        // Priority Level
+        this.priorityChosen = addNewTaskFragmentViewModel.getPriorityChosen();
+        // Default Value
+        if (this.priorityChosen == null) {
+            this.priorityChosen = this.PRIORITY_4;
+        }
+        // Set the priority icon's color and title
+        setPriorityIconAndTitle();
+
+        // AlarmTimingChosen boolean array
+        this.alarmTimingChosen = addNewTaskFragmentViewModel.getAlarmTimingChosen();
+        // Default Value
+        if (this.alarmTimingChosen == null) {
+            alarmTimingChosen = new boolean[]{false, false, false, false, false};
+        }
+        // Set the alarm text view title
+        setAddAlarmTitle();
+
+        // DeadLine Calendar
+        this.deadlineCalendar = addNewTaskFragmentViewModel.getDeadLineCalendar();
+        // Default value
+        if (this.deadlineCalendar == null) {
+            // Set the default deadline as 1 day after today
+            deadlineCalendar = Calendar.getInstance();
+            deadlineCalendar.add(Calendar.DAY_OF_MONTH, 1);
+        }
+
+        // List of alarms
+        this.listOfAlarms = addNewTaskFragmentViewModel.getListOfAlarms();
+        // Default Value
+        if (this.listOfAlarms == null) {
+            this.listOfAlarms = new ArrayList<>();
+        }
     }
 
     private void initViewModels() {
+
+        addNewTaskFragmentViewModel = ViewModelProviders.of(requireActivity()).get(AddNewTaskFragmentViewModel.class);
+
         sqlViewModel = ViewModelProviders.of(this).get(SQLViewModel.class);
         // Get the main timetable entity from Room
         sqlViewModel.getMainTimetable().observe(this, new Observer<TimetableEntity>() {
@@ -226,6 +264,51 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
         return (validTitle && validDescription);
     }
 
+    /**
+     * Helper function for setting the Priority icon's color as well as title based on the priority level chosen
+     */
+    private void setPriorityIconAndTitle() {
+        if (priorityChosen == PRIORITY_1) {
+            addPriorityTV.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_flag_red_24dp, 0, 0, 0);
+        } else if (priorityChosen == PRIORITY_2) {
+            addPriorityTV.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_flag_yellow_24dp, 0, 0, 0);
+        } else if (priorityChosen == PRIORITY_3) {
+            addPriorityTV.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_flag_green_24dp, 0, 0, 0);
+        } else if (priorityChosen == PRIORITY_4) {
+            addPriorityTV.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_flag_lightblue_24dp, 0, 0, 0);
+        } else {
+            addPriorityTV.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_flag_darkgray_24dp, 0, 0, 0);
+        }
+
+        if (priorityChosen == NO_PRIORITY) {
+            addPriorityTV.setText(getText(R.string.no_priority));
+        } else {
+            String str = String.format(Locale.ENGLISH, "Priority %d", priorityChosen);
+            addPriorityTV.setText(str);
+        }
+    }
+
+    /**
+     * Helper function for setting the alarm text view's title based on the number of alarms chosen by user
+     */
+    private void setAddAlarmTitle() {
+        int count = 0;
+        for (boolean b : alarmTimingChosen) {
+            if (b) {
+                count++;
+            }
+        }
+        if (count == 0) {
+            addAlarmTV.setText(getString(R.string.add_alarm));
+        } else if (count == 1) {
+            String str = String.format(Locale.ENGLISH, "%d alarm", count);
+            addAlarmTV.setText(str);
+        } else {
+            String str = String.format(Locale.ENGLISH, "%d alarms", count);
+            addAlarmTV.setText(str);
+        }
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -318,24 +401,10 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 priorityChosen = i + 1;
-                if (priorityChosen == PRIORITY_1) {
-                    addPriorityTV.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_flag_red_24dp, 0, 0, 0);
-                } else if (priorityChosen == PRIORITY_2) {
-                    addPriorityTV.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_flag_yellow_24dp, 0, 0, 0);
-                } else if (priorityChosen == PRIORITY_3) {
-                    addPriorityTV.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_flag_green_24dp, 0, 0, 0);
-                } else if (priorityChosen == PRIORITY_4) {
-                    addPriorityTV.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_flag_lightblue_24dp, 0, 0, 0);
-                } else {
-                    addPriorityTV.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_flag_darkgray_24dp, 0, 0, 0);
-                }
+                // Save the priority chosen in the ViewModel
+                addNewTaskFragmentViewModel.setPriorityChosen(priorityChosen);
 
-                if (priorityChosen == NO_PRIORITY) {
-                    addPriorityTV.setText(getText(R.string.no_priority));
-                } else {
-                    String str = String.format(Locale.ENGLISH, "Priority %d", priorityChosen);
-                    addPriorityTV.setText(str);
-                }
+                setPriorityIconAndTitle();
             }
         });
 
@@ -359,7 +428,6 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
         });
 
         alertDialog.show();
-
     }
 
     /**
@@ -379,21 +447,12 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
         builder.setPositiveButton(getString(R.string.confirm), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                int count = 0;
-                for (boolean b : alarmTimingChosen) {
-                    if (b) {
-                        count++;
-                    }
-                }
-                if (count == 0) {
-                    addAlarmTV.setText(getString(R.string.add_alarm));
-                } else if (count == 1) {
-                    String str = String.format(Locale.ENGLISH, "%d alarm", count);
-                    addAlarmTV.setText(str);
-                } else {
-                    String str = String.format(Locale.ENGLISH, "%d alarms", count);
-                    addAlarmTV.setText(str);
-                }
+
+                // Save the the alarmTimingChosen boolean array into the ViewModel
+                addNewTaskFragmentViewModel.setAlarmTimingChosen(alarmTimingChosen);
+
+                setAddAlarmTitle();
+
                 dialogInterface.dismiss();
             }
         });
@@ -403,7 +462,10 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 alarmTimingChosen = new boolean[]{false, false, false, false, false};
-                addAlarmTV.setText(getString(R.string.add_alarm));
+                // Save the the alarmTimingChosen boolean array into the ViewModel
+                addNewTaskFragmentViewModel.setAlarmTimingChosen(alarmTimingChosen);
+
+                setAddAlarmTitle();
             }
         });
 
@@ -416,6 +478,7 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
 
         final AlertDialog alertDialog = builder.create();
         alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.setCancelable(false);
 
         // Customise the appearance of the buttons
         alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
@@ -531,6 +594,9 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
         Date currentTime = deadlineCalendar.getTime();
         String currentDateStr = DateFormat.getDateInstance(DateFormat.FULL).format(currentTime);
         endDateTV.setText(currentDateStr.trim());
+
+        // Save the deadline calendar into the ViewModel
+        addNewTaskFragmentViewModel.setDeadLineCalendar(this.deadlineCalendar);
     }
 
     /**
@@ -546,6 +612,8 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
         deadlineCalendar.set(Calendar.MINUTE, i1);
         String timeStr = DateFormat.getTimeInstance(DateFormat.SHORT).format(deadlineCalendar.getTime());
         endTimeTV.setText(timeStr.trim());
-    }
 
+        // Save the deadline calendar into the ViewModel
+        addNewTaskFragmentViewModel.setDeadLineCalendar(this.deadlineCalendar);
+    }
 }

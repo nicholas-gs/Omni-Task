@@ -1,7 +1,7 @@
 package com.example.ntu_timetable_calendar.Converters;
 
 import com.example.ntu_timetable_calendar.EventModel.Event;
-import com.example.ntu_timetable_calendar.Helper.DayOfWeek;
+import com.example.ntu_timetable_calendar.Enum.DayOfWeek;
 import com.example.ntu_timetable_calendar.Helper.EventColors;
 import com.example.ntu_timetable_calendar.JsonModels.Course;
 import com.example.ntu_timetable_calendar.JsonModels.Detail;

@@ -1,4 +1,4 @@
-package com.example.ntu_timetable_calendar.Helper;
+package com.example.ntu_timetable_calendar.Enum;
 
 /**
  * Enum that returns the Calendar.DAY_OF_WEEK for a given day string

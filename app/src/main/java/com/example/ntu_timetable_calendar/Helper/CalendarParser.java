@@ -3,6 +3,8 @@ package com.example.ntu_timetable_calendar.Helper;
 import androidx.annotation.NonNull;
 
 import com.example.ntu_timetable_calendar.Entity.DetailEntity;
+import com.example.ntu_timetable_calendar.Enum.DayOfWeek;
+import com.example.ntu_timetable_calendar.Enum.MonthOfYear;
 import com.example.ntu_timetable_calendar.JsonModels.Exam;
 
 import java.util.ArrayList;

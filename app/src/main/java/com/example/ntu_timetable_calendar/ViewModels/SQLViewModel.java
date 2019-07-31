@@ -10,6 +10,7 @@ import com.example.ntu_timetable_calendar.Entity.CourseEntity;
 import com.example.ntu_timetable_calendar.Entity.CourseEventEntity;
 import com.example.ntu_timetable_calendar.Entity.ExamEntity;
 import com.example.ntu_timetable_calendar.Entity.ExamEventEntity;
+import com.example.ntu_timetable_calendar.Entity.TaskEntity;
 import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
 import com.example.ntu_timetable_calendar.JsonModels.Course;
 import com.example.ntu_timetable_calendar.JsonModels.Exam;
@@ -177,4 +178,33 @@ public class SQLViewModel extends AndroidViewModel implements SQLRepository.Inse
         sqlRepository.deleteExamEvent(examEventEntity);
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public LiveData<List<TaskEntity>> getAllTasks() {
+        return sqlRepository.getAllTasks();
+    }
+
+    public LiveData<List<TaskEntity>> getTimetableTasks(int timetableId) {
+        return sqlRepository.getTimetableTasks(timetableId);
+    }
+
+    public LiveData<List<TaskEntity>> getClassTasks(int courseEventEntityId) {
+        return sqlRepository.getClassTasks(courseEventEntityId);
+    }
+
+    public LiveData<TaskEntity> getTask(int id) {
+        return sqlRepository.getTask(id);
+    }
+
+    public void insertTask(TaskEntity taskEntity) {
+        sqlRepository.insertTask(taskEntity);
+    }
+
+    public void deleteTask(TaskEntity taskEntity) {
+        sqlRepository.deleteTask(taskEntity);
+    }
+
+    public void updateTask(TaskEntity taskEntity) {
+        sqlRepository.updateTask(taskEntity);
+    }
 }

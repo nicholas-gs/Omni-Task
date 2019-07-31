@@ -12,11 +12,13 @@ import com.example.ntu_timetable_calendar.DAO.CourseDAO;
 import com.example.ntu_timetable_calendar.DAO.CourseEventDAO;
 import com.example.ntu_timetable_calendar.DAO.ExamDAO;
 import com.example.ntu_timetable_calendar.DAO.ExamEventDAO;
+import com.example.ntu_timetable_calendar.DAO.TaskDAO;
 import com.example.ntu_timetable_calendar.DAO.TimetableDAO;
 import com.example.ntu_timetable_calendar.Entity.CourseEntity;
 import com.example.ntu_timetable_calendar.Entity.CourseEventEntity;
 import com.example.ntu_timetable_calendar.Entity.ExamEntity;
 import com.example.ntu_timetable_calendar.Entity.ExamEventEntity;
+import com.example.ntu_timetable_calendar.Entity.TaskEntity;
 import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
 import com.example.ntu_timetable_calendar.JsonModels.Course;
 import com.example.ntu_timetable_calendar.JsonModels.Exam;
@@ -34,6 +36,7 @@ public class SQLRepository {
     private ExamDAO examDAO;
     private CourseEventDAO courseEventDAO;
     private ExamEventDAO examEventDAO;
+    private TaskDAO taskDAO;
 
     public SQLRepository(Application application) {
         this.sqlDatabase = SQLDatabase.getInstance(application);
@@ -42,6 +45,7 @@ public class SQLRepository {
         this.examDAO = this.sqlDatabase.examDAO();
         this.courseEventDAO = this.sqlDatabase.courseEventDAO();
         this.examEventDAO = this.sqlDatabase.examEventDAO();
+        this.taskDAO = this.sqlDatabase.taskDAO();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -578,4 +582,99 @@ public class SQLRepository {
         }
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public LiveData<List<TaskEntity>> getAllTasks() {
+        return taskDAO.getAllTasks();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public LiveData<List<TaskEntity>> getTimetableTasks(int timetableId) {
+        return taskDAO.getTimetableTasks(timetableId);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public LiveData<List<TaskEntity>> getClassTasks(int courseEventEntityId) {
+        return taskDAO.getClassTasks(courseEventEntityId);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public LiveData<TaskEntity> getTask(int id) {
+        return taskDAO.getTask(id);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void insertTask(TaskEntity taskEntity) {
+        new InsertTaskAsyncTask(this.taskDAO, taskEntity).execute();
+    }
+
+    private static class InsertTaskAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        private TaskDAO taskDAO;
+        private TaskEntity taskEntity;
+
+        InsertTaskAsyncTask(TaskDAO taskDAO, TaskEntity taskEntity) {
+            this.taskDAO = taskDAO;
+            this.taskEntity = taskEntity;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            this.taskDAO.insert(this.taskEntity);
+            return null;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void deleteTask(TaskEntity taskEntity) {
+        new DeleteTaskAsyncTask(this.taskDAO, taskEntity).execute();
+    }
+
+    private static class DeleteTaskAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        private TaskDAO taskDAO;
+        private TaskEntity taskEntity;
+
+        DeleteTaskAsyncTask(TaskDAO taskDAO, TaskEntity taskEntity) {
+            this.taskDAO = taskDAO;
+            this.taskEntity = taskEntity;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            this.taskDAO.delete(this.taskEntity);
+            return null;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void updateTask(TaskEntity taskEntity) {
+        new UpdateTaskAsyncTask(this.taskDAO, taskEntity).execute();
+    }
+
+    private static class UpdateTaskAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        private TaskDAO taskDAO;
+        private TaskEntity taskEntity;
+
+        UpdateTaskAsyncTask(TaskDAO taskDAO, TaskEntity taskEntity) {
+            this.taskDAO = taskDAO;
+            this.taskEntity = taskEntity;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            this.taskDAO.update(this.taskEntity);
+            return null;
+        }
+    }
 }

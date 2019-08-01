@@ -26,15 +26,15 @@ public interface TaskDAO {
     @Query("SELECT * FROM task_table")
     LiveData<List<TaskEntity>> getAllTasks();
 
-    @Query("SELECT * FROM task_table WHERE timetableId = :timetableId")
+    @Query("SELECT * FROM task_table WHERE timetableId = :timetableId ORDER BY deadLine ASC")
     LiveData<List<TaskEntity>> getTimetableTasks(int timetableId);
 
-    @Query("SELECT * FROM task_table WHERE courseEventEntityId = :courseEventEntityId")
+    @Query("SELECT * FROM task_table WHERE courseEventEntityId = :courseEventEntityId ORDER BY deadLine ASC")
     LiveData<List<TaskEntity>> getClassTasks(int courseEventEntityId);
 
     @Query("SELECT * FROM task_table WHERE id = :id LIMIT 1")
     LiveData<TaskEntity> getTask(int id);
 
-    @Query("SELECT * FROM task_table WHERE deadLine BETWEEN :nowTime AND :deadLineTime")
+    @Query("SELECT * FROM task_table WHERE deadLine BETWEEN :nowTime AND :deadLineTime ORDER BY deadLine ASC")
     LiveData<List<TaskEntity>> getTasksWithinTime(long nowTime ,long deadLineTime);
 }

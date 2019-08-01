@@ -59,4 +59,6 @@
     <string name="no_main_timetable_dialog_message">You need a main timetable!</string>
     <string name="date_picker_dialog_saved_calendar_key">date_picker_dialog_saved_calendar</string>
     <string name="time_picker_dialog_saved_calendar_key">time_picker_dialog_saved_calendar</string>
+    <string name="chosen_priority_level">Chosen priority level</string>
+    <string name="has_alarm">Has alarm</string>
 </resources>

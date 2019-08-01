@@ -1,5 +1,6 @@
 package com.example.ntu_timetable_calendar.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.ntu_timetable_calendar.Entity.TaskEntity;
 import com.example.ntu_timetable_calendar.R;
 import com.example.ntu_timetable_calendar.RVAdapters.TaskFragmentFrag1RVAdapter;
+import com.example.ntu_timetable_calendar.SecondActivity;
 import com.example.ntu_timetable_calendar.ViewModels.SQLViewModel;
 
 import java.util.Calendar;
@@ -135,6 +137,9 @@ public class TaskFragmentFrag2 extends Fragment implements TaskFragmentFrag1RVAd
      */
     @Override
     public void onItemClicked(TaskEntity taskEntity, int position) {
-
+        Intent intent = new Intent(getActivity(), SecondActivity.class);
+        intent.putExtra(getString(R.string.ACTIVITY_INTENT), getString(R.string.TASK_DETAIL_INTENT));
+        intent.putExtra(getString(R.string.TASK_ENTITY_ID), taskEntity.getId());
+        startActivity(intent);
     }
 }

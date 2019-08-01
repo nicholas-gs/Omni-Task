@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -93,8 +94,14 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
         mToolbar = view.findViewById(R.id.add_new_task_toolbar);
         mTitleInputLayout = view.findViewById(R.id.add_new_task_title_textinputlayout);
         mTitleEdittext = view.findViewById(R.id.add_new_task_title_edittext);
+        mTitleEdittext.setHorizontallyScrolling(false);
+        mTitleEdittext.setMaxLines(10);
+        mTitleEdittext.setEllipsize(TextUtils.TruncateAt.END);
         mDescriptionInputLayout = view.findViewById(R.id.add_new_task_description_textinputlayout);
         mDescriptionEdittext = view.findViewById(R.id.add_new_task_description_edittext);
+        mDescriptionEdittext.setHorizontallyScrolling(false);
+        mDescriptionEdittext.setMaxLines(10);
+        mDescriptionEdittext.setEllipsize(TextUtils.TruncateAt.END);
 
         chooseClassSwitch = view.findViewById(R.id.add_new_task_choose_class_switch);
         chooseClassSwitch.setOnCheckedChangeListener(this);

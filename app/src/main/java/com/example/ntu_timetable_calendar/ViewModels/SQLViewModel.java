@@ -192,7 +192,7 @@ public class SQLViewModel extends AndroidViewModel implements SQLRepository.Inse
         return sqlRepository.getClassTasks(courseEventEntityId);
     }
 
-    public LiveData<List<TaskEntity>> getTasksWithinTime(int nowTime ,long deadLineTime){
+    public LiveData<List<TaskEntity>> getTasksWithinTime(long nowTime ,long deadLineTime){
         return sqlRepository.getTasksWithinTime(nowTime, deadLineTime);
     }
 

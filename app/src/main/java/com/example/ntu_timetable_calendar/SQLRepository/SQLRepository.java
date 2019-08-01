@@ -611,7 +611,7 @@ public class SQLRepository {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public LiveData<List<TaskEntity>> getTasksWithinTime(int nowTime ,long deadLineTime){
+    public LiveData<List<TaskEntity>> getTasksWithinTime(long nowTime ,long deadLineTime){
         return taskDAO.getTasksWithinTime(nowTime, deadLineTime);
     }
 

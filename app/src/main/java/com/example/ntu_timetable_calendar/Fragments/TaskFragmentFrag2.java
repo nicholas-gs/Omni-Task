@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ntu_timetable_calendar.Entity.TaskEntity;
 import com.example.ntu_timetable_calendar.R;
-import com.example.ntu_timetable_calendar.RVAdapters.TaskFragmentFrag1RVAdapter;
+import com.example.ntu_timetable_calendar.RVAdapters.TaskFragmentRVAdapter;
 import com.example.ntu_timetable_calendar.SecondActivity;
 import com.example.ntu_timetable_calendar.ViewModels.SQLViewModel;
 
@@ -28,12 +28,12 @@ import java.util.List;
 /**
  * Show tasks whose deadline is within the current month
  */
-public class TaskFragmentFrag2 extends Fragment implements TaskFragmentFrag1RVAdapter.onItemClickedListener {
+public class TaskFragmentFrag2 extends Fragment implements TaskFragmentRVAdapter.onItemClickedListener {
 
     // Views
     private RecyclerView mRecyclerView;
 
-    private TaskFragmentFrag1RVAdapter mAdapter;
+    private TaskFragmentRVAdapter mAdapter;
 
     // ViewModels
     private SQLViewModel sqlViewModel;
@@ -69,7 +69,7 @@ public class TaskFragmentFrag2 extends Fragment implements TaskFragmentFrag1RVAd
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setNestedScrollingEnabled(false);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
-        this.mAdapter = new TaskFragmentFrag1RVAdapter(requireContext());
+        this.mAdapter = new TaskFragmentRVAdapter(requireContext());
         this.mAdapter.setOnItemClickedListener(this);
         mRecyclerView.setAdapter(this.mAdapter);
     }

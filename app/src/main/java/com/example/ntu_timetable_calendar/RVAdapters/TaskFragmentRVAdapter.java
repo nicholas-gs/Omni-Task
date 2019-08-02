@@ -18,28 +18,29 @@ import com.example.ntu_timetable_calendar.Entity.TaskEntity;
 import com.example.ntu_timetable_calendar.R;
 
 import java.text.DateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class TaskFragmentFrag1RVAdapter extends ListAdapter<TaskEntity, RecyclerView.ViewHolder> {
+public class TaskFragmentRVAdapter extends ListAdapter<TaskEntity, RecyclerView.ViewHolder> {
 
     private Context context;
 
-    public TaskFragmentFrag1RVAdapter(Context context) {
+    public TaskFragmentRVAdapter(Context context) {
         super(DIFF_CALLBACK);
         this.context = context;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public interface onItemClickedListener{
+    public interface onItemClickedListener {
         void onItemClicked(TaskEntity taskEntity, int position);
     }
 
     private onItemClickedListener mListener;
 
-    public void setOnItemClickedListener(onItemClickedListener mListener){
+    public void setOnItemClickedListener(onItemClickedListener mListener) {
         this.mListener = mListener;
     }
 
@@ -53,8 +54,11 @@ public class TaskFragmentFrag1RVAdapter extends ListAdapter<TaskEntity, Recycler
 
         @Override
         public boolean areContentsTheSame(@NonNull TaskEntity oldItem, @NonNull TaskEntity newItem) {
-            return (oldItem.getTitle().equals(newItem.getTitle())) && (oldItem.getDescription().equals(newItem.getDescription()))
-                    && (oldItem.getDeadLine().equals(newItem.getDeadLine()));
+            return ((oldItem.getCourseEventEntityId() == newItem.getCourseEventEntityId()) && oldItem.getTitle().equals(newItem.getTitle())) && (oldItem.getDescription().equals(newItem.getDescription()))
+                    && (oldItem.getDeadLine().equals(newItem.getDeadLine()) && (oldItem.getAlarmList().equals(newItem.getAlarmList()))
+                    && (oldItem.getPriorityLevel() == newItem.getPriorityLevel() && (Arrays.equals(oldItem.getAlarmTimingChosen(), newItem.getAlarmTimingChosen())))
+                    && (oldItem.getTimetableId() == newItem.getTimetableId())
+            );
         }
     };
 
@@ -75,7 +79,7 @@ public class TaskFragmentFrag1RVAdapter extends ListAdapter<TaskEntity, Recycler
             mLayoutContainer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(mListener != null){
+                    if (mListener != null) {
                         mListener.onItemClicked(getItem(getAdapterPosition()), getAdapterPosition());
                     }
                 }
@@ -148,7 +152,7 @@ public class TaskFragmentFrag1RVAdapter extends ListAdapter<TaskEntity, Recycler
      * @param alarmsList List of alarms from task entity
      */
     private void setAlarmIcon(ImageView alarmIcon, List<Long> alarmsList) {
-        if(alarmsList != null && alarmsList.size() != 0){
+        if (alarmsList != null && alarmsList.size() != 0) {
             alarmIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_access_alarm_lightblue_24dp));
             alarmIcon.setVisibility(View.VISIBLE);
         } else {

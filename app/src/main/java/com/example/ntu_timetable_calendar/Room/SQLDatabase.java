@@ -19,11 +19,12 @@ import com.example.ntu_timetable_calendar.Entity.ExamEntity;
 import com.example.ntu_timetable_calendar.Entity.ExamEventEntity;
 import com.example.ntu_timetable_calendar.Entity.TaskEntity;
 import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
+import com.example.ntu_timetable_calendar.TypeConverter.AlarmTimingChosenConverter;
 import com.example.ntu_timetable_calendar.TypeConverter.AlarmTypeConverter;
 
 @Database(entities = {TimetableEntity.class, CourseEntity.class, ExamEntity.class, CourseEventEntity.class, ExamEventEntity.class, TaskEntity.class},
         version = 1, exportSchema = false)
-@TypeConverters(value = {AlarmTypeConverter.class})
+@TypeConverters(value = {AlarmTypeConverter.class, AlarmTimingChosenConverter.class})
 public abstract class SQLDatabase extends RoomDatabase {
 
     private static SQLDatabase instance;

@@ -1,5 +1,6 @@
 package com.example.ntu_timetable_calendar.Fragments;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -30,6 +31,7 @@ import com.example.ntu_timetable_calendar.Entity.TaskEntity;
 import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
 import com.example.ntu_timetable_calendar.Helper.AlarmParser;
 import com.example.ntu_timetable_calendar.R;
+import com.example.ntu_timetable_calendar.SecondActivity;
 import com.example.ntu_timetable_calendar.ViewModels.SQLViewModel;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.textfield.TextInputEditText;
@@ -45,7 +47,7 @@ import java.util.Objects;
 import es.dmoral.toasty.Toasty;
 
 public class TaskDetailFragment extends Fragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener,
-        DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
+        DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener, SecondActivity.MyOnBackPressedListener {
 
     // Widgets
     private AppBarLayout mAppBarLayout;
@@ -91,6 +93,11 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        Activity activity = getActivity();
+        if (activity instanceof SecondActivity) {
+            ((SecondActivity) activity).setMyBackPressedListener(this);
+        }
 
         initViews(view);
         initToolbar();
@@ -299,7 +306,7 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
         builder.setPositiveButton(getString(R.string.discard), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                Objects.requireNonNull(getActivity()).onBackPressed();
+                Objects.requireNonNull(getActivity()).finish();
             }
         });
 
@@ -680,5 +687,15 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
 
         // Update the TextView
         initCurrentTimeTextViews();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Callback method for when user clicks the back button -- from SecondActivity.java
+     */
+    @Override
+    public void myOnBackPressed() {
+        closeFragmentDialog();
     }
 }

@@ -11,6 +11,23 @@ import com.example.ntu_timetable_calendar.Fragments.TaskDetailFragment;
 
 public class SecondActivity extends AppCompatActivity {
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * The fragment acts as the observer and is notified by the activity when the user clicks the back button!
+     */
+    public interface MyOnBackPressedListener {
+        void myOnBackPressed();
+    }
+
+    private MyOnBackPressedListener mListener;
+
+    public void setMyBackPressedListener(MyOnBackPressedListener mListener) {
+        this.mListener = mListener;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +53,18 @@ public class SecondActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction().replace(R.id.second_activity_fragment_container,
                     new TaskDetailFragment(getIntent().getIntExtra(getString(R.string.TASK_ENTITY_ID), -1)),
                     "task_detail_fragment").commit();
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    @Override
+    public void onBackPressed() {
+        if (this.mListener != null) {
+            mListener.myOnBackPressed();
+        } else {
+            // If fragment does not implement MyOnBackPressedListener interface, do not change original functionality!
+            super.onBackPressed();
         }
     }
 }

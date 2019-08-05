@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/choose_class_fragment_save_menu_item"
+        android:icon="@drawable/ic_check_white_24dp"
+        android:title=""
+        app:showAsAction="ifRoom" />
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/choose_class_fragment_day_view_menu_item"
+            android:title="@string/day_view"
+            app:showAsAction="never" />
+
+        <item
+            android:id="@+id/choose_class_fragment_three_day_view_menu_item"
+            android:checked="true"
+            android:title="@string/three_day_view"
+            app:showAsAction="never" />
+
+        <item
+            android:id="@+id/choose_class_fragment_five_day_view_menu_item"
+            android:title="@string/five_day_view"
+            app:showAsAction="never" />
+
+    </group>
+
+</menu>

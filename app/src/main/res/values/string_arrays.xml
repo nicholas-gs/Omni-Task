@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="alarm_timing_dialog_selections">
+        <item>30 minutes before</item>
+        <item>2 hours before</item>
+        <item>6 hours before</item>
+        <item>12 hours before</item>
+        <item>1 day before</item>
+    </string-array>
+
+    <string-array name="priority_dialog_selections">
+        <item>Priority 1</item>
+        <item>Priority 2</item>
+        <item>Priority 3</item>
+        <item>Priority 4</item>
+        <item>No Priority</item>
+    </string-array>
+</resources>

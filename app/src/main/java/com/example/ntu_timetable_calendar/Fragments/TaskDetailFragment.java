@@ -33,6 +33,7 @@ import com.example.ntu_timetable_calendar.Helper.AlarmParser;
 import com.example.ntu_timetable_calendar.R;
 import com.example.ntu_timetable_calendar.SecondActivity;
 import com.example.ntu_timetable_calendar.ViewModels.SQLViewModel;
+import com.example.ntu_timetable_calendar.ViewModels.TasksFragmentViewModel;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -71,6 +72,7 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
     private boolean[] alarmTimingChosen; // Need to update
 
     // ViewModel
+    private TasksFragmentViewModel tasksFragmentViewModel;
     private SQLViewModel sqlViewModel;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -171,15 +173,24 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
 
     private void initViewModels() {
         sqlViewModel = ViewModelProviders.of(this).get(SQLViewModel.class);
-        sqlViewModel.getTask(this.taskEntityId).observe(this, new Observer<TaskEntity>() {
-            @Override
-            public void onChanged(TaskEntity taskEntity) {
-                if (taskEntity != null) {
-                    saveVariables(taskEntity);
-                    displayTask();
+        tasksFragmentViewModel = ViewModelProviders.of(this).get(TasksFragmentViewModel.class);
+
+        if (tasksFragmentViewModel.getTaskEntity() == null) {
+            sqlViewModel.getTask(this.taskEntityId).observe(this, new Observer<TaskEntity>() {
+                @Override
+                public void onChanged(TaskEntity taskEntity) {
+                    if (taskEntity != null) {
+                        saveVariablesToViewModel(taskEntity);
+                        saveLocalVariables(taskEntity);
+                        displayTask();
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            retrieveVariablesFromViewModel();
+
+            displayTask();
+        }
 
         sqlViewModel.getMainTimetable().observe(this, new Observer<TimetableEntity>() {
             @Override
@@ -189,7 +200,26 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
         });
     }
 
-    private void saveVariables(TaskEntity taskEntity) {
+    private void saveVariablesToViewModel(TaskEntity taskEntity) {
+        tasksFragmentViewModel.setTaskEntity(taskEntity);
+
+        tasksFragmentViewModel.setChosenClassId(taskEntity.getCourseEventEntityId());
+
+        Calendar tempCalendar = Calendar.getInstance();
+        tempCalendar.setTimeInMillis(taskEntity.getDeadLine());
+        tasksFragmentViewModel.setDeadLineCalendar(tempCalendar);
+
+        tasksFragmentViewModel.setAlarmTimingChosen(taskEntity.getAlarmTimingChosen());
+        tasksFragmentViewModel.setPriorityChosen(taskEntity.getPriorityLevel());
+    }
+
+    /**
+     * Save variables to local variables, so that the ViewModel does not have to accessed every time
+     * the user changes something
+     *
+     * @param taskEntity TaskEntity that user wants to change/see detail
+     */
+    private void saveLocalVariables(TaskEntity taskEntity) {
         this.chosenClassId = taskEntity.getCourseEventEntityId();
         this.taskEntity = taskEntity;
         this.deadlineCalendar = Calendar.getInstance();
@@ -200,6 +230,14 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
 
     private void saveMainTimetable(TimetableEntity timetableEntity) {
         this.mainTimetableEntity = timetableEntity;
+    }
+
+    private void retrieveVariablesFromViewModel() {
+        this.taskEntity = tasksFragmentViewModel.getTaskEntity();
+        this.chosenClassId = tasksFragmentViewModel.getChosenClassId();
+        this.deadlineCalendar = tasksFragmentViewModel.getDeadLineCalendar();
+        this.priorityChosen = tasksFragmentViewModel.getPriorityChosen();
+        this.alarmTimingChosen = tasksFragmentViewModel.getAlarmTimingChosen();
     }
 
     private void displayTask() {
@@ -347,7 +385,7 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
         builder.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-
+                dialogInterface.dismiss();
             }
         });
 
@@ -457,7 +495,7 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
      * Dialog shown to user when the user clicks the alarm text view -- prompt user to choose the alarms timing
      */
     private void initAlarmDialog() {
-        String[] listItems = {"30 minutes before", "2 hours before", "6 hours before", "12 hours before", "1 day before"};
+        String[] listItems = getResources().getStringArray(R.array.alarm_timing_dialog_selections);
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle(getString(R.string.alarm_timing));
         builder.setMultiChoiceItems(listItems, alarmTimingChosen, new DialogInterface.OnMultiChoiceClickListener() {
@@ -470,7 +508,7 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
         builder.setPositiveButton(getString(R.string.confirm), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-
+                tasksFragmentViewModel.setAlarmTimingChosen(alarmTimingChosen);
                 initAlarmTextView();
 
                 dialogInterface.dismiss();
@@ -482,8 +520,9 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 alarmTimingChosen = new boolean[]{false, false, false, false, false};
-
+                tasksFragmentViewModel.setAlarmTimingChosen(alarmTimingChosen);
                 initAlarmTextView();
+                dialogInterface.dismiss();
             }
         });
 
@@ -522,7 +561,7 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
 
     private void initPriorityDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        String[] listItems = {"Priority 1", "Priority 2", "Priority 3", "Priority 4", "No Priority"};
+        String[] listItems = getResources().getStringArray(R.array.priority_dialog_selections);
         builder.setTitle(getString(R.string.choose_priority));
         builder.setSingleChoiceItems(listItems, priorityChosen - 1, new DialogInterface.OnClickListener() {
             @Override
@@ -536,12 +575,15 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
         builder.setPositiveButton(getString(R.string.confirm), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                tasksFragmentViewModel.setPriorityChosen(priorityChosen);
                 dialogInterface.dismiss();
             }
         });
 
         final AlertDialog alertDialog = builder.create();
         alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.setCancelable(false);
+
         alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialogInterface) {
@@ -671,6 +713,9 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
 
         // Update the TextView
         initCurrentTimeTextViews();
+
+        // Update the ViewModel
+        tasksFragmentViewModel.setDeadLineCalendar(deadlineCalendar);
     }
 
     /**
@@ -687,6 +732,9 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
 
         // Update the TextView
         initCurrentTimeTextViews();
+
+        // Update the ViewModel
+        tasksFragmentViewModel.setDeadLineCalendar(deadlineCalendar);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////

@@ -26,6 +26,7 @@ import com.example.ntu_timetable_calendar.Entity.CourseEventEntity;
 import com.example.ntu_timetable_calendar.Entity.ExamEventEntity;
 import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
 import com.example.ntu_timetable_calendar.EventModel.Event;
+import com.example.ntu_timetable_calendar.Helper.WeekViewParser;
 import com.example.ntu_timetable_calendar.R;
 import com.example.ntu_timetable_calendar.SecondActivity;
 import com.example.ntu_timetable_calendar.ViewModels.HomeFragmentActivityViewModel;
@@ -84,22 +85,22 @@ public class HomeFragment extends Fragment implements EventClickListener<Event>,
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
-                    case R.id.go_to_today_menu_item:
+                    case R.id.home_fragment_go_to_today_menu_item:
                         goToNow();
                         break;
-                    case R.id.day_view_menu_item:
+                    case R.id.home_fragment_day_view_menu_item:
                         setNumberOfVisibleDays(item);
                         break;
-                    case R.id.three_day_view_menu_item:
+                    case R.id.home_fragment_three_day_view_menu_item:
                         setNumberOfVisibleDays(item);
                         break;
-                    case R.id.five_day_view_menu_item:
+                    case R.id.home_fragment_five_day_view_menu_item:
                         setNumberOfVisibleDays(item);
                         break;
-                    case R.id.saved_timetables_menu_item:
+                    case R.id.home_fragment_saved_timetables_menu_item:
                         startSecondActivity(getString(R.string.SAVED_TIMETABLES_INTENT));
                         break;
-                    case R.id.about_menu_item:
+                    case R.id.home_fragment_about_menu_item:
                         startSecondActivity(getString(R.string.ABOUT_APP_INTENT));
                         break;
                 }
@@ -121,11 +122,11 @@ public class HomeFragment extends Fragment implements EventClickListener<Event>,
 
         if (i != null) {
             if (i == getResources().getInteger(R.integer.VISIBLE_DAYS_1)) {
-                mToolbar.getMenu().performIdentifierAction(R.id.day_view_menu_item, 0);
+                mToolbar.getMenu().performIdentifierAction(R.id.home_fragment_day_view_menu_item, 0);
             } else if (i == getResources().getInteger(R.integer.VISIBLE_DAYS_3)) {
-                mToolbar.getMenu().performIdentifierAction(R.id.three_day_view_menu_item, 0);
+                mToolbar.getMenu().performIdentifierAction(R.id.home_fragment_three_day_view_menu_item, 0);
             } else if (i == getResources().getInteger(R.integer.VISIBLE_DAYS_5)) {
-                mToolbar.getMenu().performIdentifierAction(R.id.five_day_view_menu_item, 0);
+                mToolbar.getMenu().performIdentifierAction(R.id.home_fragment_five_day_view_menu_item, 0);
             }
         }
     }
@@ -150,17 +151,17 @@ public class HomeFragment extends Fragment implements EventClickListener<Event>,
      */
     private void setNumberOfVisibleDays(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.day_view_menu_item:
+            case R.id.home_fragment_day_view_menu_item:
                 mWeekView.setNumberOfVisibleDays(getResources().getInteger(R.integer.VISIBLE_DAYS_1));
                 mWeekView.setHeaderRowTextSize(getResources().getInteger(R.integer.HEADER_14_SP));
                 homeFragmentActivityViewModel.setNoOfVisibleDays(getResources().getInteger(R.integer.VISIBLE_DAYS_1));
                 break;
-            case R.id.three_day_view_menu_item:
+            case R.id.home_fragment_three_day_view_menu_item:
                 mWeekView.setNumberOfVisibleDays(getResources().getInteger(R.integer.VISIBLE_DAYS_3));
                 mWeekView.setHeaderRowTextSize(getResources().getInteger(R.integer.HEADER_14_SP));
                 homeFragmentActivityViewModel.setNoOfVisibleDays(getResources().getInteger(R.integer.VISIBLE_DAYS_3));
                 break;
-            case R.id.five_day_view_menu_item:
+            case R.id.home_fragment_five_day_view_menu_item:
                 mWeekView.setNumberOfVisibleDays(getResources().getInteger(R.integer.VISIBLE_DAYS_5));
                 mWeekView.setHeaderRowTextSize(getResources().getInteger(R.integer.HEADER_12_SP));
                 homeFragmentActivityViewModel.setNoOfVisibleDays(getResources().getInteger(R.integer.VISIBLE_DAYS_5));
@@ -225,21 +226,7 @@ public class HomeFragment extends Fragment implements EventClickListener<Event>,
      * @param courseEventEntityList List of CourseEventEntity from Room
      */
     private void saveCourseEventEntityList(List<CourseEventEntity> courseEventEntityList) {
-
-        Calendar calendar = Calendar.getInstance();
-
-        for (CourseEventEntity courseEventEntity : courseEventEntityList) {
-            Calendar start = (Calendar) calendar.clone();
-            start.setTimeInMillis(courseEventEntity.getStartTime());
-            Calendar end = (Calendar) calendar.clone();
-            end.setTimeInMillis(courseEventEntity.getEndTime());
-
-            Event event = new Event(courseEventEntity.getId(), courseEventEntity.getTitle(), start, end
-                    , courseEventEntity.getLocation(), courseEventEntity.getColor(),
-                    courseEventEntity.getAllDay(), courseEventEntity.getCanceled());
-
-            this.eventList.add(event);
-        }
+        this.eventList.addAll(WeekViewParser.saveCourseEventEntityList(courseEventEntityList));
     }
 
     /**
@@ -248,20 +235,7 @@ public class HomeFragment extends Fragment implements EventClickListener<Event>,
      * @param examEventEntityList List of ExamEventEntity from Room
      */
     private void saveExamEventEntityList(List<ExamEventEntity> examEventEntityList) {
-
-        Calendar calendar = Calendar.getInstance();
-
-        for (ExamEventEntity examEventEntity : examEventEntityList) {
-            Calendar start = (Calendar) calendar.clone();
-            start.setTimeInMillis(examEventEntity.getStartTime());
-            Calendar end = (Calendar) calendar.clone();
-            end.setTimeInMillis(examEventEntity.getEndTime());
-
-            Event event = new Event(examEventEntity.getId(), examEventEntity.getTitle(), start, end, examEventEntity.getLocation(), examEventEntity.getColor(),
-                    examEventEntity.getAllDay(), examEventEntity.getCanceled());
-
-            this.eventList.add(event);
-        }
+        this.eventList.addAll(WeekViewParser.saveExamEventEntityList(examEventEntityList));
     }
 
     /**

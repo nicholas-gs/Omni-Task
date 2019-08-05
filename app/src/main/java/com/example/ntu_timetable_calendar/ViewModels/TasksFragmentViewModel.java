@@ -4,6 +4,8 @@ import android.app.Application;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.example.ntu_timetable_calendar.Entity.TaskEntity;
 
@@ -22,7 +24,7 @@ public class TasksFragmentViewModel extends AndroidViewModel {
     // In TaskDetailFragment, we store the original unedited task here!
     private TaskEntity taskEntity;
 
-    private int chosenClassId;
+    private MutableLiveData<Integer> chosenClassId = new MutableLiveData<>();
     private Calendar deadLineCalendar;
     private boolean[] alarmTimingChosen;
     private int priorityChosen;
@@ -33,8 +35,8 @@ public class TasksFragmentViewModel extends AndroidViewModel {
         this.taskEntity = taskEntity;
     }
 
-    public void setChosenClassId(int chosenClassId) {
-        this.chosenClassId = chosenClassId;
+    public void setChosenClassId(int id) {
+        this.chosenClassId.postValue(id);
     }
 
     public void setDeadLineCalendar(Calendar deadLineCalendar) {
@@ -55,7 +57,7 @@ public class TasksFragmentViewModel extends AndroidViewModel {
         return taskEntity;
     }
 
-    public int getChosenClassId() {
+    public LiveData<Integer> getChosenClassId() {
         return chosenClassId;
     }
 

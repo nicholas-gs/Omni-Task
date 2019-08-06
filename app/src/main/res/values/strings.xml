@@ -72,4 +72,8 @@
     <string name="delete">Delete</string>
     <string name="save_changes_dialog_message">Save changes to this task?</string>
     <string name="no_class_chosen">No class chosen</string>
+    <string name="about_app_weblink"><a href="https://github.com/wRorsjakz/Omni-Task">https://github.com/wRorsjakz/Omni-Task</a></string>
+    <string name="about_app_description">Omni-Task is an open source project under GNU General Public License v3.0 license.</string>
+    <string name="omni_task_icon">Omni-Task icon</string>
+    <string name="about_app_fragment_visit">Visit the repository in Github :</string>
 </resources>

@@ -23,6 +23,9 @@ public interface CourseEventDAO {
     @Delete
     void delete(CourseEventEntity courseEventEntity);
 
+    @Query("SELECT * FROM course_event_table WHERE id = :id LIMIT 1")
+    LiveData<CourseEventEntity> getCourseEvent(int id);
+
     @Query("SELECT * FROM course_event_table")
     LiveData<List<CourseEventEntity>> getAllCourseEvents();
 

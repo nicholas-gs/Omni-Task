@@ -144,6 +144,10 @@ public class SQLViewModel extends AndroidViewModel implements SQLRepository.Inse
         return sqlRepository.getTimetableCourseEvents(timetableId);
     }
 
+    public LiveData<CourseEventEntity> getCourseEvent(int id){
+        return sqlRepository.getCourseEvent(id);
+    }
+
     public void insertCourseEvents(List<Course> courseList, Map<String, String> indexSel, int timetableId, int startYear, int startMonth, int startDate) {
         sqlRepository.insertCourseEvents(courseList, indexSel, timetableId, startYear, startMonth, startDate);
     }

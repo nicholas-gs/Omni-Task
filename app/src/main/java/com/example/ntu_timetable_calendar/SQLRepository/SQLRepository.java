@@ -410,6 +410,12 @@ public class SQLRepository {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
+    public LiveData<CourseEventEntity> getCourseEvent(int id) {
+        return courseEventDAO.getCourseEvent(id);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
     public void insertCourseEvents(List<Course> courseList, Map<String, String> indexSel, int timetableId, int startYear, int startMonth, int startDate) {
         new InsertCourseEventsAsyncTask(this.courseEventDAO, courseList, indexSel, timetableId, startYear, startMonth, startDate).execute();
     }
@@ -611,7 +617,7 @@ public class SQLRepository {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public LiveData<List<TaskEntity>> getTasksWithinTime(long nowTime ,long deadLineTime){
+    public LiveData<List<TaskEntity>> getTasksWithinTime(long nowTime, long deadLineTime) {
         return taskDAO.getTasksWithinTime(nowTime, deadLineTime);
     }
 

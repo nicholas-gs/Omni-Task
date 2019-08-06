@@ -71,4 +71,5 @@
     <string name="task_deleted">Task deleted</string>
     <string name="delete">Delete</string>
     <string name="save_changes_dialog_message">Save changes to this task?</string>
+    <string name="no_class_chosen">No class chosen</string>
 </resources>

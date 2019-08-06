@@ -24,7 +24,13 @@ public class TasksFragmentViewModel extends AndroidViewModel {
     // In TaskDetailFragment, we store the original unedited task here!
     private TaskEntity taskEntity;
 
+    // The ID of the chosen class is shared between the ChooseClassFragment & AddNewTaskFragment/TaskDetailFragment
     private MutableLiveData<Integer> chosenClassId = new MutableLiveData<>();
+    // The title of the chosen class is shared between the ChooseClassFragment & AddNewTaskFragment/TaskDetailFragment
+    private String chosenClassTitle;
+    // The time of the chosen class is shared between the ChooseClassFragment & AddNewTaskFragment/TaskDetailFragment
+    private String chosenClassTiming;
+
     private Calendar deadLineCalendar;
     private boolean[] alarmTimingChosen;
     private int priorityChosen;
@@ -37,6 +43,14 @@ public class TasksFragmentViewModel extends AndroidViewModel {
 
     public void setChosenClassId(int id) {
         this.chosenClassId.postValue(id);
+    }
+
+    public void setChosenClassTitle(String chosenClassTitle) {
+        this.chosenClassTitle = chosenClassTitle;
+    }
+
+    public void setChosenClassTiming(String chosenClassTiming) {
+        this.chosenClassTiming = chosenClassTiming;
     }
 
     public void setDeadLineCalendar(Calendar deadLineCalendar) {
@@ -59,6 +73,14 @@ public class TasksFragmentViewModel extends AndroidViewModel {
 
     public LiveData<Integer> getChosenClassId() {
         return chosenClassId;
+    }
+
+    public String getChosenClassTitle() {
+        return chosenClassTitle;
+    }
+
+    public String getChosenClassTiming() {
+        return chosenClassTiming;
     }
 
     public Calendar getDeadLineCalendar() {

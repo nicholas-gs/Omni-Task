@@ -23,6 +23,7 @@ import com.alamkanak.weekview.WeekViewDisplayable;
 import com.example.ntu_timetable_calendar.Entity.CourseEventEntity;
 import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
 import com.example.ntu_timetable_calendar.EventModel.Event;
+import com.example.ntu_timetable_calendar.Helper.StringHelper;
 import com.example.ntu_timetable_calendar.Helper.WeekViewParser;
 import com.example.ntu_timetable_calendar.R;
 import com.example.ntu_timetable_calendar.ViewModels.SQLViewModel;
@@ -30,10 +31,8 @@ import com.example.ntu_timetable_calendar.ViewModels.TasksFragmentViewModel;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -52,7 +51,8 @@ public class ChooseClassFragment extends Fragment implements MonthChangeListener
     private TasksFragmentViewModel tasksFragmentViewModel;
 
     // Variables
-    private int chosenClassId;
+    private Integer chosenClassId;
+    private String chosenClassTitle, chosenClassTiming;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -115,6 +115,30 @@ public class ChooseClassFragment extends Fragment implements MonthChangeListener
     private void initViewModels() {
         sqlViewModel = ViewModelProviders.of(this).get(SQLViewModel.class);
         tasksFragmentViewModel = ViewModelProviders.of(requireActivity()).get(TasksFragmentViewModel.class);
+
+        tasksFragmentViewModel.getChosenClassId().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer integer) {
+                // Save variables to local fields
+                chosenClassId = integer;
+                chosenClassTitle = tasksFragmentViewModel.getChosenClassTitle();
+                chosenClassTiming = tasksFragmentViewModel.getChosenClassTiming();
+                // Update the 2 text views
+                updateClassTextViews();
+            }
+        });
+    }
+
+    /**
+     * Update the two text views according to the current title and timing strings
+     */
+    private void updateClassTextViews() {
+        if (chosenClassId != null && chosenClassId >= 0 && chosenClassTitle != null && chosenClassTiming != null) {
+            titleTV.setText(chosenClassTitle.trim());
+            timingTV.setText(chosenClassTiming.trim());
+        } else {
+            titleTV.setText(getString(R.string.no_class_chosen));
+        }
     }
 
     private void getMainTimetable() {
@@ -169,7 +193,17 @@ public class ChooseClassFragment extends Fragment implements MonthChangeListener
      * Pass the chosen class/event id back to the underlying fragment using the TaskFragmentViewModel
      */
     private void saveInput() {
-        tasksFragmentViewModel.setChosenClassId(chosenClassId);
+
+        if (chosenClassId != null) {
+            tasksFragmentViewModel.setChosenClassId(chosenClassId);
+            tasksFragmentViewModel.setChosenClassTitle(chosenClassTitle.trim());
+            tasksFragmentViewModel.setChosenClassTiming(chosenClassTiming.trim());
+        } else {
+            tasksFragmentViewModel.setChosenClassId(-1);
+            tasksFragmentViewModel.setChosenClassTitle(null);
+            tasksFragmentViewModel.setChosenClassTiming(null);
+        }
+
         requireActivity().onBackPressed();
     }
 
@@ -209,12 +243,10 @@ public class ChooseClassFragment extends Fragment implements MonthChangeListener
         // Save the id of the class event in the class variable
         this.chosenClassId = (int) event.getId();
         // Set the title
-        this.titleTV.setText(event.getTitle());
+        this.chosenClassTitle = event.getTitle();
         // Set the time
-        Date startTime = event.getStartTime().getTime();
-        Date endTime = event.getEndTime().getTime();
-        String timingStr = DateFormat.getDateInstance().format(startTime) + ", " + DateFormat.getTimeInstance(DateFormat.SHORT).format(startTime)
-                + " - " + DateFormat.getTimeInstance(DateFormat.SHORT).format(endTime);
-        this.timingTV.setText(timingStr);
+        this.chosenClassTiming = StringHelper.ClassTimingParser(event.getStartTime(), event.getEndTime());
+        // Update the 2 text views
+        updateClassTextViews();
     }
 }

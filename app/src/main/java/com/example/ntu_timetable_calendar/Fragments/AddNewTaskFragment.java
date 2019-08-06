@@ -11,9 +11,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.DatePicker;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -49,26 +47,26 @@ import java.util.Objects;
 import es.dmoral.toasty.Toasty;
 
 public class AddNewTaskFragment extends Fragment implements View.OnClickListener, DatePickerDialog.OnDateSetListener,
-        TimePickerDialog.OnTimeSetListener, CompoundButton.OnCheckedChangeListener, SecondActivity.MyOnBackPressedListener {
+        TimePickerDialog.OnTimeSetListener, SecondActivity.MyOnBackPressedListener {
 
     // Widgets
     private AppBarLayout mAppBarLayout;
     private Toolbar mToolbar;
     private TextInputLayout mTitleInputLayout, mDescriptionInputLayout;
-    private TextInputEditText mTitleEdittext, mDescriptionEdittext;
-    private Switch chooseClassSwitch;
-    private TextView endDateTV, endTimeTV, addAlarmTV, addPriorityTV, addProjectTV;
+    private TextInputEditText mTitleEditText, mDescriptionEditText;
+    private TextView chosenClassTV, endDateTV, endTimeTV, addAlarmTV, addPriorityTV, addProjectTV;
 
     // ViewModel
     private SQLViewModel sqlViewModel;
     private TasksFragmentViewModel tasksFragmentViewModel;
 
     // Variables
-    private TimetableEntity mainTimetableEntity;
+    private int mainTimetableEntityId;
     private int PRIORITY_1, PRIORITY_2, PRIORITY_3, PRIORITY_4, NO_PRIORITY;
     private boolean[] alarmTimingChosen;
 
     // Variables to save
+    private Integer chosenClassId;
     private Calendar deadlineCalendar; // Save the time and day chosen for task deadline by the user using the pickers
     private String title, description;
     private Integer priorityChosen;
@@ -84,11 +82,6 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Activity activity = getActivity();
-        if (activity instanceof SecondActivity) {
-            ((SecondActivity) activity).setMyBackPressedListener(this);
-        }
-
         initViews(view);
         initViewModels();
         initVariables();
@@ -100,18 +93,18 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
         mAppBarLayout = view.findViewById(R.id.add_new_task_appbarlayout);
         mToolbar = view.findViewById(R.id.add_new_task_toolbar);
         mTitleInputLayout = view.findViewById(R.id.add_new_task_title_textinputlayout);
-        mTitleEdittext = view.findViewById(R.id.add_new_task_title_edittext);
-        mTitleEdittext.setHorizontallyScrolling(false);
-        mTitleEdittext.setMaxLines(10);
-        mTitleEdittext.setEllipsize(TextUtils.TruncateAt.END);
+        mTitleEditText = view.findViewById(R.id.add_new_task_title_edittext);
+        mTitleEditText.setHorizontallyScrolling(false);
+        mTitleEditText.setMaxLines(10);
+        mTitleEditText.setEllipsize(TextUtils.TruncateAt.END);
         mDescriptionInputLayout = view.findViewById(R.id.add_new_task_description_textinputlayout);
-        mDescriptionEdittext = view.findViewById(R.id.add_new_task_description_edittext);
-        mDescriptionEdittext.setHorizontallyScrolling(false);
-        mDescriptionEdittext.setMaxLines(10);
-        mDescriptionEdittext.setEllipsize(TextUtils.TruncateAt.END);
+        mDescriptionEditText = view.findViewById(R.id.add_new_task_description_edittext);
+        mDescriptionEditText.setHorizontallyScrolling(false);
+        mDescriptionEditText.setMaxLines(10);
+        mDescriptionEditText.setEllipsize(TextUtils.TruncateAt.END);
 
-        chooseClassSwitch = view.findViewById(R.id.add_new_task_choose_class_switch);
-        chooseClassSwitch.setOnCheckedChangeListener(this);
+        chosenClassTV = view.findViewById(R.id.add_new_task_choose_class_textview);
+        chosenClassTV.setOnClickListener(this);
         endDateTV = view.findViewById(R.id.add_new_task_end_date_tv);
         endDateTV.setOnClickListener(this);
         endTimeTV = view.findViewById(R.id.add_new_task_end_time_tv);
@@ -176,13 +169,28 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
                 saveMainTimetable(timetableEntity);
             }
         });
+
+           /*
+          The TaskFragmentViewModel is used to share data between this fragment and ChooseClassFragment
+         */
+        tasksFragmentViewModel.getChosenClassId().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer integer) {
+                chosenClassId = integer == null ? -1 : integer;
+                initChosenClassTextView();
+            }
+        });
     }
 
     /**
      * @param timetableEntity The main timetable from Room to be saved in the class member variable mainTimetableEntity
      */
     private void saveMainTimetable(TimetableEntity timetableEntity) {
-        this.mainTimetableEntity = timetableEntity;
+        if (timetableEntity == null) {
+            this.mainTimetableEntityId = -1;
+        } else {
+            this.mainTimetableEntityId = timetableEntity.getId();
+        }
     }
 
     private void initToolbar() {
@@ -223,17 +231,33 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
     }
 
     /**
+     * Set the string of the choose class text view
+     */
+    private void initChosenClassTextView() {
+        if (chosenClassId < 0) {
+            chosenClassTV.setText(getString(R.string.choose_class));
+        } else {
+            String chosenClassTitle = tasksFragmentViewModel.getChosenClassTitle();
+            String chosenClassTiming = tasksFragmentViewModel.getChosenClassTiming();
+            if (chosenClassTitle != null && chosenClassTiming != null) {
+                String str = chosenClassTitle + " : " + chosenClassTiming;
+                chosenClassTV.setText(str);
+            }
+        }
+    }
+
+    /**
      * Save the new task
      */
     private void saveTask() {
         if (validationCheck()) {
 
             // If there is no main timetable, set the class variable timetableId to -1
-            int timetableId = (mainTimetableEntity == null) ? -1 : mainTimetableEntity.getId();
+            int timetableId = this.mainTimetableEntityId;
 
             this.listOfAlarms = new AlarmParser(this.alarmTimingChosen, this.deadlineCalendar).parse();
 
-            TaskEntity taskEntity = new TaskEntity(timetableId, -1, title, description, this.deadlineCalendar.getTimeInMillis(),
+            TaskEntity taskEntity = new TaskEntity(timetableId, chosenClassId != null ? chosenClassId : -1, title, description, this.deadlineCalendar.getTimeInMillis(),
                     this.priorityChosen, this.listOfAlarms, this.alarmTimingChosen);
 
             sqlViewModel.insertTask(taskEntity);
@@ -255,8 +279,8 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
         boolean validTitle = true;
         boolean validDescription = true;
 
-        this.title = Objects.requireNonNull(mTitleEdittext.getText()).toString().trim();
-        this.description = Objects.requireNonNull(mDescriptionEdittext.getText()).toString().trim();
+        this.title = Objects.requireNonNull(mTitleEditText.getText()).toString().trim();
+        this.description = Objects.requireNonNull(mDescriptionEditText.getText()).toString().trim();
 
         if (title.length() == 0) {
             mTitleInputLayout.setError(getString(R.string.title_is_empty));
@@ -533,39 +557,21 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
             }
         });
 
-        alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialogInterface) {
-                chooseClassSwitch.setChecked(false);
-            }
-        });
-
         alertDialog.show();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * Interface definition for a callback to be invoked when the checked state of a compound button changed.
-     *
-     * @param compoundButton The compound button view whose state has changed.
-     * @param b              The new checked state of buttonView.
-     */
-    @Override
-    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-        if (compoundButton.getId() == R.id.add_new_task_choose_class_switch) {
-            if (b) {
-                // If the user does not have a main timetable, then show a dialog
-                if (mainTimetableEntity == null) {
-                    initNoMainTimetableDialog();
-                }
-            }
-        }
-    }
-
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.add_new_task_choose_class_textview:
+                if (this.mainTimetableEntityId < 0) {
+                    initNoMainTimetableDialog();
+                } else {
+                    initChooseClassFragment();
+                }
+                break;
             case R.id.add_new_task_end_date_tv:
                 MyDatePickerDialog datePicker = new MyDatePickerDialog(this.deadlineCalendar);
                 datePicker.show(getChildFragmentManager(), "date_picker");
@@ -632,5 +638,39 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
     @Override
     public void myOnBackPressed() {
         closeFragmentDialog();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Display the ChooseClassFragment for user to choose a class for the task
+     */
+    private void initChooseClassFragment() {
+        Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.second_activity_fragment_container, new ChooseClassFragment(), "home_fragment")
+                .addToBackStack("home_fragment").commit();
+    }
+
+    /**
+     * Attach the activity's onBackPressed listener here
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        Activity activity = getActivity();
+        if (activity instanceof SecondActivity) {
+            ((SecondActivity) activity).setMyBackPressedListener(this);
+        }
+    }
+
+    /**
+     * Detach the activity's onBackPressed listener here
+     */
+    @Override
+    public void onStop() {
+        super.onStop();
+        Activity activity = getActivity();
+        if (activity instanceof SecondActivity) {
+            ((SecondActivity) activity).setMyBackPressedListener(null);
+        }
     }
 }

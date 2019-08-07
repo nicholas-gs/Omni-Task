@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -41,6 +42,7 @@ public class ChooseClassFragment extends Fragment implements MonthChangeListener
     // Views
     private Toolbar mToolbar;
     private TextView titleTV, timingTV;
+    private ImageView clearClassButton;
     private WeekView<Event> mWeekView;
 
     // We store the events we want to display in the WeekView widget here
@@ -52,6 +54,7 @@ public class ChooseClassFragment extends Fragment implements MonthChangeListener
 
     // Variables
     private Integer chosenClassId;
+    private Calendar deadlineCalendar;
     private String chosenClassTitle, chosenClassTiming;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -75,9 +78,23 @@ public class ChooseClassFragment extends Fragment implements MonthChangeListener
         mToolbar = view.findViewById(R.id.choose_class_fragment_toolbar);
         titleTV = view.findViewById(R.id.choose_class_fragment_class_title);
         timingTV = view.findViewById(R.id.choose_class_fragment_class_time);
+        clearClassButton = view.findViewById(R.id.choose_class_fragment_clear_class_button);
         mWeekView = view.findViewById(R.id.choose_class_fragment_weekview);
         mWeekView.setMonthChangeListener(this);
         mWeekView.setOnEventClickListener(this);
+
+        clearClassButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Clear local variables
+                chosenClassId = -1;
+                deadlineCalendar = null;
+                chosenClassTitle = null;
+                chosenClassTiming = null;
+
+                updateClassTextViews();
+            }
+        });
     }
 
     private void initToolbar() {
@@ -121,12 +138,18 @@ public class ChooseClassFragment extends Fragment implements MonthChangeListener
             public void onChanged(Integer integer) {
                 // Save variables to local fields
                 chosenClassId = integer;
+                deadlineCalendar = tasksFragmentViewModel.getDeadLineCalendar();
                 chosenClassTitle = tasksFragmentViewModel.getChosenClassTitle();
                 chosenClassTiming = tasksFragmentViewModel.getChosenClassTiming();
                 // Update the 2 text views
                 updateClassTextViews();
             }
         });
+        /*
+          For whatever reason, when the TasksFragmentViewModel's chosenClassId is null, the observable above is not called.
+          So we will have manually call updateClassTextViews() when the fragment is instantiated.
+         */
+        updateClassTextViews();
     }
 
     /**
@@ -138,6 +161,7 @@ public class ChooseClassFragment extends Fragment implements MonthChangeListener
             timingTV.setText(chosenClassTiming.trim());
         } else {
             titleTV.setText(getString(R.string.no_class_chosen));
+            timingTV.setText("");
         }
     }
 
@@ -194,8 +218,10 @@ public class ChooseClassFragment extends Fragment implements MonthChangeListener
      */
     private void saveInput() {
 
-        if (chosenClassId != null) {
+        if (chosenClassId != null && chosenClassId >= 0) {
             tasksFragmentViewModel.setChosenClassId(chosenClassId);
+            // When the user clicks the class, the deadline for the task is set to the start of the class, but the user can still change it later
+            tasksFragmentViewModel.setDeadLineCalendar(deadlineCalendar);
             tasksFragmentViewModel.setChosenClassTitle(chosenClassTitle.trim());
             tasksFragmentViewModel.setChosenClassTiming(chosenClassTiming.trim());
         } else {
@@ -242,6 +268,8 @@ public class ChooseClassFragment extends Fragment implements MonthChangeListener
     public void onEventClick(Event event, @NotNull RectF rectF) {
         // Save the id of the class event in the class variable
         this.chosenClassId = (int) event.getId();
+        // Set the deadline to the event's start time.
+        this.deadlineCalendar = event.getStartTime();
         // Set the title
         this.chosenClassTitle = event.getTitle();
         // Set the time

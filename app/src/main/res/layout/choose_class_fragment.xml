@@ -12,12 +12,12 @@
         android:background="@color/colorPrimary">
 
         <androidx.appcompat.widget.Toolbar
-            app:menu="@menu/choose_class_toolbar_menu"
             android:id="@+id/choose_class_fragment_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/colorPrimary"
             android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
+            app:menu="@menu/choose_class_toolbar_menu"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:title="@string/choose_class"
             app:titleTextColor="@color/colorWhite" />
@@ -36,6 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
+            android:layout_toStartOf="@id/choose_class_fragment_clear_class_button"
             android:paddingStart="16dp"
             android:paddingTop="12dp"
             android:paddingEnd="8dp"
@@ -54,6 +55,22 @@
             android:paddingBottom="4dp"
             android:textColor="@color/colorContentText"
             android:textSize="14sp" />
+
+        <ImageView
+            android:id="@+id/choose_class_fragment_clear_class_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="12dp"
+            android:clickable="true"
+            android:contentDescription="@string/clear_class"
+            android:focusable="true"
+            android:paddingStart="12dp"
+            android:paddingTop="12dp"
+            android:paddingEnd="12dp"
+            android:src="@drawable/ic_close_white_24dp" />
+
 
         <com.alamkanak.weekview.WeekView
             android:id="@+id/choose_class_fragment_weekview"

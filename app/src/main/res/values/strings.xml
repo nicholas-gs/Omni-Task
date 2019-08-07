@@ -76,4 +76,5 @@
     <string name="about_app_description">Omni-Task is an open source project under GNU General Public License v3.0 license.</string>
     <string name="omni_task_icon">Omni-Task icon</string>
     <string name="about_app_fragment_visit">Visit the repository in Github :</string>
+    <string name="clear_class">Clear class</string>
 </resources>

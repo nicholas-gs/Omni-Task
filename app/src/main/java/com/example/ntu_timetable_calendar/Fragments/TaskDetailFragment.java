@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -54,6 +55,7 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
     private AppBarLayout mAppBarLayout;
     private Toolbar mToolbar;
     private TextInputLayout mTitleInputLayout, mDescriptionInputLayout;
+    private ImageView clearClassButton;
     private TextInputEditText mTitleEditText, mDescriptionEditText;
     private TextView chosenClassTextView, endDateTV, endTimeTV, addAlarmTV, addPriorityTV, addProjectTV;
 
@@ -117,6 +119,8 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
         mDescriptionEditText.setMaxLines(10);
         mDescriptionEditText.setEllipsize(TextUtils.TruncateAt.END);
 
+        clearClassButton = view.findViewById(R.id.task_detail_clear_class_button);
+        clearClassButton.setOnClickListener(this);
         chosenClassTextView = view.findViewById(R.id.task_detail_choose_class_textview);
         chosenClassTextView.setOnClickListener(this);
         endDateTV = view.findViewById(R.id.task_detail_end_date_tv);
@@ -320,10 +324,12 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
     private void updateChooseClassTextView() {
         if (chosenClassId < 0) {
             chosenClassTextView.setText(getString(R.string.choose_class));
+            chosenClassTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorContentText));
         } else {
             if (chosenClassTitle != null && chosenClassTiming != null) {
                 String str = chosenClassTitle + " : " + chosenClassTiming;
                 chosenClassTextView.setText(str);
+                chosenClassTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorWhite));
             }
         }
     }
@@ -703,6 +709,14 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
         }
     }
 
+    /**
+     * Clear the ChosenClassId in the TasksFragmentViewModel
+     * The LiveData observable will be triggered above and the text view will be cleared
+     */
+    private void clearChosenClass() {
+        tasksFragmentViewModel.setChosenClassId(-1);
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
@@ -714,6 +728,9 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
                 } else {
                     initChooseClassFragment();
                 }
+                break;
+            case R.id.task_detail_clear_class_button:
+                clearChosenClass();
                 break;
             case R.id.task_detail_end_date_tv:
                 MyDatePickerDialog datePicker = new MyDatePickerDialog(this.deadlineCalendar);

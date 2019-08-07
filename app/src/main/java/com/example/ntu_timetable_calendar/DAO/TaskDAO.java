@@ -37,4 +37,7 @@ public interface TaskDAO {
 
     @Query("SELECT * FROM task_table WHERE deadLine BETWEEN :nowTime AND :deadLineTime ORDER BY deadLine ASC")
     LiveData<List<TaskEntity>> getTasksWithinTime(long nowTime ,long deadLineTime);
+
+    @Query("UPDATE task_table SET courseEventEntityId = -1")
+    void clearAllClassesInTasks();
 }

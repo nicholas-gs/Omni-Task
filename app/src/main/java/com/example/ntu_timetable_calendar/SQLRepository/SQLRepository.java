@@ -623,6 +623,27 @@ public class SQLRepository {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
+    public void clearAllClassesInTasks() {
+        new ClearAllClassesInTasksAsyncTask(this.taskDAO).execute();
+    }
+
+    private static class ClearAllClassesInTasksAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        private TaskDAO taskDAO;
+
+        ClearAllClassesInTasksAsyncTask(TaskDAO taskDAO) {
+            this.taskDAO = taskDAO;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            this.taskDAO.clearAllClassesInTasks();
+            return null;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
     public void insertTask(TaskEntity taskEntity) {
         new InsertTaskAsyncTask(this.taskDAO, taskEntity).execute();
     }

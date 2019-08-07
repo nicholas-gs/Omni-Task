@@ -215,4 +215,8 @@ public class SQLViewModel extends AndroidViewModel implements SQLRepository.Inse
     public void updateTask(TaskEntity taskEntity) {
         sqlRepository.updateTask(taskEntity);
     }
+
+    public void clearAllClassesInTasks(){
+        sqlRepository.clearAllClassesInTasks();
+    }
 }

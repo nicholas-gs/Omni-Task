@@ -139,6 +139,8 @@ public class TimetableDetailFragment extends Fragment implements MonthChangeList
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 sqlViewModel.deleteTimetable(timetableEntity);
+                // Set all tasks class to -1 (No chosen class)
+                sqlViewModel.clearAllClassesInTasks();
                 Objects.requireNonNull(getActivity()).onBackPressed();
             }
         });
@@ -172,6 +174,7 @@ public class TimetableDetailFragment extends Fragment implements MonthChangeList
      */
     private void displayEditDialog() {
         EditTimetableDialog editTimetableDialog = new EditTimetableDialog(this.timetableEntity);
+        editTimetableDialog.setCancelable(false);
         editTimetableDialog.setEditTimetableDialogInterface(this);
         editTimetableDialog.show(getChildFragmentManager(), "save_timetable_dialog");
     }
@@ -241,7 +244,20 @@ public class TimetableDetailFragment extends Fragment implements MonthChangeList
      * Edit timetable dialog save button click listener
      */
     @Override
-    public void onSaveClick() {
+    public void onSaveClick(String mTitle, String mDescription, boolean mIsMainTimetable) {
+
+        setTasks(mIsMainTimetable);
+
+        this.timetableEntity.setName(mTitle);
+        this.timetableEntity.setDescription(mDescription);
+        this.timetableEntity.setMainTimetable(mIsMainTimetable);
+
+        sqlViewModel.updateTimetable(this.timetableEntity);
+
+        // NOTE -- This DAO method automatically sets all other timetable to NOT isMainTimetable
+        if (mIsMainTimetable) {
+            sqlViewModel.setIsMainTimetable(this.timetableEntity.getId());
+        }
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -262,5 +278,21 @@ public class TimetableDetailFragment extends Fragment implements MonthChangeList
     public void onEventClick(Event event, @NotNull RectF rectF) {
         TimetableEventDetailDialog dialog = new TimetableEventDetailDialog(event);
         dialog.show(getChildFragmentManager(), "timetable_event_detail_dialog");
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * If there is a change in boolean value (from true to false or false to true), we need to set
+     * all pre-existing task's chosen class id to -1 (no class).
+     *
+     * @param mIsMainTimetable User selection from dialog box
+     */
+    private void setTasks(boolean mIsMainTimetable) {
+        if (this.timetableEntity.getIsMainTimetable() && !mIsMainTimetable) {        // From true to false
+            sqlViewModel.clearAllClassesInTasks();
+        } else if (!this.timetableEntity.getIsMainTimetable() && mIsMainTimetable) { // From false to true
+            sqlViewModel.clearAllClassesInTasks();
+        }
     }
 }

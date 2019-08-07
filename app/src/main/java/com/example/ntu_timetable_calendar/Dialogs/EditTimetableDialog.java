@@ -3,6 +3,8 @@ package com.example.ntu_timetable_calendar.Dialogs;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,12 +14,12 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
 import com.example.ntu_timetable_calendar.R;
-import com.example.ntu_timetable_calendar.ViewModels.SQLViewModel;
 import com.google.android.material.button.MaterialButton;
+
+import java.util.Objects;
 
 public class EditTimetableDialog extends DialogFragment implements View.OnClickListener {
 
@@ -26,7 +28,10 @@ public class EditTimetableDialog extends DialogFragment implements View.OnClickL
     private MaterialButton mSaveButton, mCancelButton;
 
     private TimetableEntity timetableEntity;
-    private SQLViewModel sqlViewModel;
+
+    // Variables to send back to TimetableDetailFragment through interface
+    private String mTitle, mDescription;
+    private boolean mIsMainTimetable;
 
     public EditTimetableDialog() {
     }
@@ -38,7 +43,7 @@ public class EditTimetableDialog extends DialogFragment implements View.OnClickL
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     public interface EditTimetableDialogInterface {
-        void onSaveClick();
+        void onSaveClick(String mTitle, String mDescription, boolean mIsMainTimetable);
     }
 
     private EditTimetableDialogInterface mListener;
@@ -68,9 +73,18 @@ public class EditTimetableDialog extends DialogFragment implements View.OnClickL
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        // Lock the orientation of the UI
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            Objects.requireNonNull(getActivity()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        } else
+            Objects.requireNonNull(getActivity()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+    }
+
+    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        sqlViewModel = ViewModelProviders.of(this).get(SQLViewModel.class);
     }
 
     private void initViews(View view) {
@@ -103,26 +117,30 @@ public class EditTimetableDialog extends DialogFragment implements View.OnClickL
     }
 
     private void saveEditedTimetable() {
-
-        String titleStr = mTitleEditText.getText().toString().trim();
-        if (titleStr.length() == 0) {
-            titleStr = getString(R.string.untitled_timetable);
+        // Title
+        mTitle = mTitleEditText.getText().toString().trim();
+        if (mTitle.length() == 0) {
+            mTitle = getString(R.string.untitled_timetable);
         }
-
-        String descriptionStr = mDescriptionEditText.getText().toString().trim();
-        if (descriptionStr.length() == 0) {
-            descriptionStr = getString(R.string.no_description);
+        // Description
+        mDescription = mDescriptionEditText.getText().toString().trim();
+        if (mDescription.length() == 0) {
+            mDescription = getString(R.string.no_description);
         }
-
-        timetableEntity.setName(titleStr);
-        timetableEntity.setDescription(descriptionStr);
-        timetableEntity.setMainTimetable(mIsMainTimetableCheckbox.isChecked());
-        sqlViewModel.updateTimetable(this.timetableEntity);
+        // IsMainTimetable
+        mIsMainTimetable = mIsMainTimetableCheckbox.isChecked();
 
         if (mListener != null) {
-            mListener.onSaveClick();
+            mListener.onSaveClick(mTitle, mDescription, mIsMainTimetable);
         }
 
         dismiss();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        // Unlock orientation change
+        Objects.requireNonNull(getActivity()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
     }
 }

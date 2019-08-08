@@ -24,6 +24,8 @@ public class TaskEntity {
     private Long deadLine;
     private int priorityLevel;
 
+    private boolean isDone;
+
     @TypeConverters(AlarmTypeConverter.class)
     private List<Long> alarmList;
 
@@ -31,7 +33,7 @@ public class TaskEntity {
     private boolean[] alarmTimingChosen;
 
     public TaskEntity(int timetableId, int courseEventEntityId, String title, String description, Long deadLine, int priorityLevel, List<Long> alarmList,
-                      boolean[] alarmTimingChosen) {
+                      boolean[] alarmTimingChosen, boolean isDone) {
         this.timetableId = timetableId;
         this.courseEventEntityId = courseEventEntityId;
         this.title = title;
@@ -40,6 +42,7 @@ public class TaskEntity {
         this.priorityLevel = priorityLevel;
         this.alarmList = alarmList;
         this.alarmTimingChosen = alarmTimingChosen;
+        this.isDone = isDone;
     }
 
     // Setters
@@ -80,6 +83,10 @@ public class TaskEntity {
         this.alarmTimingChosen = alarmTimingChosen;
     }
 
+    public void setIsDone(boolean isDone) {
+        this.isDone = isDone;
+    }
+
     // Getters
 
     public int getId() {
@@ -116,5 +123,9 @@ public class TaskEntity {
 
     public boolean[] getAlarmTimingChosen() {
         return alarmTimingChosen;
+    }
+
+    public boolean getIsDone() {
+        return isDone;
     }
 }

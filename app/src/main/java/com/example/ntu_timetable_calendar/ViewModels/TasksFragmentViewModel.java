@@ -34,6 +34,7 @@ public class TasksFragmentViewModel extends AndroidViewModel {
     private Calendar deadLineCalendar;
     private boolean[] alarmTimingChosen;
     private int priorityChosen;
+    private boolean isDone;
 
     // Setters
 
@@ -65,6 +66,10 @@ public class TasksFragmentViewModel extends AndroidViewModel {
         this.priorityChosen = priorityChosen;
     }
 
+    public void setIsDone(boolean isDone) {
+        this.isDone = isDone;
+    }
+
     // Getters
 
     public TaskEntity getTaskEntity() {
@@ -93,5 +98,9 @@ public class TasksFragmentViewModel extends AndroidViewModel {
 
     public int getPriorityChosen() {
         return priorityChosen;
+    }
+
+    public boolean getIsDone() {
+        return isDone;
     }
 }

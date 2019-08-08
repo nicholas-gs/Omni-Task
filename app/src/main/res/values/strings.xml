@@ -77,4 +77,6 @@
     <string name="omni_task_icon">Omni-Task icon</string>
     <string name="about_app_fragment_visit">Visit the repository in Github :</string>
     <string name="clear_class">Clear class</string>
+    <string name="mark_as_done">Mark as done</string>
+    <string name="mark_as_not_done">Mark as not done</string>
 </resources>

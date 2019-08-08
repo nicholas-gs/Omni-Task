@@ -1,6 +1,7 @@
 package com.example.ntu_timetable_calendar.RVAdapters;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,7 +58,7 @@ public class TaskFragmentRVAdapter extends ListAdapter<TaskEntity, RecyclerView.
             return ((oldItem.getCourseEventEntityId() == newItem.getCourseEventEntityId()) && oldItem.getTitle().equals(newItem.getTitle())) && (oldItem.getDescription().equals(newItem.getDescription()))
                     && (oldItem.getDeadLine().equals(newItem.getDeadLine()) && (oldItem.getAlarmList().equals(newItem.getAlarmList()))
                     && (oldItem.getPriorityLevel() == newItem.getPriorityLevel() && (Arrays.equals(oldItem.getAlarmTimingChosen(), newItem.getAlarmTimingChosen())))
-                    && (oldItem.getTimetableId() == newItem.getTimetableId())
+                    && (oldItem.getTimetableId() == newItem.getTimetableId() && (oldItem.getIsDone() == newItem.getIsDone()))
             );
         }
     };
@@ -110,6 +111,8 @@ public class TaskFragmentRVAdapter extends ListAdapter<TaskEntity, RecyclerView.
 
         // Alarm icon
         setAlarmIcon(myViewHolder.mAlarmIcon, taskEntity.getAlarmList());
+
+        setViewsByIsDone(myViewHolder, taskEntity);
     }
 
     /**
@@ -157,6 +160,16 @@ public class TaskFragmentRVAdapter extends ListAdapter<TaskEntity, RecyclerView.
             alarmIcon.setVisibility(View.VISIBLE);
         } else {
             alarmIcon.setVisibility(View.GONE);
+        }
+    }
+
+    private void setViewsByIsDone(MyViewHolder myViewHolder, TaskEntity taskEntity) {
+        if (taskEntity.getIsDone()) {
+            myViewHolder.mTitle.setPaintFlags(myViewHolder.mTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            myViewHolder.mDeadline.setPaintFlags(myViewHolder.mDeadline.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        } else {
+            myViewHolder.mTitle.setPaintFlags(myViewHolder.mTitle.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+            myViewHolder.mDeadline.setPaintFlags(myViewHolder.mDeadline.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
         }
     }
 }

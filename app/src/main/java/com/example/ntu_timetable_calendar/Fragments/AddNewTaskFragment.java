@@ -264,7 +264,7 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
             this.listOfAlarms = new AlarmParser(this.alarmTimingChosen, this.deadlineCalendar).parse();
 
             TaskEntity taskEntity = new TaskEntity(timetableId, chosenClassId != null ? chosenClassId : -1, title, description, this.deadlineCalendar.getTimeInMillis(),
-                    this.priorityChosen, this.listOfAlarms, this.alarmTimingChosen);
+                    this.priorityChosen, this.listOfAlarms, this.alarmTimingChosen, false);
 
             sqlViewModel.insertTask(taskEntity);
 

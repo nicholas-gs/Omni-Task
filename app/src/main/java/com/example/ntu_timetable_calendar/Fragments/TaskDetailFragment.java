@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -30,12 +31,14 @@ import com.example.ntu_timetable_calendar.Entity.CourseEventEntity;
 import com.example.ntu_timetable_calendar.Entity.TaskEntity;
 import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
 import com.example.ntu_timetable_calendar.Helper.AlarmParser;
+import com.example.ntu_timetable_calendar.Helper.BooleanArrayHelper;
 import com.example.ntu_timetable_calendar.Helper.StringHelper;
 import com.example.ntu_timetable_calendar.R;
 import com.example.ntu_timetable_calendar.SecondActivity;
 import com.example.ntu_timetable_calendar.ViewModels.SQLViewModel;
 import com.example.ntu_timetable_calendar.ViewModels.TasksFragmentViewModel;
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -58,6 +61,7 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
     private ImageView clearClassButton;
     private TextInputEditText mTitleEditText, mDescriptionEditText;
     private TextView chosenClassTextView, endDateTV, endTimeTV, addAlarmTV, addPriorityTV, addProjectTV;
+    private MaterialButton markAsDoneButton;
 
     // Variables
     private int taskEntityId;
@@ -66,13 +70,14 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
     private int mainTimetableEntityId;
     private TaskEntity taskEntity;
 
-    private String chosenClassTitle; // For local use only
-    private String chosenClassTiming; // For local use only
-    private int chosenClassId; // Need to update
-    private String title, description; // Need to update
-    private int priorityChosen; // Need to update
-    private Calendar deadlineCalendar; // Need to update
-    private boolean[] alarmTimingChosen; // Need to update
+    private String chosenClassTitle;                        // For local use only
+    private String chosenClassTiming;                       // For local use only
+    private int chosenClassId;                              // Need to update
+    private String title, description;                      // Need to update
+    private int priorityChosen;                             // Need to update
+    private Calendar deadlineCalendar;                      // Need to update
+    private boolean[] alarmTimingChosen;                    // Need to update
+    private boolean isDone;                                 // Need to update
 
     // ViewModel
     private TasksFragmentViewModel tasksFragmentViewModel;
@@ -133,6 +138,8 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
         addPriorityTV.setOnClickListener(this);
         addProjectTV = view.findViewById(R.id.task_detail_add_project_textview);
         addPriorityTV.setOnClickListener(this);
+        markAsDoneButton = view.findViewById(R.id.task_detail_mark_as_done_button);
+        markAsDoneButton.setOnClickListener(this);
     }
 
     private void initToolbar() {
@@ -219,6 +226,7 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
 
         tasksFragmentViewModel.setAlarmTimingChosen(taskEntity.getAlarmTimingChosen());
         tasksFragmentViewModel.setPriorityChosen(taskEntity.getPriorityLevel());
+        tasksFragmentViewModel.setIsDone(taskEntity.getIsDone());
     }
 
     /**
@@ -235,6 +243,7 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
         this.deadlineCalendar.setTimeInMillis(taskEntity.getDeadLine());
         this.priorityChosen = this.taskEntity.getPriorityLevel();
         this.alarmTimingChosen = this.taskEntity.getAlarmTimingChosen();
+        this.isDone = this.taskEntity.getIsDone();
     }
 
     private void saveMainTimetable(TimetableEntity timetableEntity) {
@@ -250,6 +259,7 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
         this.deadlineCalendar = tasksFragmentViewModel.getDeadLineCalendar();
         this.priorityChosen = tasksFragmentViewModel.getPriorityChosen();
         this.alarmTimingChosen = tasksFragmentViewModel.getAlarmTimingChosen();
+        this.isDone = tasksFragmentViewModel.getIsDone();
 
         tasksFragmentViewModel.getChosenClassId().observe(this, new Observer<Integer>() {
             @Override
@@ -306,6 +316,7 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
         initCurrentTimeTextViews();
         initAlarmTextView();
         initPriorityTextViewAndIcon();
+        updateViewsByIsDone();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -390,6 +401,66 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
             addPriorityTV.setText(str);
         }
     }
+
+    /**
+     * Update the views (clickable & strike-through) based on the boolean value of isDone variable above
+     */
+    private void updateViewsByIsDone() {
+        // Update the clickable state of the views
+        setAllViewsClickableState(isDone);
+
+        if (isDone) {
+            markAsDoneButton.setText(getString(R.string.mark_as_not_done));
+            // Strike-through chosenClassTextView only if user has chosen one
+            if (chosenClassId >= 0) {
+                chosenClassTextView.setPaintFlags(chosenClassTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            }
+            endDateTV.setPaintFlags(endDateTV.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            endTimeTV.setPaintFlags(endTimeTV.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            // Strike-through addAlarmTV only if user has at least one alarm set
+            if (!BooleanArrayHelper.AreAllFalse(alarmTimingChosen)) {
+                addAlarmTV.setPaintFlags(addAlarmTV.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            }
+
+            addPriorityTV.setPaintFlags(addPriorityTV.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+
+        } else {
+            /* Remove all strike-through */
+            markAsDoneButton.setText(getString(R.string.mark_as_done));
+            chosenClassTextView.setPaintFlags(chosenClassTextView.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+            endDateTV.setPaintFlags(endDateTV.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+            endTimeTV.setPaintFlags(endTimeTV.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+            addAlarmTV.setPaintFlags(addAlarmTV.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+            addPriorityTV.setPaintFlags(addPriorityTV.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+        }
+    }
+
+    /**
+     * If the task is marked as done, we don't want to allow user to be able to edit it, so we disable
+     * the view's clickable state
+     *
+     * @param isDone Whether task is complete
+     */
+    private void setAllViewsClickableState(boolean isDone) {
+        chosenClassTextView.setClickable(!isDone);
+        clearClassButton.setClickable(!isDone);
+        endDateTV.setClickable(!isDone);
+        endTimeTV.setClickable(!isDone);
+        addAlarmTV.setClickable(!isDone);
+        addPriorityTV.setClickable(!isDone);
+        addProjectTV.setClickable(!isDone);
+
+        if (isDone) {
+            // Prevent user when editing the text in the two EditTexts
+            mTitleEditText.setFocusable(false);
+            mDescriptionEditText.setFocusable(false);
+        } else {
+            // Re-enable user to edit using the EditTexts
+            mTitleEditText.setFocusableInTouchMode(true);
+            mDescriptionEditText.setFocusableInTouchMode(true);
+        }
+    }
+
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -697,6 +768,7 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
             this.taskEntity.setPriorityLevel(this.priorityChosen);
             this.taskEntity.setDeadLine(this.deadlineCalendar.getTimeInMillis());
             this.taskEntity.setAlarmTimingChosen(this.alarmTimingChosen);
+            this.taskEntity.setIsDone(this.isDone);
 
             List<Long> alarmList = new AlarmParser(this.alarmTimingChosen, this.deadlineCalendar).parse();
 
@@ -715,6 +787,18 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
      */
     private void clearChosenClass() {
         tasksFragmentViewModel.setChosenClassId(-1);
+    }
+
+    /**
+     * Set the view
+     */
+    private void markAsDoneButtonPressed() {
+        // Negate the current boolean value
+        this.isDone = !this.isDone;
+        tasksFragmentViewModel.setIsDone(this.isDone);
+
+        // Update the views based on the value of isDone
+        updateViewsByIsDone();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -747,6 +831,9 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
                 initPriorityDialog();
                 break;
             case R.id.task_detail_add_project_textview:
+                break;
+            case R.id.task_detail_mark_as_done_button:
+                markAsDoneButtonPressed();
                 break;
         }
     }

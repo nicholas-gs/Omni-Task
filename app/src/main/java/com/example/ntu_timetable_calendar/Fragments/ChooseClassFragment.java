@@ -1,5 +1,6 @@
 package com.example.ntu_timetable_calendar.Fragments;
 
+import android.content.Context;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -19,6 +21,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.alamkanak.weekview.EventClickListener;
 import com.alamkanak.weekview.MonthChangeListener;
+import com.alamkanak.weekview.ScrollListener;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewDisplayable;
 import com.example.ntu_timetable_calendar.Entity.CourseEventEntity;
@@ -27,6 +30,7 @@ import com.example.ntu_timetable_calendar.EventModel.Event;
 import com.example.ntu_timetable_calendar.Helper.StringHelper;
 import com.example.ntu_timetable_calendar.Helper.WeekViewParser;
 import com.example.ntu_timetable_calendar.R;
+import com.example.ntu_timetable_calendar.ViewModels.ChooseClassFragmentActivityViewModel;
 import com.example.ntu_timetable_calendar.ViewModels.SQLViewModel;
 import com.example.ntu_timetable_calendar.ViewModels.TasksFragmentViewModel;
 
@@ -37,7 +41,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
-public class ChooseClassFragment extends Fragment implements MonthChangeListener<Event>, EventClickListener<Event> {
+public class ChooseClassFragment extends Fragment implements MonthChangeListener<Event>, EventClickListener<Event>, ScrollListener {
 
     // Views
     private Toolbar mToolbar;
@@ -51,6 +55,7 @@ public class ChooseClassFragment extends Fragment implements MonthChangeListener
     // ViewModels
     private SQLViewModel sqlViewModel;
     private TasksFragmentViewModel tasksFragmentViewModel;
+    private ChooseClassFragmentActivityViewModel chooseClassFragmentActivityViewModel;
 
     // Variables
     private Integer chosenClassId;
@@ -58,6 +63,31 @@ public class ChooseClassFragment extends Fragment implements MonthChangeListener
     private String chosenClassTitle, chosenClassTiming;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        // Handles what happens when activity onBackPressed is called.
+        // onBackPressed is called when user :
+        // 1) Presses the back button
+        // 2) Presses the close button on the toolbar
+        // 3) Presses the save button
+        OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // Save all variables to default values
+                chosenClassId = -1;
+                deadlineCalendar = null;
+                chosenClassTitle = null;
+                chosenClassTiming = null;
+                saveVariablesToViewModel();
+                // Go back the previous fragment
+                requireActivity().getSupportFragmentManager().popBackStack();
+            }
+        };
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
+    }
 
     @Nullable
     @Override
@@ -71,6 +101,8 @@ public class ChooseClassFragment extends Fragment implements MonthChangeListener
         initViews(view);
         initToolbar();
         initViewModels();
+        goToTime();
+        initVisibleDays();
         getMainTimetable();
     }
 
@@ -82,6 +114,7 @@ public class ChooseClassFragment extends Fragment implements MonthChangeListener
         mWeekView = view.findViewById(R.id.choose_class_fragment_weekview);
         mWeekView.setMonthChangeListener(this);
         mWeekView.setOnEventClickListener(this);
+        mWeekView.setScrollListener(this);
 
         clearClassButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,6 +125,7 @@ public class ChooseClassFragment extends Fragment implements MonthChangeListener
                 chosenClassTitle = null;
                 chosenClassTiming = null;
 
+                saveVariablesToViewModel();
                 updateClassTextViews();
             }
         });
@@ -131,26 +165,49 @@ public class ChooseClassFragment extends Fragment implements MonthChangeListener
 
     private void initViewModels() {
         sqlViewModel = ViewModelProviders.of(this).get(SQLViewModel.class);
+        chooseClassFragmentActivityViewModel = ViewModelProviders.of(requireActivity()).get(ChooseClassFragmentActivityViewModel.class);
         tasksFragmentViewModel = ViewModelProviders.of(requireActivity()).get(TasksFragmentViewModel.class);
 
         tasksFragmentViewModel.getChosenClassId().observe(this, new Observer<Integer>() {
             @Override
             public void onChanged(Integer integer) {
-                // Save variables to local fields
-                chosenClassId = integer;
-                deadlineCalendar = tasksFragmentViewModel.getDeadLineCalendar();
-                chosenClassTitle = tasksFragmentViewModel.getChosenClassTitle();
-                chosenClassTiming = tasksFragmentViewModel.getChosenClassTiming();
+                if (chooseClassFragmentActivityViewModel.getChosenClassId() == null || chooseClassFragmentActivityViewModel.getChosenClassId() < 0) {
+                    // Save variables to local fields
+                    chosenClassId = integer;
+                    deadlineCalendar = tasksFragmentViewModel.getDeadLineCalendar();
+                    chosenClassTitle = tasksFragmentViewModel.getChosenClassTitle();
+                    chosenClassTiming = tasksFragmentViewModel.getChosenClassTiming();
+                    // Save variables to ChooseClassFragmentActivityViewModel
+                    saveVariablesToViewModel();
+                } else {
+                    retrieveVariablesFromViewModel();
+                }
                 // Update the 2 text views
                 updateClassTextViews();
             }
         });
-        /*
-          For whatever reason, when the TasksFragmentViewModel's chosenClassId is null, the observable above is not called.
-          So we will have manually call updateClassTextViews() when the fragment is instantiated.
-         */
-        updateClassTextViews();
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Save class variables to ChooseClassFragmentActivityViewModel
+     */
+    private void saveVariablesToViewModel() {
+        this.chooseClassFragmentActivityViewModel.setChosenClassId(this.chosenClassId);
+        this.chooseClassFragmentActivityViewModel.setDeadlineCalendar(this.deadlineCalendar);
+        this.chooseClassFragmentActivityViewModel.setChosenClassTitle(this.chosenClassTitle);
+        this.chooseClassFragmentActivityViewModel.setChosenClassTiming(this.chosenClassTiming);
+    }
+
+    private void retrieveVariablesFromViewModel() {
+        this.chosenClassId = this.chooseClassFragmentActivityViewModel.getChosenClassId();
+        this.deadlineCalendar = this.chooseClassFragmentActivityViewModel.getDeadlineCalendar();
+        this.chosenClassTitle = this.chooseClassFragmentActivityViewModel.getChosenClassTitle();
+        this.chosenClassTiming = this.chooseClassFragmentActivityViewModel.getChosenClassTiming();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Update the two text views according to the current title and timing strings
@@ -200,14 +257,17 @@ public class ChooseClassFragment extends Fragment implements MonthChangeListener
             case R.id.choose_class_fragment_day_view_menu_item:
                 mWeekView.setNumberOfVisibleDays(getResources().getInteger(R.integer.VISIBLE_DAYS_1));
                 mWeekView.setHeaderRowTextSize(getResources().getInteger(R.integer.HEADER_14_SP));
+                chooseClassFragmentActivityViewModel.setNoOfVisibleDays(getResources().getInteger(R.integer.VISIBLE_DAYS_1));
                 break;
             case R.id.choose_class_fragment_three_day_view_menu_item:
                 mWeekView.setNumberOfVisibleDays(getResources().getInteger(R.integer.VISIBLE_DAYS_3));
                 mWeekView.setHeaderRowTextSize(getResources().getInteger(R.integer.HEADER_14_SP));
+                chooseClassFragmentActivityViewModel.setNoOfVisibleDays(getResources().getInteger(R.integer.VISIBLE_DAYS_3));
                 break;
             case R.id.choose_class_fragment_five_day_view_menu_item:
                 mWeekView.setNumberOfVisibleDays(getResources().getInteger(R.integer.VISIBLE_DAYS_5));
                 mWeekView.setHeaderRowTextSize(getResources().getInteger(R.integer.HEADER_12_SP));
+                chooseClassFragmentActivityViewModel.setNoOfVisibleDays(getResources().getInteger(R.integer.VISIBLE_DAYS_5));
                 break;
         }
         item.setChecked(true);
@@ -268,13 +328,80 @@ public class ChooseClassFragment extends Fragment implements MonthChangeListener
     public void onEventClick(Event event, @NotNull RectF rectF) {
         // Save the id of the class event in the class variable
         this.chosenClassId = (int) event.getId();
+
         // Set the deadline to the event's start time.
         this.deadlineCalendar = event.getStartTime();
+
         // Set the title
         this.chosenClassTitle = event.getTitle();
+
         // Set the time
         this.chosenClassTiming = StringHelper.ClassTimingParser(event.getStartTime(), event.getEndTime());
+
+        // Save class variables to ChooseClassFragmentActivityViewModel
+        saveVariablesToViewModel();
+
         // Update the 2 text views
         updateClassTextViews();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Get the firstVisibleDay saved in the ViewModel and set the WeekView widget to it
+     */
+    private void goToTime() {
+        Calendar firstVisibleDay = chooseClassFragmentActivityViewModel.getFirstDayVisible();
+        if (firstVisibleDay != null) {
+            mWeekView.goToDate(firstVisibleDay);
+            mWeekView.goToHour(8);
+        } else {
+            goToNow();
+        }
+    }
+
+    /**
+     * Go to current day and time for the WeekView widget
+     */
+    private void goToNow() {
+        chooseClassFragmentActivityViewModel.setFirstDayVisible(null);
+        mWeekView.goToToday();
+        mWeekView.goToCurrentTime();
+    }
+
+    /**
+     * Get the number of visible days from the HomeFragmentActivityViewModel and set the WeekView widget to it by mimicking a toolbar menu click
+     */
+    private void initVisibleDays() {
+        Integer i = chooseClassFragmentActivityViewModel.getNoOfVisibleDays();
+
+        if (i != null) {
+            if (i == getResources().getInteger(R.integer.VISIBLE_DAYS_1)) {
+                mToolbar.getMenu().performIdentifierAction(R.id.choose_class_fragment_day_view_menu_item, 0);
+            } else if (i == getResources().getInteger(R.integer.VISIBLE_DAYS_3)) {
+                mToolbar.getMenu().performIdentifierAction(R.id.choose_class_fragment_three_day_view_menu_item, 0);
+            } else if (i == getResources().getInteger(R.integer.VISIBLE_DAYS_5)) {
+                mToolbar.getMenu().performIdentifierAction(R.id.choose_class_fragment_five_day_view_menu_item, 0);
+            }
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * WeekView widget horizontal scroll listener -- here we save the first visible date to the ViewModel. This is so that when the
+     * user returns to this HomeFragment, he does not have to scroll to the date again!
+     *
+     * @param calendar  Calendar for the first day visible
+     * @param calendar1 Calendar for the last day visible?
+     */
+    @Override
+    public void onFirstVisibleDayChanged(@NotNull Calendar calendar, @org.jetbrains.annotations.Nullable Calendar calendar1) {
+        Calendar now = Calendar.getInstance();
+        if (calendar.get(Calendar.DAY_OF_YEAR) == now.get(Calendar.DAY_OF_YEAR) && calendar.get(Calendar.YEAR) == now.get(Calendar.YEAR)) {
+            goToNow();
+        } else {
+            chooseClassFragmentActivityViewModel.setFirstDayVisible(calendar);
+        }
     }
 }

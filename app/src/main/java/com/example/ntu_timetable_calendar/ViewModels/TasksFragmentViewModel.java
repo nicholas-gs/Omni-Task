@@ -12,7 +12,8 @@ import com.example.ntu_timetable_calendar.Entity.TaskEntity;
 import java.util.Calendar;
 
 /**
- * ViewModel used to re-instantiate the fragment's variables
+ * 1) ViewModel used to re-instantiate the fragment's variables
+ * 2) Also used to share variables between ChooseClassFragment & AddNewTaskFragment/TaskDetailFragment
  * Used by AddNewTaskFragment & TaskDetailFragment
  */
 public class TasksFragmentViewModel extends AndroidViewModel {
@@ -24,8 +25,8 @@ public class TasksFragmentViewModel extends AndroidViewModel {
     // In TaskDetailFragment, we store the original unedited task here!
     private TaskEntity taskEntity;
 
-    // The ID of the chosen class is shared between the ChooseClassFragment & AddNewTaskFragment/TaskDetailFragment
-    private MutableLiveData<Integer> chosenClassId = new MutableLiveData<>();
+    // The ID of the chosen class is shared between the ChooseClassFragment & AddNewTaskFragment/TaskDetailFragment, with default value of -1
+    private MutableLiveData<Integer> chosenClassId = new MutableLiveData<>(-1);
     // The title of the chosen class is shared between the ChooseClassFragment & AddNewTaskFragment/TaskDetailFragment
     private String chosenClassTitle;
     // The time of the chosen class is shared between the ChooseClassFragment & AddNewTaskFragment/TaskDetailFragment

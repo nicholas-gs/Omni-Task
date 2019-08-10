@@ -1,9 +1,9 @@
 package com.example.ntu_timetable_calendar.Fragments;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -34,7 +35,6 @@ import com.example.ntu_timetable_calendar.Helper.AlarmParser;
 import com.example.ntu_timetable_calendar.Helper.BooleanArrayHelper;
 import com.example.ntu_timetable_calendar.Helper.StringHelper;
 import com.example.ntu_timetable_calendar.R;
-import com.example.ntu_timetable_calendar.SecondActivity;
 import com.example.ntu_timetable_calendar.ViewModels.SQLViewModel;
 import com.example.ntu_timetable_calendar.ViewModels.TasksFragmentViewModel;
 import com.google.android.material.appbar.AppBarLayout;
@@ -52,7 +52,7 @@ import java.util.Objects;
 import es.dmoral.toasty.Toasty;
 
 public class TaskDetailFragment extends Fragment implements View.OnClickListener,
-        DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener, SecondActivity.MyOnBackPressedListener {
+        DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener/*, SecondActivity.MyOnBackPressedListener*/ {
 
     // Widgets
     private AppBarLayout mAppBarLayout;
@@ -93,6 +93,21 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        // Handles what happens when activity onBackPressed is called.
+        OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                closeFragmentDialog();
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
+    }
 
     @Nullable
     @Override
@@ -847,30 +862,6 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
                 .addToBackStack("home_fragment").commit();
     }
 
-    /**
-     * Attach the activity's onBackPressed listener here
-     */
-    @Override
-    public void onResume() {
-        super.onResume();
-        Activity activity = getActivity();
-        if (activity instanceof SecondActivity) {
-            ((SecondActivity) activity).setMyBackPressedListener(this);
-        }
-    }
-
-    /**
-     * Detach the activity's onBackPressed listener here
-     */
-    @Override
-    public void onStop() {
-        super.onStop();
-        Activity activity = getActivity();
-        if (activity instanceof SecondActivity) {
-            ((SecondActivity) activity).setMyBackPressedListener(null);
-        }
-    }
-
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -911,15 +902,5 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
 
         // Update the ViewModel
         tasksFragmentViewModel.setDeadLineCalendar(deadlineCalendar);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Callback method for when user clicks the back button -- from SecondActivity.java
-     */
-    @Override
-    public void myOnBackPressed() {
-        closeFragmentDialog();
     }
 }

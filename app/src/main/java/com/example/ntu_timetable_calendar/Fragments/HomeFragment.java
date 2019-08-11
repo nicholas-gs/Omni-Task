@@ -250,7 +250,7 @@ public class HomeFragment extends Fragment implements EventClickListener<Event>,
 
     private void startSecondActivity(String intentString) {
         Intent intent = new Intent(getActivity(), SecondActivity.class);
-        intent.putExtra(getString(R.string.ACTIVITY_INTENT), intentString);
+        intent.putExtra(getString(R.string.SECOND_ACTIVITY_INTENT_KEY), intentString);
         startActivity(intent);
     }
 

@@ -11,30 +11,13 @@ import com.example.ntu_timetable_calendar.Fragments.TaskDetailFragment;
 
 public class SecondActivity extends AppCompatActivity {
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * The fragment acts as the observer and is notified by the activity when the user clicks the back button!
-     */
-    public interface MyOnBackPressedListener {
-        void myOnBackPressed();
-    }
-
-    private MyOnBackPressedListener mListener;
-
-    public void setMyBackPressedListener(MyOnBackPressedListener mListener) {
-        this.mListener = mListener;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
 
         if (savedInstanceState == null) {
-            String incomingIntentString = getIntent().getStringExtra(getString(R.string.ACTIVITY_INTENT));
+            String incomingIntentString = getIntent().getStringExtra(getString(R.string.SECOND_ACTIVITY_INTENT_KEY));
             initFragment(incomingIntentString);
         }
     }
@@ -51,20 +34,9 @@ public class SecondActivity extends AppCompatActivity {
                     "add_new_task_fragment").commit();
         } else if (intentStr.equals(getString(R.string.TASK_DETAIL_INTENT))) {
             getSupportFragmentManager().beginTransaction().replace(R.id.second_activity_fragment_container,
-                    new TaskDetailFragment(getIntent().getIntExtra(getString(R.string.TASK_ENTITY_ID), -1)),
-                    "task_detail_fragment").commit();
+                    new TaskDetailFragment(getIntent().getIntExtra(getString(R.string.TASK_ENTITY_ID), -1), getIntent().getBooleanExtra(
+                            getString(R.string.EXTRA_INTENT_INFO_KEY), false)), "task_detail_fragment").commit();
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    @Override
-    public void onBackPressed() {
-        if (this.mListener != null) {
-            mListener.myOnBackPressed();
-        } else {
-            // If fragment does not implement MyOnBackPressedListener interface, do not change original functionality!
-            super.onBackPressed();
-        }
-    }
 }

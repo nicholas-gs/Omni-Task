@@ -6,7 +6,9 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
 
-public class App extends Application {
+import com.example.ntu_timetable_calendar.JsonDatabase.JsonDatabase;
+
+public class BaseApplication extends Application {
 
     public static final String TASK_DUE_CHANNEL_ID = "task_due_notification_channel_id";
     public static final String OVERDUE_TASKS_CHANNEL_ID = "overdue_tasks_notification_channel_id";
@@ -17,8 +19,17 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
+        initJsonDatabase();
         createTaskDueChannel();
         createOverdueTasksChannel();
+    }
+
+    /**
+     * We instantiate the jsonDatabase here (even though we don't the data yet) in order to prevent
+     * the fragment loading to lag, since instantiating the database carries out the deserialization
+     */
+    private void initJsonDatabase() {
+        JsonDatabase jsonDatabase = JsonDatabase.getJsonDatabaseInstance(getApplicationContext());
     }
 
     /**
@@ -40,7 +51,7 @@ public class App extends Application {
         }
     }
 
-    private void createOverdueTasksChannel(){
+    private void createOverdueTasksChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel taskNotificationChannel = new NotificationChannel(OVERDUE_TASKS_CHANNEL_ID, OVERDUE_TASKS_CHANNEL_NAME,
                     NotificationManager.IMPORTANCE_DEFAULT);
@@ -54,8 +65,4 @@ public class App extends Application {
             manager.createNotificationChannel(taskNotificationChannel);
         }
     }
-
-
-
-
 }

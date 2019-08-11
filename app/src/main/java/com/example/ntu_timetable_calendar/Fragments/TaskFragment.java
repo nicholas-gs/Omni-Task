@@ -79,7 +79,7 @@ public class TaskFragment extends Fragment implements View.OnClickListener {
         if (view.getId() == R.id.todo_fragment_fab) {
             String intentString = getString(R.string.ADD_NEW_TASK_INTENT);
             Intent intent = new Intent(getActivity(), SecondActivity.class);
-            intent.putExtra(getString(R.string.ACTIVITY_INTENT), intentString);
+            intent.putExtra(getString(R.string.SECOND_ACTIVITY_INTENT_KEY), intentString);
             startActivity(intent);
         }
     }

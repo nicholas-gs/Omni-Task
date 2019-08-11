@@ -42,7 +42,7 @@
     <string name="ABOUT_APP_INTENT">about_app_intent</string>
     <string name="ADD_NEW_TASK_INTENT">add_new_task_intent</string>
     <string name="TASK_DETAIL_INTENT">task_detail_intent</string>
-    <string name="ACTIVITY_INTENT">activity_intent</string>
+    <string name="SECOND_ACTIVITY_INTENT_KEY">second_activity_intent_key</string>
     <string name="is_main_timetable">Is main timetable</string>
     <string name="edit_timetable">Edit timetable</string>
     <string name="changes_saved">Changes saved</string>
@@ -79,4 +79,7 @@
     <string name="clear_class">Clear class</string>
     <string name="mark_as_done">Mark as done</string>
     <string name="mark_as_not_done">Mark as not done</string>
+    <string name="EXTRA_INTENT_INFO_KEY">EXTRA_INTENT_INFO_KEY</string>
+    <string name="notification_id_key">NOTIFICATION_ID_KEY</string>
+    <string name="INTENT_MESSAGE_KEY">intent_message_key</string>
 </resources>

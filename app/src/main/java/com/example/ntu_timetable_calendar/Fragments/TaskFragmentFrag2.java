@@ -58,8 +58,6 @@ public class TaskFragmentFrag2 extends Fragment implements TaskFragmentRVAdapter
         initViewModels();
     }
 
-    private static final String TAG = "TaskFragmentFrag2TAG";
-
     private void initViews(View view) {
         mRecyclerView = view.findViewById(R.id.tasks_frag2_recyclerview);
     }
@@ -77,8 +75,7 @@ public class TaskFragmentFrag2 extends Fragment implements TaskFragmentRVAdapter
     private void initVariables() {
         int lastDate = Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH);
         int firstDate = Calendar.getInstance().getActualMinimum(Calendar.DAY_OF_MONTH);
-        Log.d(TAG, "initVariables: FirstDate - " + firstDate);
-        Log.d(TAG, "initVariables: LastDate - " + lastDate);
+
         // Calendar for first day of the current month (For example 01/08/2019 00:00:00:000)
         this.firstDayOfMonth = Calendar.getInstance();
         this.firstDayOfMonth.set(Calendar.DAY_OF_MONTH, firstDate);
@@ -138,7 +135,7 @@ public class TaskFragmentFrag2 extends Fragment implements TaskFragmentRVAdapter
     @Override
     public void onItemClicked(TaskEntity taskEntity, int position) {
         Intent intent = new Intent(getActivity(), SecondActivity.class);
-        intent.putExtra(getString(R.string.ACTIVITY_INTENT), getString(R.string.TASK_DETAIL_INTENT));
+        intent.putExtra(getString(R.string.SECOND_ACTIVITY_INTENT_KEY), getString(R.string.TASK_DETAIL_INTENT));
         intent.putExtra(getString(R.string.TASK_ENTITY_ID), taskEntity.getId());
         startActivity(intent);
     }

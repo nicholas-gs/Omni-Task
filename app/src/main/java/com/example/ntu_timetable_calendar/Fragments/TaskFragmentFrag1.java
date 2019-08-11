@@ -107,7 +107,7 @@ public class TaskFragmentFrag1 extends Fragment implements TaskFragmentRVAdapter
     @Override
     public void onItemClicked(TaskEntity taskEntity, int position) {
         Intent intent = new Intent(getActivity(), SecondActivity.class);
-        intent.putExtra(getString(R.string.ACTIVITY_INTENT), getString(R.string.TASK_DETAIL_INTENT));
+        intent.putExtra(getString(R.string.SECOND_ACTIVITY_INTENT_KEY), getString(R.string.TASK_DETAIL_INTENT));
         intent.putExtra(getString(R.string.TASK_ENTITY_ID), taskEntity.getId());
         startActivity(intent);
     }

@@ -190,7 +190,7 @@ public class PlanFragment extends Fragment implements View.OnClickListener, Even
 
     private void initSQLViewModel() {
         sqlViewModel = ViewModelProviders.of(requireActivity()).get(SQLViewModel.class);
-        sqlViewModel.setmListener(this);
+        sqlViewModel.setInsertTimetableCompletedListener(this);
     }
 
     /**

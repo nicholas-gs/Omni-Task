@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.example.ntu_timetable_calendar.Entity.AlarmEntity;
 import com.example.ntu_timetable_calendar.Entity.CourseEntity;
 import com.example.ntu_timetable_calendar.Entity.CourseEventEntity;
 import com.example.ntu_timetable_calendar.Entity.ExamEntity;
@@ -19,7 +20,7 @@ import com.example.ntu_timetable_calendar.SQLRepository.SQLRepository;
 import java.util.List;
 import java.util.Map;
 
-public class SQLViewModel extends AndroidViewModel implements SQLRepository.InsertTimetableCompletedListener {
+public class SQLViewModel extends AndroidViewModel implements SQLRepository.InsertTimetableCompletedListener, SQLRepository.InsertTaskCompletedListener {
 
     private SQLRepository sqlRepository;
 
@@ -27,6 +28,7 @@ public class SQLViewModel extends AndroidViewModel implements SQLRepository.Inse
         super(application);
         this.sqlRepository = new SQLRepository(application);
         this.sqlRepository.setInsertTimetableCompletedListener(this);
+        this.sqlRepository.setInsertTaskCompletedListener(this);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -38,10 +40,10 @@ public class SQLViewModel extends AndroidViewModel implements SQLRepository.Inse
         void onInsertCallback(Long timetableId);
     }
 
-    private InsertTimetableCompletedListener mListener;
+    private InsertTimetableCompletedListener insertTimetableCompletedListener;
 
-    public void setmListener(InsertTimetableCompletedListener insertTimetableCompletedListener) {
-        this.mListener = insertTimetableCompletedListener;
+    public void setInsertTimetableCompletedListener(InsertTimetableCompletedListener insertTimetableCompletedListener) {
+        this.insertTimetableCompletedListener = insertTimetableCompletedListener;
     }
 
     /**
@@ -50,9 +52,28 @@ public class SQLViewModel extends AndroidViewModel implements SQLRepository.Inse
      * @param timetableId Id of the newly inserted timetable
      */
     @Override
-    public void onInsertCallback(Long timetableId) {
-        if (mListener != null) {
-            mListener.onInsertCallback(timetableId);
+    public void onInsertTimetableCallback(Long timetableId) {
+        if (insertTimetableCompletedListener != null) {
+            insertTimetableCompletedListener.onInsertCallback(timetableId);
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public interface InsertTaskCompletedListener {
+        void onInsertTaskCallback(Long taskId);
+    }
+
+    private InsertTaskCompletedListener insertTaskCompletedListener;
+
+    public void setInsertTaskCompletedListener(InsertTaskCompletedListener insertTaskCompletedListener) {
+        this.insertTaskCompletedListener = insertTaskCompletedListener;
+    }
+
+    @Override
+    public void onInsertTaskCallback(Long taskId) {
+        if (insertTaskCompletedListener != null) {
+            insertTaskCompletedListener.onInsertTaskCallback(taskId);
         }
     }
 
@@ -144,7 +165,7 @@ public class SQLViewModel extends AndroidViewModel implements SQLRepository.Inse
         return sqlRepository.getTimetableCourseEvents(timetableId);
     }
 
-    public LiveData<CourseEventEntity> getCourseEvent(int id){
+    public LiveData<CourseEventEntity> getCourseEvent(int id) {
         return sqlRepository.getCourseEvent(id);
     }
 
@@ -196,7 +217,7 @@ public class SQLViewModel extends AndroidViewModel implements SQLRepository.Inse
         return sqlRepository.getClassTasks(courseEventEntityId);
     }
 
-    public LiveData<List<TaskEntity>> getTasksWithinTime(long nowTime ,long deadLineTime){
+    public LiveData<List<TaskEntity>> getTasksWithinTime(long nowTime, long deadLineTime) {
         return sqlRepository.getTasksWithinTime(nowTime, deadLineTime);
     }
 
@@ -216,7 +237,41 @@ public class SQLViewModel extends AndroidViewModel implements SQLRepository.Inse
         sqlRepository.updateTask(taskEntity);
     }
 
-    public void clearAllClassesInTasks(){
+    public void clearAllClassesInTasks() {
         sqlRepository.clearAllClassesInTasks();
+    }
+
+    public void completeTask(int taskId) {
+        sqlRepository.completeTask(taskId);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public LiveData<List<AlarmEntity>> getAllAlarms() {
+        return sqlRepository.getAllAlarms();
+    }
+
+    public LiveData<List<AlarmEntity>> getAllTaskAlarms(int taskId) {
+        return sqlRepository.getAllTaskAlarms(taskId);
+    }
+
+    public void insertAlarm(AlarmEntity alarmEntity) {
+        sqlRepository.insertAlarm(alarmEntity);
+    }
+
+    public void updateAlarm(AlarmEntity alarmEntity) {
+        sqlRepository.updateAlarm(alarmEntity);
+    }
+
+    public void deleteAlarm(AlarmEntity alarmEntity) {
+        sqlRepository.deleteAlarm(alarmEntity);
+    }
+
+    public void deleteAllAlarms() {
+        sqlRepository.deleteAllAlarms();
+    }
+
+    public void deleteTaskAlarms(int taskId) {
+        sqlRepository.deleteTaskAlarms(taskId);
     }
 }

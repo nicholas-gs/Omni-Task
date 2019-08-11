@@ -8,12 +8,14 @@ import androidx.lifecycle.LiveData;
 import com.example.ntu_timetable_calendar.Converters.CourseEventToCourseEventEntityConverter;
 import com.example.ntu_timetable_calendar.Converters.CourseToCourseEntityConverter;
 import com.example.ntu_timetable_calendar.Converters.ExamToExamEventConverter;
+import com.example.ntu_timetable_calendar.DAO.AlarmDAO;
 import com.example.ntu_timetable_calendar.DAO.CourseDAO;
 import com.example.ntu_timetable_calendar.DAO.CourseEventDAO;
 import com.example.ntu_timetable_calendar.DAO.ExamDAO;
 import com.example.ntu_timetable_calendar.DAO.ExamEventDAO;
 import com.example.ntu_timetable_calendar.DAO.TaskDAO;
 import com.example.ntu_timetable_calendar.DAO.TimetableDAO;
+import com.example.ntu_timetable_calendar.Entity.AlarmEntity;
 import com.example.ntu_timetable_calendar.Entity.CourseEntity;
 import com.example.ntu_timetable_calendar.Entity.CourseEventEntity;
 import com.example.ntu_timetable_calendar.Entity.ExamEntity;
@@ -37,6 +39,7 @@ public class SQLRepository {
     private CourseEventDAO courseEventDAO;
     private ExamEventDAO examEventDAO;
     private TaskDAO taskDAO;
+    private AlarmDAO alarmDAO;
 
     public SQLRepository(Application application) {
         this.sqlDatabase = SQLDatabase.getInstance(application);
@@ -46,6 +49,7 @@ public class SQLRepository {
         this.courseEventDAO = this.sqlDatabase.courseEventDAO();
         this.examEventDAO = this.sqlDatabase.examEventDAO();
         this.taskDAO = this.sqlDatabase.taskDAO();
+        this.alarmDAO = this.sqlDatabase.alarmDAO();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -54,13 +58,28 @@ public class SQLRepository {
      * Callback method returning the auto-generated timetable id when a new timetable is inserted by timetableDAO
      */
     public interface InsertTimetableCompletedListener {
-        void onInsertCallback(Long timetableId);
+        void onInsertTimetableCallback(Long timetableId);
     }
 
     private InsertTimetableCompletedListener mListener;
 
     public void setInsertTimetableCompletedListener(InsertTimetableCompletedListener insertTimetableCompletedListener) {
         this.mListener = insertTimetableCompletedListener;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Callback method returning the auto-generated task id when a new task is inserted by TaskDao
+     */
+    public interface InsertTaskCompletedListener {
+        void onInsertTaskCallback(Long taskId);
+    }
+
+    private InsertTaskCompletedListener insertTaskCompletedListener;
+
+    public void setInsertTaskCompletedListener(InsertTaskCompletedListener insertTaskCompletedListener) {
+        this.insertTaskCompletedListener = insertTaskCompletedListener;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,7 +109,7 @@ public class SQLRepository {
         protected void onPostExecute(Long aLong) {
             super.onPostExecute(aLong);
             // Return Id of the newly inserted timetable
-            sqlRepository.mListener.onInsertCallback(aLong);
+            sqlRepository.mListener.onInsertTimetableCallback(aLong);
         }
     }
 
@@ -645,23 +664,32 @@ public class SQLRepository {
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     public void insertTask(TaskEntity taskEntity) {
-        new InsertTaskAsyncTask(this.taskDAO, taskEntity).execute();
+        new InsertTaskAsyncTask(this.taskDAO, taskEntity, this).execute();
     }
 
-    private static class InsertTaskAsyncTask extends AsyncTask<Void, Void, Void> {
+    private static class InsertTaskAsyncTask extends AsyncTask<Void, Void, Long> {
 
         private TaskDAO taskDAO;
         private TaskEntity taskEntity;
+        private SQLRepository sqlRepository;
 
-        InsertTaskAsyncTask(TaskDAO taskDAO, TaskEntity taskEntity) {
+        InsertTaskAsyncTask(TaskDAO taskDAO, TaskEntity taskEntity, SQLRepository sqlRepository) {
             this.taskDAO = taskDAO;
             this.taskEntity = taskEntity;
+            this.sqlRepository = sqlRepository;
         }
 
         @Override
-        protected Void doInBackground(Void... voids) {
-            this.taskDAO.insert(this.taskEntity);
-            return null;
+        protected Long doInBackground(Void... voids) {
+            return this.taskDAO.insert(this.taskEntity);
+        }
+
+        @Override
+        protected void onPostExecute(Long aLong) {
+            super.onPostExecute(aLong);
+            if (sqlRepository.insertTaskCompletedListener != null) {
+                sqlRepository.insertTaskCompletedListener.onInsertTaskCallback(aLong);
+            }
         }
     }
 
@@ -707,6 +735,159 @@ public class SQLRepository {
         @Override
         protected Void doInBackground(Void... voids) {
             this.taskDAO.update(this.taskEntity);
+            return null;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void completeTask(int taskId) {
+        new CompleteTaskAsyncTask(this.taskDAO, taskId).execute();
+    }
+
+    private static class CompleteTaskAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        private TaskDAO taskDAO;
+        private int taskId;
+
+        CompleteTaskAsyncTask(TaskDAO taskDAO, int taskId) {
+            this.taskDAO = taskDAO;
+            this.taskId = taskId;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            taskDAO.completeTask(taskId);
+            return null;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void insertAlarm(AlarmEntity alarmEntity) {
+        new InsertAlarmAsyncTask(this.alarmDAO, alarmEntity, this).execute();
+    }
+
+    private static class InsertAlarmAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        private AlarmDAO alarmDAO;
+        private AlarmEntity alarmEntity;
+        private SQLRepository sqlRepository;
+
+        InsertAlarmAsyncTask(AlarmDAO alarmDAO, AlarmEntity alarmEntity, SQLRepository sqlRepository) {
+            this.alarmDAO = alarmDAO;
+            this.alarmEntity = alarmEntity;
+            this.sqlRepository = sqlRepository;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            alarmDAO.insert(alarmEntity);
+            return null;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void updateAlarm(AlarmEntity alarmEntity) {
+        new UpdateAlarmAsyncTask(this.alarmDAO, alarmEntity).execute();
+    }
+
+    private static class UpdateAlarmAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        private AlarmDAO alarmDAO;
+        private AlarmEntity alarmEntity;
+
+        UpdateAlarmAsyncTask(AlarmDAO alarmDAO, AlarmEntity alarmEntity) {
+            this.alarmDAO = alarmDAO;
+            this.alarmEntity = alarmEntity;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            alarmDAO.update(alarmEntity);
+            return null;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void deleteAlarm(AlarmEntity alarmEntity) {
+        new DeleteAlarmAsyncTask(this.alarmDAO, alarmEntity).execute();
+    }
+
+    private static class DeleteAlarmAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        private AlarmDAO alarmDAO;
+        private AlarmEntity alarmEntity;
+
+        DeleteAlarmAsyncTask(AlarmDAO alarmDAO, AlarmEntity alarmEntity) {
+            this.alarmDAO = alarmDAO;
+            this.alarmEntity = alarmEntity;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            alarmDAO.delete(alarmEntity);
+            return null;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void deleteAllAlarms() {
+        new DeleteAllAlarmsAsyncTask(this.alarmDAO).execute();
+    }
+
+    private static class DeleteAllAlarmsAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        private AlarmDAO alarmDAO;
+
+        DeleteAllAlarmsAsyncTask(AlarmDAO alarmDAO) {
+            this.alarmDAO = alarmDAO;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            alarmDAO.deleteAllAlarms();
+            return null;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public LiveData<List<AlarmEntity>> getAllAlarms() {
+        return this.alarmDAO.getAllAlarms();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public LiveData<List<AlarmEntity>> getAllTaskAlarms(int taskId){
+        return this.alarmDAO.getAllTaskAlarms(taskId);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void deleteTaskAlarms(int taskId) {
+        new DeleteTaskAlarmsAsyncTask(this.alarmDAO, taskId).execute();
+    }
+
+    private static class DeleteTaskAlarmsAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        private AlarmDAO alarmDAO;
+        private int taskId;
+
+        DeleteTaskAlarmsAsyncTask(AlarmDAO alarmDAO, int taskId) {
+            this.alarmDAO = alarmDAO;
+            this.taskId = taskId;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            this.alarmDAO.deleteTaskAlarms(this.taskId);
             return null;
         }
     }

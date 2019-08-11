@@ -6,6 +6,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -27,6 +28,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.ntu_timetable_calendar.Dialogs.MyDatePickerDialog;
 import com.example.ntu_timetable_calendar.Dialogs.MyTimePickerDialog;
+import com.example.ntu_timetable_calendar.Entity.AlarmEntity;
 import com.example.ntu_timetable_calendar.Entity.TaskEntity;
 import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
 import com.example.ntu_timetable_calendar.Helper.AlarmParser;
@@ -48,7 +50,7 @@ import java.util.Objects;
 import es.dmoral.toasty.Toasty;
 
 public class AddNewTaskFragment extends Fragment implements View.OnClickListener, DatePickerDialog.OnDateSetListener,
-        TimePickerDialog.OnTimeSetListener {
+        TimePickerDialog.OnTimeSetListener, SQLViewModel.InsertTaskCompletedListener {
 
     // Widgets
     private AppBarLayout mAppBarLayout;
@@ -172,6 +174,7 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
             // Set the default deadline as 1 day after today
             deadlineCalendar = Calendar.getInstance();
             deadlineCalendar.add(Calendar.DAY_OF_MONTH, 1);
+            deadlineCalendar.set(Calendar.SECOND, 0);
         }
     }
 
@@ -180,6 +183,8 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
         tasksFragmentViewModel = ViewModelProviders.of(requireActivity()).get(TasksFragmentViewModel.class);
 
         sqlViewModel = ViewModelProviders.of(this).get(SQLViewModel.class);
+        sqlViewModel.setInsertTaskCompletedListener(this);
+
         // Get the main timetable entity from Room
         sqlViewModel.getMainTimetable().observe(this, new Observer<TimetableEntity>() {
             @Override
@@ -281,9 +286,6 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
                     this.priorityChosen, this.listOfAlarms, this.alarmTimingChosen, false);
 
             sqlViewModel.insertTask(taskEntity);
-
-            Toasty.success(requireContext(), "Task saved", Toasty.LENGTH_SHORT).show();
-            Objects.requireNonNull(getActivity()).finish();
         }
     }
 
@@ -670,4 +672,37 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
         Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.second_activity_fragment_container, new ChooseClassFragment(), "home_fragment")
                 .addToBackStack("home_fragment").commit();
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * We need the ID of the newly inserted task in order to insert the AlarmEntity into Room
+     *
+     * @param taskId ID of the newly inserted task
+     */
+    @Override
+    public void onInsertTaskCallback(Long taskId) {
+        List<AlarmEntity> alarmEntityList = new ArrayList<>();
+        String alarmTitle = this.title + " task due";
+
+        for (Long alarmTiming : listOfAlarms) {
+            alarmEntityList.add(new AlarmEntity(taskId.intValue(), alarmTiming, alarmTitle));
+        }
+
+        // Insert all the alarms into the AlarmEntity table
+        for (AlarmEntity alarmEntity : alarmEntityList) {
+            sqlViewModel.insertAlarm(alarmEntity);
+        }
+
+        // Close fragment/activity after a slight delay
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Toasty.success(requireContext(), "Task saved", Toasty.LENGTH_SHORT).show();
+                Objects.requireNonNull(getActivity()).finish();
+            }
+        }, 250);
+    }
+
 }

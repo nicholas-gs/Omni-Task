@@ -15,7 +15,7 @@ import java.util.List;
 public interface TaskDAO {
 
     @Insert
-    void insert(TaskEntity taskEntity);
+    Long insert(TaskEntity taskEntity);
 
     @Update
     void update(TaskEntity taskEntity);
@@ -36,8 +36,14 @@ public interface TaskDAO {
     LiveData<TaskEntity> getTask(int id);
 
     @Query("SELECT * FROM task_table WHERE deadLine BETWEEN :nowTime AND :deadLineTime ORDER BY deadLine ASC")
-    LiveData<List<TaskEntity>> getTasksWithinTime(long nowTime ,long deadLineTime);
+    LiveData<List<TaskEntity>> getTasksWithinTime(long nowTime, long deadLineTime);
 
     @Query("UPDATE task_table SET courseEventEntityId = -1")
     void clearAllClassesInTasks();
+
+    @Query("UPDATE task_table SET isDone = 1 WHERE id = :taskId")
+    void completeTask(int taskId);
+
+    @Query("SELECT * FROM task_table WHERE isDone == 0")
+    List<TaskEntity> getAllNotDoneTasks();
 }

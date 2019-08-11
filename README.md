@@ -34,9 +34,9 @@ Add and edit tasks               | Assign task to a class
 :-------------------------:|:-------------------------:
 ![Webp net-resizeimage](https://user-images.githubusercontent.com/39665412/62752525-698ba480-ba9a-11e9-9143-664bb5abec11.png) | ![Webp net-resizeimage (1)](https://user-images.githubusercontent.com/39665412/62752683-0c442300-ba9b-11e9-85e6-504651ede09c.png)
 
-Receive reminders               |
+Set reminder timing              | Receive reminders 
 :-------------------------:|:-------------------------:
-![receive_reminders](https://user-images.githubusercontent.com/39665412/62838048-8a761480-bca9-11e9-8ed0-23160900d20d.png) |
+![alarm_timing](https://user-images.githubusercontent.com/39665412/62838140-ceb5e480-bcaa-11e9-94c4-53c5b5670c7c.png) | ![receive_reminders](https://user-images.githubusercontent.com/39665412/62838048-8a761480-bca9-11e9-8ed0-23160900d20d.png)
 
 ## Acknowledgements
 

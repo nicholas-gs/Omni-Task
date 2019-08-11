@@ -1,6 +1,15 @@
 package com.example.ntu_timetable_calendar.Helper;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+
 import androidx.annotation.NonNull;
+
+import com.example.ntu_timetable_calendar.Entity.AlarmEntity;
+import com.example.ntu_timetable_calendar.R;
+import com.example.ntu_timetable_calendar.Receivers.AlertReceiver;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -75,4 +84,42 @@ public class AlarmParser {
         }
         return calendar;
     }
+
+    /**
+     * NOTE : We use the AlarmEntity ID for the notification_id_key in Intent extra & requestCode in PendingIntent
+     * Used to schedule a list of notifications using AlarmManager
+     *
+     * @param context       Context
+     * @param alarmManager  Provides access to the system alarm services to schedule your application to be run at some point in the future.
+     * @param allAlarmsList List of all AlarmEntities from Room
+     */
+    public static void scheduleAlarmsHelper(@NonNull Context context, @NonNull AlarmManager alarmManager, @NonNull List<AlarmEntity> allAlarmsList) {
+
+        for (AlarmEntity alarmEntity : allAlarmsList) {
+
+            Intent intent = new Intent(context, AlertReceiver.class);
+            intent.putExtra(context.getString(R.string.INTENT_MESSAGE_KEY), alarmEntity.getTitle());
+            intent.putExtra(context.getString(R.string.notification_id_key), alarmEntity.getId());
+            intent.putExtra(context.getString(R.string.TASK_ENTITY_ID), alarmEntity.getTaskId());
+
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, alarmEntity.getId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmEntity.getTime(), pendingIntent);
+        }
+    }
+
+    public static void deleteScheduledAlarmsHelper(@NonNull Context context, @NonNull AlarmManager alarmManager, @NonNull List<AlarmEntity> alarmEntityList) {
+
+        for (AlarmEntity alarmEntity : alarmEntityList) {
+            Intent intent = new Intent(context, AlertReceiver.class);
+            intent.putExtra(context.getString(R.string.INTENT_MESSAGE_KEY), alarmEntity.getTitle());
+            intent.putExtra(context.getString(R.string.notification_id_key), alarmEntity.getId());
+            intent.putExtra(context.getString(R.string.TASK_ENTITY_ID), alarmEntity.getTaskId());
+
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, alarmEntity.getId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            alarmManager.cancel(pendingIntent);
+        }
+    }
+
 }

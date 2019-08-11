@@ -1,12 +1,15 @@
 package com.example.ntu_timetable_calendar.Fragments;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -28,12 +31,14 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.ntu_timetable_calendar.Dialogs.MyDatePickerDialog;
 import com.example.ntu_timetable_calendar.Dialogs.MyTimePickerDialog;
+import com.example.ntu_timetable_calendar.Entity.AlarmEntity;
 import com.example.ntu_timetable_calendar.Entity.CourseEventEntity;
 import com.example.ntu_timetable_calendar.Entity.TaskEntity;
 import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
 import com.example.ntu_timetable_calendar.Helper.AlarmParser;
 import com.example.ntu_timetable_calendar.Helper.BooleanArrayHelper;
 import com.example.ntu_timetable_calendar.Helper.StringHelper;
+import com.example.ntu_timetable_calendar.MainActivity;
 import com.example.ntu_timetable_calendar.R;
 import com.example.ntu_timetable_calendar.ViewModels.SQLViewModel;
 import com.example.ntu_timetable_calendar.ViewModels.TasksFragmentViewModel;
@@ -43,6 +48,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -64,6 +70,7 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
     private MaterialButton markAsDoneButton;
 
     // Variables
+    private boolean launchedFromNotification;
     private int taskEntityId;
     private int PRIORITY_1, PRIORITY_2, PRIORITY_3, PRIORITY_4, NO_PRIORITY;
 
@@ -85,8 +92,9 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public TaskDetailFragment(int taskEntityId) {
+    public TaskDetailFragment(int taskEntityId, boolean launchedFromNotification) {
         this.taskEntityId = taskEntityId;
+        this.launchedFromNotification = launchedFromNotification;
     }
 
     public TaskDetailFragment() {
@@ -205,6 +213,9 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
                         saveLocalVariables(taskEntity);
                         retrieveCourseEventData(taskEntity);
                         displayTask();
+                        removeTaskAlarms();
+                    } else {
+                        Objects.requireNonNull(getActivity()).finish();
                     }
                 }
             });
@@ -221,6 +232,23 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
             @Override
             public void onChanged(TimetableEntity timetableEntity) {
                 saveMainTimetable(timetableEntity);
+            }
+        });
+    }
+
+    /**
+     * Remove all the alarms of this task in AlarmManager.
+     * NOTE - We set up the alarms in the saveTask() method below
+     */
+    private void removeTaskAlarms() {
+        final AlarmManager alarmManager = (AlarmManager) Objects.requireNonNull(getActivity()).getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+
+        sqlViewModel.getAllTaskAlarms(this.taskEntity.getId()).observe(this, new Observer<List<AlarmEntity>>() {
+            @Override
+            public void onChanged(List<AlarmEntity> alarmEntityList) {
+                if (alarmEntityList != null && alarmEntityList.size() != 0) {
+                    AlarmParser.deleteScheduledAlarmsHelper(requireContext(), alarmManager, alarmEntityList);
+                }
             }
         });
     }
@@ -476,7 +504,6 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
         }
     }
 
-
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -494,6 +521,7 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
         builder.setPositiveButton(getString(R.string.discard), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                initMainActivity();
                 Objects.requireNonNull(getActivity()).finish();
             }
         });
@@ -572,6 +600,7 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
                 sqlViewModel.deleteTask(taskEntity);
 
                 Toasty.success(requireContext(), getString(R.string.task_deleted), Toasty.LENGTH_SHORT).show();
+                initMainActivity();
                 Objects.requireNonNull(getActivity()).finish();
             }
         });
@@ -789,10 +818,38 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
 
             this.taskEntity.setAlarmList(alarmList);
 
+            // Save updated task to Room
             sqlViewModel.updateTask(this.taskEntity);
 
-            Toasty.success(requireContext(), getString(R.string.changes_saved), Toasty.LENGTH_SHORT).show();
-            Objects.requireNonNull(getActivity()).finish();
+            if (this.isDone) {
+                // Delete all the task's alarm if task is done since we do not need to inform user again
+                sqlViewModel.deleteTaskAlarms(this.taskEntity.getId());
+            } else {
+                // Delete this task's alarms ( I delete all cause i can't be bothered to figure out what changes to task's alarm timings have been saved :/ )
+                sqlViewModel.deleteTaskAlarms(this.taskEntity.getId());
+
+                List<AlarmEntity> alarmEntityList = new ArrayList<>();
+                for (Long l : this.taskEntity.getAlarmList()) {
+                    alarmEntityList.add(new AlarmEntity(taskEntity.getId(), l, taskEntity.getTitle() + " task due"));
+                }
+
+                // Insert this task's alarms into Room
+                for (AlarmEntity alarmEntity : alarmEntityList) {
+                    sqlViewModel.insertAlarm(alarmEntity);
+                }
+            }
+
+            initMainActivity();
+
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Toasty.success(requireContext(), getString(R.string.changes_saved), Toasty.LENGTH_SHORT).show();
+                    Objects.requireNonNull(getActivity()).finish();
+                }
+            }, 250);
+
         }
     }
 
@@ -852,6 +909,7 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
                 break;
         }
     }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -860,6 +918,17 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
     private void initChooseClassFragment() {
         Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction().replace(R.id.second_activity_fragment_container, new ChooseClassFragment(), "home_fragment")
                 .addToBackStack("home_fragment").commit();
+    }
+
+    /**
+     * We need to initialise the main activity if this fragment is opened by clicking the notification
+     */
+    private void initMainActivity() {
+        if (launchedFromNotification) {
+            Intent intent = new Intent(requireActivity(), MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            requireActivity().startActivity(intent);
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////

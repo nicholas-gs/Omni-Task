@@ -1,22 +1,28 @@
 package com.example.ntu_timetable_calendar;
 
+import android.app.AlarmManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.example.ntu_timetable_calendar.Fragments.TaskFragment;
+import com.example.ntu_timetable_calendar.Entity.AlarmEntity;
 import com.example.ntu_timetable_calendar.Fragments.HomeFragment;
 import com.example.ntu_timetable_calendar.Fragments.PlanFragment;
 import com.example.ntu_timetable_calendar.Fragments.SearchFragment;
-import com.example.ntu_timetable_calendar.JsonDatabase.JsonDatabase;
+import com.example.ntu_timetable_calendar.Fragments.TaskFragment;
+import com.example.ntu_timetable_calendar.Helper.AlarmParser;
 import com.example.ntu_timetable_calendar.ViewModels.HomeFragmentActivityViewModel;
 import com.example.ntu_timetable_calendar.ViewModels.PlanFragmentActivityViewModel;
 import com.example.ntu_timetable_calendar.ViewModels.SQLViewModel;
 import com.example.ntu_timetable_calendar.ViewModels.SearchFragmentActivityViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,10 +38,6 @@ public class MainActivity extends AppCompatActivity {
                     new HomeFragment(), "home_fragment").commit();
         }
 
-        // We instantiate the jsonDatabase here (even though we don't the data yet) in order to prevent
-        // the fragment loading to lag, since instantiating the database carries out the deserialization
-        JsonDatabase jsonDatabase = JsonDatabase.getJsonDatabaseInstance(getApplicationContext());
-
         initialiseViews();
         setUpBottomNav();
         initActivityViewModels();
@@ -44,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
     private void initialiseViews() {
         bottomNavigationView = findViewById(R.id.activitymain_bottom_navview);
         bottomNavigationView.setItemIconTintList(null);
-
     }
 
     private void setUpBottomNav() {
@@ -81,12 +82,21 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Initialize ViewModel whose lifecycle is tied to the application
      */
-    private void initActivityViewModels(){
+    private void initActivityViewModels() {
         SearchFragmentActivityViewModel searchFragmentActivityViewModel = ViewModelProviders.of(this).get(SearchFragmentActivityViewModel.class);
         searchFragmentActivityViewModel.setSearchQuery(null);
         PlanFragmentActivityViewModel planFragmentActivityViewModel = ViewModelProviders.of(this).get(PlanFragmentActivityViewModel.class);
-        SQLViewModel sqlViewModel = ViewModelProviders.of(this).get(SQLViewModel.class);
+        final SQLViewModel sqlViewModel = ViewModelProviders.of(this).get(SQLViewModel.class);
         HomeFragmentActivityViewModel homeFragmentActivityViewModel = ViewModelProviders.of(this).get(HomeFragmentActivityViewModel.class);
+
+        /* We schedule the alarms here when there is a change in the alarm_table in Room */
+        sqlViewModel.getAllAlarms().observe(this, new Observer<List<AlarmEntity>>() {
+            @Override
+            public void onChanged(List<AlarmEntity> alarmEntities) {
+                AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+                AlarmParser.scheduleAlarmsHelper(getApplicationContext(), alarmManager, alarmEntities);
+            }
+        });
     }
 
 }

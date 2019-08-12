@@ -26,7 +26,7 @@ import java.util.Calendar;
 import java.util.List;
 
 /**
- * Show tasks whose deadline is within the current month
+ * Show tasks whose deadline is within the current month (THIS MONTH)
  */
 public class TaskFragmentFrag2 extends Fragment implements TaskFragmentRVAdapter.onItemClickedListener {
 

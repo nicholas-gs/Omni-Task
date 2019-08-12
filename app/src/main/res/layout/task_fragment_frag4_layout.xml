@@ -5,10 +5,4 @@
     android:background="@color/colorPrimary"
     android:orientation="vertical">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/tasks_frag3_recyclerview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorPrimary" />
-
 </RelativeLayout>

@@ -22,6 +22,7 @@
             app:titleTextColor="@color/colorWhite" />
 
         <com.google.android.material.tabs.TabLayout
+            app:tabMode="scrollable"
             app:tabGravity="fill"
             app:tabTextColor="@color/colorContentText"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
@@ -29,6 +30,7 @@
             android:id="@+id/todo_fragment_tablayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:tabSelectedTextColor="@color/colorAccent"
             android:background="@color/colorPrimary" />
 
     </com.google.android.material.appbar.AppBarLayout>

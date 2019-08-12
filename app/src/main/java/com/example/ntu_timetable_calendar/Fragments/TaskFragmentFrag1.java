@@ -24,6 +24,9 @@ import com.example.ntu_timetable_calendar.ViewModels.SQLViewModel;
 import java.util.Calendar;
 import java.util.List;
 
+/**
+ * Fragment showing the tasks for the next 7 days (NEXT 7 DAYS)
+ */
 public class TaskFragmentFrag1 extends Fragment implements TaskFragmentRVAdapter.onItemClickedListener {
 
     // Views

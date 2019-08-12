@@ -62,11 +62,13 @@ public class TaskFragment extends Fragment implements View.OnClickListener {
         fragmentList.add(new TaskFragmentFrag1());
         fragmentList.add(new TaskFragmentFrag2());
         fragmentList.add(new TaskFragmentFrag3());
+        fragmentList.add(new TaskFragmentFrag4());
         todoPagerAdapter.addFragments(fragmentList);
 
         List<String> titleList = new ArrayList<>();
         titleList.add("Next 7 days");
         titleList.add("This Month");
+        titleList.add("All Tasks");
         titleList.add("Projects");
         todoPagerAdapter.addTitles(titleList);
 

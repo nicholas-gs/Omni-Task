@@ -38,11 +38,6 @@
     <string name="custom">Custom</string>
     <string name="saved_timetables">Saved timetables</string>
     <string name="about">About</string>
-    <string name="SAVED_TIMETABLES_INTENT">saved_timetable_intent</string>
-    <string name="ABOUT_APP_INTENT">about_app_intent</string>
-    <string name="ADD_NEW_TASK_INTENT">add_new_task_intent</string>
-    <string name="TASK_DETAIL_INTENT">task_detail_intent</string>
-    <string name="SECOND_ACTIVITY_INTENT_KEY">second_activity_intent_key</string>
     <string name="is_main_timetable">Is main timetable</string>
     <string name="edit_timetable">Edit timetable</string>
     <string name="changes_saved">Changes saved</string>
@@ -85,4 +80,15 @@
     <string name="all_tasks_completed">All tasks completed</string>
     <string name="completed_tasks">Completed tasks</string>
     <string name="add_new_project">Add new project</string>
+
+    <!-- Second Activity intent extras KEY -->
+    <string name="SECOND_ACTIVITY_INTENT_KEY">second_activity_intent_key</string>
+
+    <!-- Second Activity intent extras VALUE -->
+    <string name="SAVED_TIMETABLES_INTENT">saved_timetable_intent</string>
+    <string name="ABOUT_APP_INTENT">about_app_intent</string>
+    <string name="ADD_NEW_TASK_INTENT">add_new_task_intent</string>
+    <string name="TASK_DETAIL_INTENT">task_detail_intent</string>
+    <string name="ADD_NEW_PROJECT_INTENT">add_new_project</string>
+    <string name="SHOW_COMPLETED_TASKS_INTENT">show_completed_tasks</string>
 </resources>

@@ -26,14 +26,20 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.example.ntu_timetable_calendar.utils.dialogs.MyDatePickerDialog;
-import com.example.ntu_timetable_calendar.utils.dialogs.MyTimePickerDialog;
+import com.example.ntu_timetable_calendar.R;
+import com.example.ntu_timetable_calendar.converters.AlarmParser;
 import com.example.ntu_timetable_calendar.models.entities.AlarmEntity;
 import com.example.ntu_timetable_calendar.models.entities.TaskEntity;
 import com.example.ntu_timetable_calendar.models.entities.TimetableEntity;
-import com.example.ntu_timetable_calendar.converters.AlarmParser;
-import com.example.ntu_timetable_calendar.utils.TaskFragmentUtil;
-import com.example.ntu_timetable_calendar.R;
+import com.example.ntu_timetable_calendar.utils.constants.PriorityConstants;
+import com.example.ntu_timetable_calendar.utils.datahelper.EntryValidationCheck;
+import com.example.ntu_timetable_calendar.utils.dialogs.CloseFragmentDialog;
+import com.example.ntu_timetable_calendar.utils.dialogs.MyDatePickerDialog;
+import com.example.ntu_timetable_calendar.utils.dialogs.MyTimePickerDialog;
+import com.example.ntu_timetable_calendar.utils.dialogs.NoMainTimetableDialog;
+import com.example.ntu_timetable_calendar.utils.dialogs.SaveTaskDialog;
+import com.example.ntu_timetable_calendar.utils.viewformatters.AlarmTextViewFormatter;
+import com.example.ntu_timetable_calendar.utils.viewformatters.PriorityTextViewFormatter;
 import com.example.ntu_timetable_calendar.viewmodels.SQLViewModel;
 import com.example.ntu_timetable_calendar.viewmodels.TasksFragmentViewModel;
 import com.google.android.material.appbar.AppBarLayout;
@@ -45,7 +51,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 import es.dmoral.toasty.Toasty;
@@ -66,7 +71,6 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
     private TasksFragmentViewModel tasksFragmentViewModel;
 
     // Variables
-    private TaskFragmentUtil taskFragmentUtil;
     private int mainTimetableEntityId;
     private boolean[] alarmTimingChosen;
 
@@ -76,6 +80,11 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
     private String title, description;
     private Integer priorityChosen;
     private List<Long> listOfAlarms = new ArrayList<>();
+
+    // Utils
+    private PriorityTextViewFormatter priorityTextViewFormatter;
+    private AlarmTextViewFormatter alarmTextViewFormatter;
+    private EntryValidationCheck entryValidationCheck;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -101,8 +110,8 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        taskFragmentUtil = new TaskFragmentUtil(requireContext(), requireActivity());
         initViews(view);
+        initUtils();
         initViewModels();
         initVariables();
         initToolbar();
@@ -149,7 +158,7 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
         this.priorityChosen = tasksFragmentViewModel.getPriorityChosen();
         // Default Value
         if (this.priorityChosen == 0) {
-            this.priorityChosen = TaskFragmentUtil.getPriority4();
+            this.priorityChosen = PriorityConstants.getPriority4();
         }
         // Set the priority icon's color and title
         setPriorityIconAndTitle();
@@ -199,6 +208,12 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
                 initChosenClassTextView();
             }
         });
+    }
+
+    private void initUtils() {
+        priorityTextViewFormatter = new PriorityTextViewFormatter(requireContext(), addPriorityTV);
+        alarmTextViewFormatter = new AlarmTextViewFormatter(requireContext(), addAlarmTV);
+        entryValidationCheck = new EntryValidationCheck(requireContext(), mTitleInputLayout, mDescriptionInputLayout);
     }
 
     /**
@@ -275,7 +290,7 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
         this.title = Objects.requireNonNull(mTitleEditText.getText()).toString().trim();
         this.description = Objects.requireNonNull(mDescriptionEditText.getText()).toString().trim();
 
-        if (taskFragmentUtil.validationCheck(this.mTitleInputLayout, this.mDescriptionInputLayout, this.title, this.description)) {
+        if (entryValidationCheck.validate(this.title, this.description)) {
 
             // If there is no main timetable, set the class variable timetableId to -1
             int timetableId = this.mainTimetableEntityId;
@@ -293,31 +308,14 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
      * Helper function for setting the Priority icon's color as well as title based on the priority level chosen
      */
     private void setPriorityIconAndTitle() {
-        if (priorityChosen == TaskFragmentUtil.getPriority1()) {
-            addPriorityTV.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_flag_red_24dp, 0, 0, 0);
-        } else if (priorityChosen == TaskFragmentUtil.getPriority2()) {
-            addPriorityTV.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_flag_yellow_24dp, 0, 0, 0);
-        } else if (priorityChosen == TaskFragmentUtil.getPriority3()) {
-            addPriorityTV.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_flag_green_24dp, 0, 0, 0);
-        } else if (priorityChosen == TaskFragmentUtil.getPriority4()) {
-            addPriorityTV.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_flag_lightblue_24dp, 0, 0, 0);
-        } else if (priorityChosen == TaskFragmentUtil.getNoPriority()) {
-            addPriorityTV.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_flag_darkgray_24dp, 0, 0, 0);
-        }
-
-        if (priorityChosen == TaskFragmentUtil.getNoPriority()) {
-            addPriorityTV.setText(getText(R.string.no_priority));
-        } else {
-            String str = String.format(Locale.ENGLISH, "Priority %d", priorityChosen);
-            addPriorityTV.setText(str);
-        }
+        priorityTextViewFormatter.format(this.priorityChosen);
     }
 
     /**
      * Helper function for setting the alarm text view's title based on the number of alarms chosen by user
      */
     private void setAddAlarmTitle() {
-        addAlarmTV.setText(taskFragmentUtil.formatAddAlarmTitle(this.alarmTimingChosen));
+        alarmTextViewFormatter.update(this.alarmTimingChosen);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -326,47 +324,29 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
      * Dialog shown to user when the user clicks the close button on the toolbar -- prompts user if they want to discard the task
      */
     private void closeFragmentDialog() {
-        taskFragmentUtil.initCloseFragmentDialog(false).show();
+        new CloseFragmentDialog(requireContext(), requireActivity(), false).initCloseFragmentDialog().show();
     }
 
     /**
      * Dialog shown to user when the user clicks the save button on the toolbar -- prompts user if they want to save or continue editing
      */
     private void saveTaskDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setMessage(getString(R.string.save_new_task_dialog_message));
-        builder.setPositiveButton(getString(R.string.save), new DialogInterface.OnClickListener() {
+        DialogInterface.OnClickListener positiveButtonClicked = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 saveTask();
             }
-        });
+        };
 
-        builder.setNegativeButton(getString(R.string.keep_editing), new DialogInterface.OnClickListener() {
+        DialogInterface.OnClickListener negativeButtonClicked = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 dialogInterface.dismiss();
             }
-        });
+        };
 
-        final AlertDialog alertDialog = builder.create();
-        alertDialog.setCanceledOnTouchOutside(false);
-
-        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialogInterface) {
-                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setBackgroundColor(ContextCompat.getColor(requireContext(),
-                        android.R.color.background_light));
-                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setBackgroundColor(ContextCompat.getColor(requireContext(),
-                        android.R.color.background_light));
-                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(),
-                        R.color.colorPrimaryDark));
-                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(),
-                        R.color.colorPrimaryDark));
-            }
-        });
-
-        alertDialog.show();
+        new SaveTaskDialog.Builder(requireContext()).SetPositiveButtonClick(positiveButtonClicked).SetNegativeButtonClick(negativeButtonClicked).build()
+                .show();
     }
 
     /**
@@ -482,7 +462,7 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
     }
 
     private void showNoMainTimetableDialog() {
-        taskFragmentUtil.initNoMainTimetableDialog().show();
+        new NoMainTimetableDialog(requireContext(), requireActivity()).initNoMainTimetableDialog().show();
     }
 
     /**

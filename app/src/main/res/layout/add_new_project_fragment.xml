@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/add_new_project_appbarlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/add_new_project_toolbar"
+            style="@style/Theme.MaterialComponents.Light.DarkActionBar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            app:title="@string/add_new_project"
+            app:titleTextColor="@color/colorWhite" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="8dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="8dp">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/add_new_project_title_textinputlayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:textColorHint="@color/colorContentText"
+                app:counterEnabled="false"
+                app:counterTextColor="@color/colorPrimaryLight"
+                app:errorEnabled="true"
+                app:errorTextColor="@color/colorAccent"
+                app:hintTextColor="@color/colorPrimaryLight">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/add_new_project_title_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:hint="@string/add_title"
+                    android:imeOptions="actionNext"
+                    android:inputType="text"
+                    android:textColor="@color/colorWhite"
+                    android:textColorHint="@color/colorPrimaryLight"
+                    android:textCursorDrawable="@drawable/color_cursor" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/add_new_project_description_textinputlayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/add_new_project_title_textinputlayout"
+                android:background="@android:color/transparent"
+                android:textColorHint="@color/colorContentText"
+                app:counterEnabled="false"
+                app:counterTextColor="@color/colorPrimaryLight"
+                app:errorEnabled="true"
+                app:errorTextColor="@color/colorAccent"
+                app:hintTextColor="@color/colorPrimaryLight">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/add_new_project_description_edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:hint="@string/add_description"
+                    android:imeOptions="actionDone"
+                    android:inputType="text"
+                    android:textColor="@color/colorWhite"
+                    android:textColorHint="@color/colorPrimaryLight"
+                    android:textCursorDrawable="@drawable/color_cursor" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/add_new_project_add_priority_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/add_new_project_description_textinputlayout"
+                android:layout_marginTop="8dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:drawableStart="@drawable/ic_flag_lightblue_24dp"
+                android:drawablePadding="24dp"
+                android:focusable="true"
+                android:paddingStart="12dp"
+                android:paddingTop="12dp"
+                android:paddingEnd="0dp"
+                android:paddingBottom="12dp"
+                android:text="@string/priority_4"
+                android:textColor="@color/colorContentText"
+                android:textSize="16sp" />
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

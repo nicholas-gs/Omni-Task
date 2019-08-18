@@ -14,9 +14,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import com.example.ntu_timetable_calendar.adapters.pageradapters.TodoPagerAdapter;
 import com.example.ntu_timetable_calendar.R;
 import com.example.ntu_timetable_calendar.activities.SecondActivity;
+import com.example.ntu_timetable_calendar.adapters.pageradapters.TodoPagerAdapter;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
@@ -62,9 +62,9 @@ public class TaskFragment extends Fragment implements View.OnClickListener {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.task_fragment_toolbar_menu_completedtasks) {
-                    // TODO - A new fragment to show all the already completed tasks
+                    startSecondActivity(getString(R.string.SHOW_COMPLETED_TASKS_INTENT));
                 } else if (item.getItemId() == R.id.task_fragment_toolbar_menu_addnewproject) {
-                   // TODO - A new fragment for user to add a new project
+                    startSecondActivity(getString(R.string.ADD_NEW_PROJECT_INTENT));
                 }
                 return true;
             }
@@ -90,6 +90,13 @@ public class TaskFragment extends Fragment implements View.OnClickListener {
 
         viewPager.setAdapter(todoPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
+    }
+
+    private void startSecondActivity(String intentValue) {
+        Intent intent = new Intent(getActivity(), SecondActivity.class);
+        intent.putExtra(getString(R.string.SECOND_ACTIVITY_INTENT_KEY), intentValue);
+        startActivity(intent);
+
     }
 
     @Override

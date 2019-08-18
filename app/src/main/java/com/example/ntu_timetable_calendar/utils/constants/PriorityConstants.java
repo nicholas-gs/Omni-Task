@@ -3,7 +3,7 @@ package com.example.ntu_timetable_calendar.utils.constants;
 /**
  * Constants for the TaskEntity
  */
-public abstract class TaskEntityConstants {
+public abstract class PriorityConstants {
 
     @SuppressWarnings("FieldCanBeLocal")
     private static int PRIORITY_1 = 1;

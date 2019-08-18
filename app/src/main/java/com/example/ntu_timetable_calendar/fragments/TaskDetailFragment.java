@@ -38,10 +38,11 @@ import com.example.ntu_timetable_calendar.utils.InitialiseBackStack;
 import com.example.ntu_timetable_calendar.utils.datahelper.BooleanArrayHelper;
 import com.example.ntu_timetable_calendar.utils.datahelper.EntryValidationCheck;
 import com.example.ntu_timetable_calendar.utils.datahelper.StringHelper;
-import com.example.ntu_timetable_calendar.utils.dialogs.CloseFragmentDialog;
+import com.example.ntu_timetable_calendar.utils.dialogs.CloseFragmentAlertDialog;
+import com.example.ntu_timetable_calendar.utils.dialogs.DeleteTaskAlertDialog;
 import com.example.ntu_timetable_calendar.utils.dialogs.MyDatePickerDialog;
 import com.example.ntu_timetable_calendar.utils.dialogs.MyTimePickerDialog;
-import com.example.ntu_timetable_calendar.utils.dialogs.NoMainTimetableDialog;
+import com.example.ntu_timetable_calendar.utils.dialogs.NoMainTimetableAlertDialog;
 import com.example.ntu_timetable_calendar.utils.viewformatters.AlarmTextViewFormatter;
 import com.example.ntu_timetable_calendar.utils.viewformatters.PriorityTextViewFormatter;
 import com.example.ntu_timetable_calendar.viewmodels.SQLViewModel;
@@ -483,7 +484,24 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
      * Dialog shown to user when the user clicks the close button on the toolbar -- prompts user if they want to discard changes to the task
      */
     private void closeFragmentDialog() {
-        new CloseFragmentDialog(requireContext(), requireActivity(), launchedFromNotification).initCloseFragmentDialog().show();
+
+        DialogInterface.OnClickListener positiveButtonClicked = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                InitialiseBackStack.initMainActivity(requireActivity(), launchedFromNotification);
+                Objects.requireNonNull(requireActivity()).finish();
+            }
+        };
+
+        DialogInterface.OnClickListener negativeButtonClicked = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        };
+
+
+        new CloseFragmentAlertDialog(requireContext(), positiveButtonClicked, negativeButtonClicked).build().show();
     }
 
     /**
@@ -531,54 +549,42 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
      * Dialog shown to user when the user clicks the delete button on the toolbar -- prompts user if they want to delete the task
      */
     private void deleteTaskDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setMessage(getString(R.string.task_detail_fragment_delete_dialog_message));
-        builder.setPositiveButton(getString(R.string.delete), new DialogInterface.OnClickListener() {
+        DialogInterface.OnClickListener positiveButtonClicked = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 sqlViewModel.deleteTask(taskEntity);
 
                 Toasty.success(requireContext(), getString(R.string.task_deleted), Toasty.LENGTH_SHORT).show();
 
-                InitialiseBackStack.initMainActivity(getActivity(), launchedFromNotification);
+                InitialiseBackStack.initMainActivity(requireActivity(), launchedFromNotification);
 
                 Objects.requireNonNull(getActivity()).finish();
             }
-        });
+        };
 
-        builder.setNegativeButton(getString(R.string.keep_editing), new DialogInterface.OnClickListener() {
+        DialogInterface.OnClickListener negativeButtonClicked = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 dialogInterface.dismiss();
             }
-        });
+        };
 
-        final AlertDialog alertDialog = builder.create();
-        alertDialog.setCanceledOnTouchOutside(false);
-        alertDialog.setCancelable(false);
+        new DeleteTaskAlertDialog(requireContext(), positiveButtonClicked, negativeButtonClicked).build().show();
 
-        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialogInterface) {
-                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setBackgroundColor(ContextCompat.getColor(requireContext(),
-                        android.R.color.background_light));
-                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setBackgroundColor(ContextCompat.getColor(requireContext(),
-                        android.R.color.background_light));
-                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(),
-                        R.color.colorPrimaryDark));
-                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(),
-                        R.color.colorPrimaryDark));
-            }
-        });
-
-        alertDialog.show();
     }
 
     /**
      * Show a dialog telling the user there is no timetable if there is no main timetable to choose a class
      */
     private void showNoMainTimetableDialog() {
-        new NoMainTimetableDialog(requireContext(), requireActivity()).initNoMainTimetableDialog().show();
+        DialogInterface.OnClickListener positiveButtonClicked = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        };
+
+        new NoMainTimetableAlertDialog(requireContext(), positiveButtonClicked).build().show();
     }
 
     /**

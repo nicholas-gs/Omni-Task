@@ -31,13 +31,14 @@ import com.example.ntu_timetable_calendar.converters.AlarmParser;
 import com.example.ntu_timetable_calendar.models.entities.AlarmEntity;
 import com.example.ntu_timetable_calendar.models.entities.TaskEntity;
 import com.example.ntu_timetable_calendar.models.entities.TimetableEntity;
+import com.example.ntu_timetable_calendar.utils.InitialiseBackStack;
 import com.example.ntu_timetable_calendar.utils.constants.PriorityConstants;
 import com.example.ntu_timetable_calendar.utils.datahelper.EntryValidationCheck;
-import com.example.ntu_timetable_calendar.utils.dialogs.CloseFragmentDialog;
+import com.example.ntu_timetable_calendar.utils.dialogs.CloseFragmentAlertDialog;
 import com.example.ntu_timetable_calendar.utils.dialogs.MyDatePickerDialog;
 import com.example.ntu_timetable_calendar.utils.dialogs.MyTimePickerDialog;
-import com.example.ntu_timetable_calendar.utils.dialogs.NoMainTimetableDialog;
-import com.example.ntu_timetable_calendar.utils.dialogs.SaveTaskDialog;
+import com.example.ntu_timetable_calendar.utils.dialogs.NoMainTimetableAlertDialog;
+import com.example.ntu_timetable_calendar.utils.dialogs.SaveTaskAlertDialog;
 import com.example.ntu_timetable_calendar.utils.viewformatters.AlarmTextViewFormatter;
 import com.example.ntu_timetable_calendar.utils.viewformatters.PriorityTextViewFormatter;
 import com.example.ntu_timetable_calendar.viewmodels.SQLViewModel;
@@ -324,7 +325,23 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
      * Dialog shown to user when the user clicks the close button on the toolbar -- prompts user if they want to discard the task
      */
     private void closeFragmentDialog() {
-        new CloseFragmentDialog(requireContext(), requireActivity(), false).initCloseFragmentDialog().show();
+
+        DialogInterface.OnClickListener positiveButtonClicked = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                InitialiseBackStack.initMainActivity(requireActivity(), false);
+                Objects.requireNonNull(requireActivity()).finish();
+            }
+        };
+
+        DialogInterface.OnClickListener negativeButtonClicked = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        };
+
+        new CloseFragmentAlertDialog(requireContext(), positiveButtonClicked, negativeButtonClicked).build().show();
     }
 
     /**
@@ -345,8 +362,7 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
             }
         };
 
-        new SaveTaskDialog.Builder(requireContext()).SetPositiveButtonClick(positiveButtonClicked).SetNegativeButtonClick(negativeButtonClicked).build()
-                .show();
+        new SaveTaskAlertDialog(requireContext(), positiveButtonClicked, negativeButtonClicked).build().show();
     }
 
     /**
@@ -462,7 +478,14 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
     }
 
     private void showNoMainTimetableDialog() {
-        new NoMainTimetableDialog(requireContext(), requireActivity()).initNoMainTimetableDialog().show();
+        DialogInterface.OnClickListener positiveButtonClicked = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        };
+
+        new NoMainTimetableAlertDialog(requireContext(), positiveButtonClicked).build().show();
     }
 
     /**

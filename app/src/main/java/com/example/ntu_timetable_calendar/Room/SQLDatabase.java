@@ -12,6 +12,7 @@ import com.example.ntu_timetable_calendar.DAO.CourseDAO;
 import com.example.ntu_timetable_calendar.DAO.CourseEventDAO;
 import com.example.ntu_timetable_calendar.DAO.ExamDAO;
 import com.example.ntu_timetable_calendar.DAO.ExamEventDAO;
+import com.example.ntu_timetable_calendar.DAO.ProjectDAO;
 import com.example.ntu_timetable_calendar.DAO.TaskDAO;
 import com.example.ntu_timetable_calendar.DAO.TimetableDAO;
 import com.example.ntu_timetable_calendar.Entity.AlarmEntity;
@@ -19,12 +20,14 @@ import com.example.ntu_timetable_calendar.Entity.CourseEntity;
 import com.example.ntu_timetable_calendar.Entity.CourseEventEntity;
 import com.example.ntu_timetable_calendar.Entity.ExamEntity;
 import com.example.ntu_timetable_calendar.Entity.ExamEventEntity;
+import com.example.ntu_timetable_calendar.Entity.ProjectEntity;
 import com.example.ntu_timetable_calendar.Entity.TaskEntity;
 import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
 import com.example.ntu_timetable_calendar.TypeConverter.AlarmTimingChosenConverter;
 import com.example.ntu_timetable_calendar.TypeConverter.AlarmTypeConverter;
 
-@Database(entities = {TimetableEntity.class, CourseEntity.class, ExamEntity.class, CourseEventEntity.class, ExamEventEntity.class, TaskEntity.class, AlarmEntity.class},
+@Database(entities = {TimetableEntity.class, CourseEntity.class, ExamEntity.class, CourseEventEntity.class,
+        ExamEventEntity.class, TaskEntity.class, AlarmEntity.class, ProjectEntity.class},
         version = 1, exportSchema = false)
 @TypeConverters(value = {AlarmTypeConverter.class, AlarmTimingChosenConverter.class})
 public abstract class SQLDatabase extends RoomDatabase {
@@ -44,6 +47,8 @@ public abstract class SQLDatabase extends RoomDatabase {
     public abstract TaskDAO taskDAO();
 
     public abstract AlarmDAO alarmDAO();
+
+    public abstract ProjectDAO projectDAO();
 
     public static synchronized SQLDatabase getInstance(Context context) {
         if (instance == null) {

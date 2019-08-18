@@ -11,6 +11,7 @@ import com.example.ntu_timetable_calendar.Entity.CourseEntity;
 import com.example.ntu_timetable_calendar.Entity.CourseEventEntity;
 import com.example.ntu_timetable_calendar.Entity.ExamEntity;
 import com.example.ntu_timetable_calendar.Entity.ExamEventEntity;
+import com.example.ntu_timetable_calendar.Entity.ProjectEntity;
 import com.example.ntu_timetable_calendar.Entity.TaskEntity;
 import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
 import com.example.ntu_timetable_calendar.JsonModels.Course;
@@ -274,4 +275,23 @@ public class SQLViewModel extends AndroidViewModel implements SQLRepository.Inse
     public void deleteTaskAlarms(int taskId) {
         sqlRepository.deleteTaskAlarms(taskId);
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void insertProject(ProjectEntity projectEntity){
+        sqlRepository.insertProject(projectEntity);
+    }
+
+    public void updateProject(ProjectEntity projectEntity){
+        sqlRepository.updateProject(projectEntity);
+    }
+
+    public void deleteProject(ProjectEntity projectEntity){
+        sqlRepository.deleteProject(projectEntity);
+    }
+
+    public LiveData<List<ProjectEntity>> getAllProjects(){
+        return  sqlRepository.getAllProjects();
+    }
+
 }

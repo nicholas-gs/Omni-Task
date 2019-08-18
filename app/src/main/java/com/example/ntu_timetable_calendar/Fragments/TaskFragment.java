@@ -3,6 +3,7 @@ package com.example.ntu_timetable_calendar.Fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -42,6 +43,7 @@ public class TaskFragment extends Fragment implements View.OnClickListener {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initViews(view);
+        initToolbar();
         initTabLayout();
     }
 
@@ -53,6 +55,20 @@ public class TaskFragment extends Fragment implements View.OnClickListener {
         fab = view.findViewById(R.id.todo_fragment_fab);
         fab.setOnClickListener(this);
 
+    }
+
+    private void initToolbar() {
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.task_fragment_toolbar_menu_completedtasks) {
+                    // TODO - A new fragment to show all the already completed tasks
+                } else if (item.getItemId() == R.id.task_fragment_toolbar_menu_addnewproject) {
+                   // TODO - A new fragment for user to add a new project
+                }
+                return true;
+            }
+        });
     }
 
     private void initTabLayout() {

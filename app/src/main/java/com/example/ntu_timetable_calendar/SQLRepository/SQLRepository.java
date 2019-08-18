@@ -13,6 +13,7 @@ import com.example.ntu_timetable_calendar.DAO.CourseDAO;
 import com.example.ntu_timetable_calendar.DAO.CourseEventDAO;
 import com.example.ntu_timetable_calendar.DAO.ExamDAO;
 import com.example.ntu_timetable_calendar.DAO.ExamEventDAO;
+import com.example.ntu_timetable_calendar.DAO.ProjectDAO;
 import com.example.ntu_timetable_calendar.DAO.TaskDAO;
 import com.example.ntu_timetable_calendar.DAO.TimetableDAO;
 import com.example.ntu_timetable_calendar.Entity.AlarmEntity;
@@ -20,6 +21,7 @@ import com.example.ntu_timetable_calendar.Entity.CourseEntity;
 import com.example.ntu_timetable_calendar.Entity.CourseEventEntity;
 import com.example.ntu_timetable_calendar.Entity.ExamEntity;
 import com.example.ntu_timetable_calendar.Entity.ExamEventEntity;
+import com.example.ntu_timetable_calendar.Entity.ProjectEntity;
 import com.example.ntu_timetable_calendar.Entity.TaskEntity;
 import com.example.ntu_timetable_calendar.Entity.TimetableEntity;
 import com.example.ntu_timetable_calendar.JsonModels.Course;
@@ -40,6 +42,7 @@ public class SQLRepository {
     private ExamEventDAO examEventDAO;
     private TaskDAO taskDAO;
     private AlarmDAO alarmDAO;
+    private ProjectDAO projectDAO;
 
     public SQLRepository(Application application) {
         this.sqlDatabase = SQLDatabase.getInstance(application);
@@ -50,6 +53,7 @@ public class SQLRepository {
         this.examEventDAO = this.sqlDatabase.examEventDAO();
         this.taskDAO = this.sqlDatabase.taskDAO();
         this.alarmDAO = this.sqlDatabase.alarmDAO();
+        this.projectDAO = this.sqlDatabase.projectDAO();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -891,4 +895,88 @@ public class SQLRepository {
             return null;
         }
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void insertProject(ProjectEntity projectEntity){
+        new InsertProjectAsyncClass(this.projectDAO, projectEntity).execute();
+    }
+
+    private static class InsertProjectAsyncClass extends AsyncTask<Void, Void, Void>{
+
+        private ProjectDAO projectDAO;
+        private ProjectEntity projectEntity;
+
+        InsertProjectAsyncClass(ProjectDAO projectDAO, ProjectEntity projectEntity) {
+            this.projectDAO = projectDAO;
+            this.projectEntity = projectEntity;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            this.projectDAO.insert(this.projectEntity);
+            return null;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void updateProject(ProjectEntity projectEntity){
+        new UpdateProjectAsyncClass(this.projectDAO, projectEntity).execute();
+    }
+
+    private static class UpdateProjectAsyncClass extends AsyncTask<Void, Void, Void>{
+
+        private ProjectDAO projectDAO;
+        private ProjectEntity projectEntity;
+
+        UpdateProjectAsyncClass(ProjectDAO projectDAO, ProjectEntity projectEntity) {
+            this.projectDAO = projectDAO;
+            this.projectEntity = projectEntity;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            this.projectDAO.update(this.projectEntity);
+            return null;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void deleteProject(ProjectEntity projectEntity){
+        new DeleteProjectAsyncClass(this.projectDAO, projectEntity).execute();
+    }
+
+    private static class DeleteProjectAsyncClass extends AsyncTask<Void, Void, Void>{
+
+        private ProjectDAO projectDAO;
+        private ProjectEntity projectEntity;
+
+        DeleteProjectAsyncClass(ProjectDAO projectDAO, ProjectEntity projectEntity) {
+            this.projectDAO = projectDAO;
+            this.projectEntity = projectEntity;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            this.projectDAO.delete(this.projectEntity);
+            return null;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public LiveData<List<ProjectEntity>> getAllProjects(){
+        return this.projectDAO.getAllProjects();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
 }

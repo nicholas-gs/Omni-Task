@@ -28,4 +28,20 @@ public class Time {
     public float getDuration() {
         return duration;
     }
+
+    public void setFull(String full) {
+        this.full = full;
+    }
+
+    public void setStart(String start) {
+        this.start = start;
+    }
+
+    public void setEnd(String end) {
+        this.end = end;
+    }
+
+    public void setDuration(float duration) {
+        this.duration = duration;
+    }
 }

@@ -27,7 +27,7 @@
                 android:id="@+id/course_detail_header"
                 layout="@layout/course_detail_fragment_header" />
 
-            <com.example.ntu_timetable_calendar.ExpandableCardView.ExpandableCardView
+            <com.example.ntu_timetable_calendar.utils.expandablecardview.ExpandableCardView
                 android:id="@+id/course_detail_expandableCardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

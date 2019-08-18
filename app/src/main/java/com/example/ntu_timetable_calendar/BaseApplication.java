@@ -6,7 +6,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
 
-import com.example.ntu_timetable_calendar.JsonDatabase.JsonDatabase;
+import com.example.ntu_timetable_calendar.databaseservices.jsondatabase.JsonDatabase;
 
 public class BaseApplication extends Application {
 

@@ -12,9 +12,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SecondActivity"></activity>
+        <activity android:name=".activities.SecondActivity"></activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,9 +23,9 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".Receivers.NotificationDoneReceiver" />
+        <receiver android:name=".receivers.NotificationDoneReceiver" />
         <receiver
-            android:name=".Receivers.BootCompleteReceiver"
+            android:name=".receivers.BootCompleteReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -33,7 +33,7 @@
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".Receivers.AlertReceiver" />
+        <receiver android:name=".receivers.AlertReceiver" />
     </application>
 
 </manifest>

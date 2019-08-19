@@ -38,11 +38,14 @@ import com.example.ntu_timetable_calendar.utils.InitialiseBackStack;
 import com.example.ntu_timetable_calendar.utils.datahelper.BooleanArrayHelper;
 import com.example.ntu_timetable_calendar.utils.datahelper.EntryValidationCheck;
 import com.example.ntu_timetable_calendar.utils.datahelper.StringHelper;
+import com.example.ntu_timetable_calendar.utils.dialogs.AlarmTimingAlertDialog;
 import com.example.ntu_timetable_calendar.utils.dialogs.CloseFragmentAlertDialog;
 import com.example.ntu_timetable_calendar.utils.dialogs.DeleteTaskAlertDialog;
 import com.example.ntu_timetable_calendar.utils.dialogs.MyDatePickerDialog;
 import com.example.ntu_timetable_calendar.utils.dialogs.MyTimePickerDialog;
 import com.example.ntu_timetable_calendar.utils.dialogs.NoMainTimetableAlertDialog;
+import com.example.ntu_timetable_calendar.utils.dialogs.PriorityAlertDialog;
+import com.example.ntu_timetable_calendar.utils.dialogs.SaveChangesAlertDialog;
 import com.example.ntu_timetable_calendar.utils.viewformatters.AlarmTextViewFormatter;
 import com.example.ntu_timetable_calendar.utils.viewformatters.PriorityTextViewFormatter;
 import com.example.ntu_timetable_calendar.viewmodels.SQLViewModel;
@@ -508,41 +511,22 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
      * Dialog shown to user when the user clicks the save button on the toolbar -- prompts user if they want to save changes to the task
      */
     private void saveChangesDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setMessage(getString(R.string.save_changes_dialog_message));
-        builder.setPositiveButton(getString(R.string.save), new DialogInterface.OnClickListener() {
+
+        AlertDialog.OnClickListener positiveButtonClicked = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 saveTask();
             }
-        });
+        };
 
-        builder.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+        AlertDialog.OnClickListener negativeButtonClicked = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 dialogInterface.dismiss();
             }
-        });
+        };
 
-        final AlertDialog alertDialog = builder.create();
-        alertDialog.setCanceledOnTouchOutside(false);
-        alertDialog.setCancelable(false);
-
-        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialogInterface) {
-                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setBackgroundColor(ContextCompat.getColor(requireContext(),
-                        android.R.color.background_light));
-                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setBackgroundColor(ContextCompat.getColor(requireContext(),
-                        android.R.color.background_light));
-                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(),
-                        R.color.colorPrimaryDark));
-                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(),
-                        R.color.colorPrimaryDark));
-            }
-        });
-
-        alertDialog.show();
+        new SaveChangesAlertDialog(requireContext(), positiveButtonClicked, negativeButtonClicked).build().show();
     }
 
     /**
@@ -591,106 +575,69 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
      * Dialog shown to user when the user clicks the alarm text view -- prompt user to choose the alarms timing
      */
     private void initAlarmDialog() {
-        String[] listItems = getResources().getStringArray(R.array.alarm_timing_dialog_selections);
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle(getString(R.string.alarm_timing));
-        builder.setMultiChoiceItems(listItems, alarmTimingChosen, new DialogInterface.OnMultiChoiceClickListener() {
+        DialogInterface.OnMultiChoiceClickListener itemClickedListener = new DialogInterface.OnMultiChoiceClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i, boolean b) {
                 alarmTimingChosen[i] = b;
             }
-        });
+        };
 
-        builder.setPositiveButton(getString(R.string.confirm), new DialogInterface.OnClickListener() {
+        DialogInterface.OnClickListener positiveItemClicked = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+
+                // Save the the alarmTimingChosen boolean array into the ViewModel
                 tasksFragmentViewModel.setAlarmTimingChosen(alarmTimingChosen);
+
                 initAlarmTextView();
 
                 dialogInterface.dismiss();
             }
-        });
+        };
 
         // Reset the alarm timing to all false
-        builder.setNegativeButton(getString(R.string.clear), new DialogInterface.OnClickListener() {
+        DialogInterface.OnClickListener negativeItemClicked = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 alarmTimingChosen = new boolean[]{false, false, false, false, false};
+                // Save the the alarmTimingChosen boolean array into the ViewModel
                 tasksFragmentViewModel.setAlarmTimingChosen(alarmTimingChosen);
-                initAlarmTextView();
-                dialogInterface.dismiss();
-            }
-        });
 
-        builder.setNeutralButton(getString(R.string.custom), new DialogInterface.OnClickListener() {
+                initAlarmTextView();
+            }
+        };
+
+        DialogInterface.OnClickListener neutralItemClicked = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
 
             }
-        });
+        };
 
-        final AlertDialog alertDialog = builder.create();
-        alertDialog.setCanceledOnTouchOutside(false);
-        alertDialog.setCancelable(false);
-
-        // Customise the appearance of the buttons
-        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialogInterface) {
-                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setBackgroundColor(ContextCompat.getColor(requireContext(),
-                        android.R.color.background_light));
-                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(),
-                        R.color.colorPrimaryDark));
-                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setBackgroundColor(ContextCompat.getColor(requireContext(),
-                        android.R.color.background_light));
-                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(),
-                        R.color.colorPrimaryDark));
-                alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL).setBackgroundColor(ContextCompat.getColor(requireContext(),
-                        android.R.color.background_light));
-                alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL).setTextColor(ContextCompat.getColor(requireContext(),
-                        R.color.colorPrimaryDark));
-            }
-        });
-
-        alertDialog.show();
+        new AlarmTimingAlertDialog(requireContext(), positiveItemClicked, negativeItemClicked, neutralItemClicked,
+                itemClickedListener, this.alarmTimingChosen).build().show();
     }
 
     private void initPriorityDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        String[] listItems = getResources().getStringArray(R.array.priority_dialog_selections);
-        builder.setTitle(getString(R.string.choose_priority));
-        builder.setSingleChoiceItems(listItems, priorityChosen - 1, new DialogInterface.OnClickListener() {
+        DialogInterface.OnClickListener itemClickedListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 priorityChosen = i + 1;
+                // Save the priority chosen in the ViewModel
+                tasksFragmentViewModel.setPriorityChosen(priorityChosen);
 
                 initPriorityTextViewAndIcon();
             }
-        });
+        };
 
-        builder.setPositiveButton(getString(R.string.confirm), new DialogInterface.OnClickListener() {
+        DialogInterface.OnClickListener positiveItemClicked = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                tasksFragmentViewModel.setPriorityChosen(priorityChosen);
                 dialogInterface.dismiss();
             }
-        });
+        };
 
-        final AlertDialog alertDialog = builder.create();
-        alertDialog.setCanceledOnTouchOutside(false);
-        alertDialog.setCancelable(false);
-
-        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialogInterface) {
-                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setBackgroundColor(ContextCompat.getColor(requireContext(),
-                        android.R.color.background_light));
-                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(),
-                        R.color.colorPrimaryDark));
-            }
-        });
-
-        alertDialog.show();
+        new PriorityAlertDialog(requireContext(), positiveItemClicked, itemClickedListener, priorityChosen - 1).build().show();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////

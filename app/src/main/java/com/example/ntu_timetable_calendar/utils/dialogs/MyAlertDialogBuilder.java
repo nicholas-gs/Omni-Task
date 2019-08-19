@@ -18,7 +18,11 @@ public class MyAlertDialogBuilder {
 
     private Context context;
     private String title, message, positiveButtonText, negativeButtonText, neutralButtonText;
-    private DialogInterface.OnClickListener positiveButtonClicked, negativeButtonClicked, neutralButtonClicked;
+    private DialogInterface.OnClickListener positiveButtonClicked, negativeButtonClicked, neutralButtonClicked, singleItemClickedListener;
+    private DialogInterface.OnMultiChoiceClickListener multiItemClickedListener;
+    private CharSequence[] items;
+    private boolean[] checkedItems;
+    private int checkedItem;
 
     private AlertDialog.Builder builder;
     private AlertDialog alertDialog;
@@ -38,6 +42,11 @@ public class MyAlertDialogBuilder {
         this.positiveButtonClicked = builder.positiveButtonClicked;
         this.negativeButtonClicked = builder.negativeButtonClicked;
         this.neutralButtonClicked = builder.neutralButtonClicked;
+        this.singleItemClickedListener = builder.singleItemClickedListener;
+        this.items = builder.items;
+        this.checkedItem = builder.checkedItem;
+        this.multiItemClickedListener = builder.multiItemClickedListener;
+        this.checkedItems = builder.checkedItems;
     }
 
     private AlertDialog initialise() {
@@ -47,6 +56,8 @@ public class MyAlertDialogBuilder {
         initPositiveButton();
         initNegativeButton();
         initNeutralButton();
+        initSingleChoiceItems();
+        initMultiChoiceItems();
         alertDialog = builder.create();
         initButtonColor(this.positiveButtonClicked, this.negativeButtonClicked, this.neutralButtonClicked);
         return alertDialog;
@@ -79,6 +90,18 @@ public class MyAlertDialogBuilder {
     private void initNeutralButton() {
         if (this.neutralButtonText != null && this.neutralButtonClicked != null) {
             builder.setNeutralButton(this.neutralButtonText, this.neutralButtonClicked);
+        }
+    }
+
+    private void initSingleChoiceItems() {
+        if (this.singleItemClickedListener != null) {
+            builder.setSingleChoiceItems(this.items, this.checkedItem, this.singleItemClickedListener);
+        }
+    }
+
+    private void initMultiChoiceItems() {
+        if (this.multiItemClickedListener != null) {
+            builder.setMultiChoiceItems(this.items, this.checkedItems, this.multiItemClickedListener);
         }
     }
 
@@ -117,7 +140,12 @@ public class MyAlertDialogBuilder {
 
         private Context context;
         private String title, message, positiveButtonText, negativeButtonText, neutralButtonText;
-        private DialogInterface.OnClickListener positiveButtonClicked, negativeButtonClicked, neutralButtonClicked;
+        private DialogInterface.OnClickListener positiveButtonClicked, negativeButtonClicked, neutralButtonClicked,
+                singleItemClickedListener;
+        private DialogInterface.OnMultiChoiceClickListener multiItemClickedListener;
+        private CharSequence[] items;
+        private int checkedItem;
+        private boolean[] checkedItems;
 
         public Builder(@NonNull Context context) {
             this.context = context;
@@ -151,6 +179,21 @@ public class MyAlertDialogBuilder {
                                          @NonNull String neutralButtonText) {
             this.neutralButtonClicked = neutralButtonClicked;
             this.neutralButtonText = neutralButtonText;
+            return this;
+        }
+
+        Builder setSingleChoiceItems(@NonNull String[] items, int checkedItem, @NonNull DialogInterface.OnClickListener listener) {
+            this.items = items;
+            this.checkedItem = checkedItem;
+            this.singleItemClickedListener = listener;
+            return this;
+        }
+
+
+        Builder setMultiChoiceItems(@NonNull String[] items, boolean[] checkedItems, @NonNull DialogInterface.OnMultiChoiceClickListener listener) {
+            this.items = items;
+            this.checkedItems = checkedItems;
+            this.multiItemClickedListener = listener;
             return this;
         }
 

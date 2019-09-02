@@ -65,7 +65,7 @@ import java.util.Objects;
 import es.dmoral.toasty.Toasty;
 
 public class TaskDetailFragment extends Fragment implements View.OnClickListener,
-        DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener/*, SecondActivity.MyOnBackPressedListener*/ {
+        DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
     // Widgets
     private AppBarLayout mAppBarLayout;
@@ -364,7 +364,7 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
      */
     private void displayTask() {
         initEditTexts();
-        initCurrentTimeTextViews();
+        updateCurrentTimeTextViews();
         initAlarmTextView();
         initPriorityTextViewAndIcon();
         updateViewsByIsDone();
@@ -399,7 +399,7 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
     /**
      * Initialise the deadline date TextView and time TextView
      */
-    private void initCurrentTimeTextViews() {
+    private void updateCurrentTimeTextViews() {
         Date currentTime = deadlineCalendar.getTime();
         String currentDateStr = DateFormat.getDateInstance(DateFormat.FULL).format(currentTime);
         endDateTV.setText(currentDateStr.trim());
@@ -782,7 +782,7 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
         deadlineCalendar.set(Calendar.DAY_OF_MONTH, i2);
 
         // Update the TextView
-        initCurrentTimeTextViews();
+        updateCurrentTimeTextViews();
 
         // Update the ViewModel
         tasksFragmentViewModel.setDeadLineCalendar(deadlineCalendar);
@@ -801,7 +801,7 @@ public class TaskDetailFragment extends Fragment implements View.OnClickListener
         deadlineCalendar.set(Calendar.MINUTE, i1);
 
         // Update the TextView
-        initCurrentTimeTextViews();
+        updateCurrentTimeTextViews();
 
         // Update the ViewModel
         tasksFragmentViewModel.setDeadLineCalendar(deadlineCalendar);

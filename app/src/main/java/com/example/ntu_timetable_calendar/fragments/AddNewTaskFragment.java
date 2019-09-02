@@ -31,6 +31,7 @@ import com.example.ntu_timetable_calendar.models.entities.AlarmEntity;
 import com.example.ntu_timetable_calendar.models.entities.TaskEntity;
 import com.example.ntu_timetable_calendar.models.entities.TimetableEntity;
 import com.example.ntu_timetable_calendar.utils.InitialiseBackStack;
+import com.example.ntu_timetable_calendar.utils.basefragment.BaseTaskFragment;
 import com.example.ntu_timetable_calendar.utils.constants.PriorityConstants;
 import com.example.ntu_timetable_calendar.utils.datahelper.EntryValidationCheck;
 import com.example.ntu_timetable_calendar.utils.dialogs.AlarmTimingAlertDialog;
@@ -57,7 +58,7 @@ import java.util.Objects;
 
 import es.dmoral.toasty.Toasty;
 
-public class AddNewTaskFragment extends Fragment implements View.OnClickListener, DatePickerDialog.OnDateSetListener,
+public class AddNewTaskFragment extends BaseTaskFragment implements View.OnClickListener, DatePickerDialog.OnDateSetListener,
         TimePickerDialog.OnTimeSetListener, SQLViewModel.InsertTaskCompletedListener {
 
     // Widgets
@@ -395,7 +396,7 @@ public class AddNewTaskFragment extends Fragment implements View.OnClickListener
     /**
      * AlertDialog for user to choose the time for the alarm/reminder for the task
      */
-    private void initAlarmDialog() {
+    public void initAlarmDialog() {
 
         DialogInterface.OnMultiChoiceClickListener itemClickedListener = new DialogInterface.OnMultiChoiceClickListener() {
             @Override
